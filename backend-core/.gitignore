@@ -31,3 +31,10 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Seguridad: Credenciales de Base de Datos
+src/main/resources/application.properties
+
+# Entorno y logs
+.env
+*.log
