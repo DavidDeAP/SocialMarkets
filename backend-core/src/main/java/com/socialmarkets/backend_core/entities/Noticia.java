@@ -23,7 +23,7 @@ public class Noticia {
     private LocalDateTime fecha;
 
     @Column(name = "enlace", length = 500)
-    private String enlace;
+    private String enlace; // Url a la noticia original
 
     @PrePersist
     protected void onCreate() {

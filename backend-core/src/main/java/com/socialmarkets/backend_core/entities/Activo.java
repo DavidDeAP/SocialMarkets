@@ -16,7 +16,7 @@ public class Activo {
     private Long identificador;
 
     @Column(name = "nombre", nullable = false, unique = true, length = 100)
-    private String nombre; // Ej: "BTC/USDT" o "AAPL"
+    private String nombre; // Nombre del activo
 
     @Column(name = "valor")
     private Double valor; // Precio actual de mercado

@@ -9,6 +9,6 @@ public interface AnalisisRepository extends JpaRepository<Analisis, Long> {
     // Para ver los análisis de un usuario concreto
     List<Analisis> findByUsuario(Usuario usuario);
     
-    // Para filtrar por estado (Pendiente, Acertado...)
+    // Para filtrar por estado (Pendiente, Acertado o Fallido)
     List<Analisis> findByEstado(String estado);
 }

@@ -5,6 +5,9 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.socialmarkets.backend_core.enums.EstadoAnalisis;
+import com.socialmarkets.backend_core.enums.TipoAnalisis;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,19 +23,22 @@ public class Analisis {
     private String contenido;
 
     @Column(name = "precio_entrada")
-    private Double precioEntrada;
+    private Double precioEntrada; // El precio en tiempo real que se asigna al hacer el post
 
     @Column(name = "precio_cierre")
-    private Double precioCierre;
+    private Double precioCierre; // El precio del activo en el momento en el que se caduca el post
 
     @Column(name = "precio_objetivo")
-    private Double precioObjetivo;
+    private Double precioObjetivo; // El precio que pone el usuario como meta por lo que cree que sucederá
 
     @Column(name = "fecha_vencimiento")
-    private LocalDateTime fechaVencimiento;
+    private LocalDateTime fechaVencimiento; // Fecha que pone el usuario para que se cumpla o no su análisis
 
-    private String tipo; // "Fundamental" o "Técnico"
-    private String estado; // "Pendiente", "Acertado", "Fallido"
+    @Enumerated(EnumType.STRING)
+    private TipoAnalisis tipo;
+
+    @Enumerated(EnumType.STRING)
+    private EstadoAnalisis estado;
 
     @ManyToOne
     @JoinColumn(name = "id_usuario")

@@ -14,7 +14,7 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    // Método para el Login (Simplificado sin JWT por ahora para que no te dé error)
+    // Método para el Login (Sin JWT, ya que lo agregaré cuando investigue sobre ello)
     public Usuario autenticar(String nombreUsuario, String password) {
         return usuarioRepository.findByUsuario(nombreUsuario)
                 .filter(u -> u.getHashClave().equals(password))

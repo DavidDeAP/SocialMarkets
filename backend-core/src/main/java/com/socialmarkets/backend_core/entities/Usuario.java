@@ -23,10 +23,10 @@ public class Usuario {
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "hash_clave", nullable = false)
-    private String hashClave;
+    private String hashClave; // Contraseña cifrada
 
     @Column(name = "indice_acierto")
-    private Double indiceAcierto = 0.0;
+    private Double indiceAcierto = 0.0; // El porcentaje de acierto del usuario
 
     @Column(name = "numero_predicciones")
     private Integer numeroPredicciones = 0;

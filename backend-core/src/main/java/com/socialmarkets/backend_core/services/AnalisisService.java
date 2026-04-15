@@ -1,11 +1,12 @@
 package com.socialmarkets.backend_core.services;
 
-import java.time.LocalDateTime;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.socialmarkets.backend_core.entities.Analisis;
+import com.socialmarkets.backend_core.enums.EstadoAnalisis;
 import com.socialmarkets.backend_core.repositories.AnalisisRepository;
 
 @Service
@@ -16,7 +17,7 @@ public class AnalisisService {
 
     public Analisis crearAnalisis(Analisis analisis) {
         // Al crear un análisis, el estado inicial siempre es "Pendiente" 
-        analisis.setEstado("Pendiente");
+    	analisis.setEstado(EstadoAnalisis.PENDIENTE); 
         return analisisRepository.save(analisis);
     }
 
