@@ -48,7 +48,7 @@ const Login = () => {
                     />
                 </div>
 
-                <button type="submit">Entrar al Panel</button>
+                <button type="submit">Iniciar Sesión</button>
                 
                 <p className="subtitle" style={{ marginTop: '1rem' }}>
                 ¿No tienes cuenta? <Link to="/registro" style={{ color: 'var(--accent)', textDecoration: 'none' }}>Regístrate aquí</Link>
