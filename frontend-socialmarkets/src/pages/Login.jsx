@@ -30,8 +30,7 @@ const Login = () => {
                     <label>Nombre de Usuario</label>
                     <input 
                         type="text" 
-                        name="usuario" 
-                        placeholder="Tu usuario" 
+                        name="usuario"
                         onChange={handleInputChange} 
                         required 
                     />
@@ -41,8 +40,7 @@ const Login = () => {
                     <label>Contraseña</label>
                     <input 
                         type="password" 
-                        name="hashClave" 
-                        placeholder="••••••••" 
+                        name="hashClave"
                         onChange={handleInputChange} 
                         required 
                     />
