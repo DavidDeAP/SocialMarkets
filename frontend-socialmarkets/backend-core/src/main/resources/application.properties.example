@@ -1,6 +1,0 @@
-spring.datasource.url=${DB_URL}
-spring.datasource.username=${DB_USER}
-spring.datasource.password=${DB_PASSWORD}
-
-aws.s3.access-key=
-aws.s3.secret-key=
