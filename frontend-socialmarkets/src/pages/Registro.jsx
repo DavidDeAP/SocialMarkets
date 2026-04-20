@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
 const Registro = () => {
+    const navigate = useNavigate();
     const [datos, setDatos] = useState({ usuario: '', hashClave: '', biografia: '' });
     const [foto, setFoto] = useState(null);
     const [cargando, setCargando] = useState(false);
@@ -29,15 +30,13 @@ const Registro = () => {
         if (foto) formData.append('foto', foto);
 
         try {
-        const respuesta = await axios.post('http://localhost:8080/api/usuarios/registrar', formData);
-        
-        setMensajeGlobal({ texto: "¡Cuenta creada con éxito!", tipo: 'exito' });
-
-        // Reinicio de campos al crear la cuenta
-        setDatos({ usuario: '', hashClave: '', biografia: '' });
-        setFoto(null);
-        setErrorUsuario('');
-        e.target.reset(); 
+            const respuesta = await axios.post('http://localhost:8080/api/usuarios/registrar', formData);
+            
+            setMensajeGlobal({ texto: "¡Cuenta creada con éxito!", tipo: 'exito' });
+            
+            navigate('/login', { 
+                state: { mensajeExito: "¡Cuenta creada con éxito!" } 
+            }); 
 
         } catch (error) {
             if (error.response) {
@@ -102,8 +101,8 @@ const Registro = () => {
                     {cargando ? 'Registrando...' : 'Crear Cuenta'}
                 </button>
 
-                <p className="subtitle" style={{ marginTop: '0.5rem' }}>
-                    ¿Ya tienes cuenta? <Link to="/login" className="accent-link">Inicia sesión</Link>
+                <p className="subtitle" style={{ marginTop: '1rem' }}>
+                ¿Ya tienes cuenta? <Link to="/login" style={{ color: 'var(--accent)', textDecoration: 'none' }}>Iniciar sesión</Link>
                 </p>
             </form>
         </div>
