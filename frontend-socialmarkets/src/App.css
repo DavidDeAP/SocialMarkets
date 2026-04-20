@@ -116,15 +116,16 @@ button:active {
 }
 
 .input-error {
-    border-color: #dc3545 !important;
+    border: 2px solid #ff4d4d !important;
 }
 
-.error-text {
-    color: #dc3545;
-    font-size: 0.8rem;
-    margin-top: 4px;
+/* Texto de error debajo del input */
+.error-text-login {
+    color: #ff4d4d;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
     display: block;
-    font-weight: 500;
+    font-weight: bold;
 }
 
 @keyframes fadeIn {

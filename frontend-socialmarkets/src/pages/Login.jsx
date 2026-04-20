@@ -3,8 +3,9 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const Login = () => {
-    const location = useLocation(); // Recibe el estado
+    const location = useLocation();
     const [mensaje, setMensaje] = useState('');
+    const [errorLogin, setErrorLogin] = useState(false);
     const navigate = useNavigate(); 
     
     const [credenciales, setCredenciales] = useState({
@@ -21,11 +22,13 @@ const Login = () => {
     }, [location]);
 
     const handleInputChange = (e) => {
+        setErrorLogin(false);
         setCredenciales({ ...credenciales, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setErrorLogin(false);
         
         const params = new URLSearchParams();
         params.append('usuario', credenciales.usuario);
@@ -38,29 +41,12 @@ const Login = () => {
                 }
             });
             
-            
             localStorage.setItem('token', respuesta.data);
-        
             navigate('/home');
             
         } catch (error) {
-
             console.error("Error completo:", error);
-
-            
-            let mensajeError = "Error desconocido";
-            
-            if (error.response) {
-                
-                mensajeError = typeof error.response.data === 'string' 
-                    ? error.response.data 
-                    : "Credenciales inválidas";
-            } else if (error.request) {
-                
-                mensajeError = "No se puede conectar con el servidor";
-            }
-            
-            alert("Error en el login: " + mensajeError);
+            setErrorLogin(true);
         }
     };
 
@@ -69,7 +55,6 @@ const Login = () => {
             <h2>SocialMarkets</h2>
             <p className="subtitle">Bienvenido de nuevo</p>
             
-            {/* El Pop-up de éxito */}
             {mensaje && (
                 <div className="alert-panel exito" style={{ marginBottom: '1rem' }}>
                     {mensaje}
@@ -79,12 +64,29 @@ const Login = () => {
             <form className="form-registro" onSubmit={handleSubmit}>
                 <div className="input-group">
                     <label>Nombre de Usuario</label>
-                    <input type="text" name="usuario" onChange={handleInputChange} required />
+                    <input 
+                        type="text" 
+                        name="usuario" 
+                        className={errorLogin ? 'input-error' : ''}
+                        onChange={handleInputChange} 
+                        required 
+                    />
                 </div>
 
                 <div className="input-group">
                     <label>Contraseña</label>
-                    <input type="password" name="hashClave" onChange={handleInputChange} required />
+                    <input 
+                        type="password" 
+                        name="hashClave" 
+                        className={errorLogin ? 'input-error' : ''} 
+                        onChange={handleInputChange} 
+                        required 
+                    />
+                    {errorLogin && (
+                        <span className="error-text-login">
+                            Nombre de usuario o contraseña incorrectos
+                        </span>
+                    )}
                 </div>
 
                 <button type="submit" className="btn-main">Iniciar Sesión</button>
