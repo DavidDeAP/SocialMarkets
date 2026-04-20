@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.socialmarkets.backend_core.entities.Usuario;
+import com.socialmarkets.backend_core.security.JwtUtils;
 import com.socialmarkets.backend_core.services.S3Service;
 import com.socialmarkets.backend_core.services.UsuarioService;
 
@@ -29,18 +31,13 @@ public class UsuarioController {
     @Autowired
     private S3Service s3Service; // Servicio de AWS S3
 
-    // POST para recibir Imagen + Datos
+ // POST para recibir Imagen + Datos
     @PostMapping(value = "/registrar", consumes = {"multipart/form-data"})
     public ResponseEntity<?> registrar(
-            @RequestParam("usuario") String usuarioJson, // Lo recibimos como String
+            @RequestPart("usuario") Usuario usuario, // Spring lo convierte de JSON a Objeto automáticamente
             @RequestPart(value = "foto", required = false) MultipartFile foto) {
         try {
-            // 1. Convertimos el texto JSON a un objeto Usuario manualmente (si lo hacía directamente no me lo detectaba como JSON)
-            com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
-            // Esto es necesario para que entienda las fechas como LocalDateTime
-            objectMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
-            
-            Usuario usuario = objectMapper.readValue(usuarioJson, Usuario.class);
+            // 1. Ya no necesitas el ObjectMapper, 'usuario' ya viene relleno
 
             // 2. Si hay foto, la subimos
             if (foto != null && !foto.isEmpty()) {
@@ -53,8 +50,21 @@ public class UsuarioController {
             return ResponseEntity.ok(nuevoUsuario);
             
         } catch (Exception e) {
-            e.printStackTrace(); // Esto imprimirá el error en la consola si algo falla
+            e.printStackTrace();
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+    
+    @Autowired
+    private JwtUtils jwtUtils;
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestParam("usuario") String user, @RequestParam("password") String pass) {
+        try {
+            String token = usuarioService.autenticar(user, pass, jwtUtils);
+            return ResponseEntity.ok(token); // Enviamos el "carnet" al frontend
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body("Credenciales inválidas");
         }
     }
 
@@ -62,7 +72,18 @@ public class UsuarioController {
     public ResponseEntity<List<Usuario>> listarUsuarios() {
         return ResponseEntity.ok(usuarioService.obtenerTodos());
     }
-
+    
+    @GetMapping("/perfil")
+    public ResponseEntity<?> obtenerPerfil(java.security.Principal principal) {
+        try {
+            // principal.getName() devuelve el usuario que el JwtFilter guardó en la memoria
+            Usuario usuario = usuarioService.obtenerPorNombre(principal.getName());
+            return ResponseEntity.ok(usuario);
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body("Usuario no encontrado");
+        }
+    }
+    
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerUsuarioPorId(@PathVariable Long id) {
         try {

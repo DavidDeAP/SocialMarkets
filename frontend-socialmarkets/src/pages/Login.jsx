@@ -1,21 +1,20 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Login = () => {
     const location = useLocation(); // Recibe el estado
     const [mensaje, setMensaje] = useState('');
+    const navigate = useNavigate(); 
     
     const [credenciales, setCredenciales] = useState({
         usuario: '',
         hashClave: ''
     });
 
-    // Detecta si venimos de un registro exitoso
     useEffect(() => {
         if (location.state?.mensajeExito) {
             setMensaje(location.state.mensajeExito);
-            
-            // Limpia el mensaje después de 5 segundos
             const timer = setTimeout(() => setMensaje(''), 5000);
             return () => clearTimeout(timer);
         }
@@ -25,9 +24,44 @@ const Login = () => {
         setCredenciales({ ...credenciales, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Intentando iniciar sesión con:", credenciales);
+        
+        const params = new URLSearchParams();
+        params.append('usuario', credenciales.usuario);
+        params.append('password', credenciales.hashClave);
+
+        try {
+            const respuesta = await axios.post('http://localhost:8080/api/usuarios/login', params, {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            });
+            
+            
+            localStorage.setItem('token', respuesta.data);
+        
+            navigate('/home');
+            
+        } catch (error) {
+
+            console.error("Error completo:", error);
+
+            
+            let mensajeError = "Error desconocido";
+            
+            if (error.response) {
+                
+                mensajeError = typeof error.response.data === 'string' 
+                    ? error.response.data 
+                    : "Credenciales inválidas";
+            } else if (error.request) {
+                
+                mensajeError = "No se puede conectar con el servidor";
+            }
+            
+            alert("Error en el login: " + mensajeError);
+        }
     };
 
     return (

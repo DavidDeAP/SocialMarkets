@@ -26,30 +26,23 @@ const Registro = () => {
         setErrorUsuario('');
 
         const formData = new FormData();
-        formData.append('usuario', JSON.stringify(datos));
+        const usuarioBlob = new Blob([JSON.stringify(datos)], { type: 'application/json' });
+        formData.append('usuario', usuarioBlob); 
         if (foto) formData.append('foto', foto);
 
         try {
-            const respuesta = await axios.post('http://localhost:8080/api/usuarios/registrar', formData);
+            await axios.post('http://localhost:8080/api/usuarios/registrar', formData);
             
-            setMensajeGlobal({ texto: "¡Cuenta creada con éxito!", tipo: 'exito' });
-            
-            navigate('/login', { 
-                state: { mensajeExito: "¡Cuenta creada con éxito!" } 
-            }); 
+            navigate('/login'); 
 
         } catch (error) {
             if (error.response) {
                 const msg = error.response.data;
-                
-                // Lógica para error de "Usuario ya existe"
                 if (typeof msg === 'string' && msg.toLowerCase().includes("existe")) {
                     setErrorUsuario("Este nombre de usuario ya está en uso");
                 } else {
                     setMensajeGlobal({ texto: "Error: " + (typeof msg === 'string' ? msg : "Datos inválidos"), tipo: 'error' });
                 }
-            } else {
-                setMensajeGlobal({ texto: "Error de conexión con el servidor", tipo: 'error' });
             }
         } finally {
             setCargando(false);
