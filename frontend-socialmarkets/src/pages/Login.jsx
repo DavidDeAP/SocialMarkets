@@ -6,6 +6,7 @@ const Login = () => {
     const location = useLocation();
     const [mensaje, setMensaje] = useState('');
     const [errorLogin, setErrorLogin] = useState(false);
+    const [errores, setErrores] = useState({});
     const navigate = useNavigate(); 
     
     const [credenciales, setCredenciales] = useState({
@@ -23,12 +24,22 @@ const Login = () => {
 
     const handleInputChange = (e) => {
         setErrorLogin(false);
+        setErrores({ ...errores, [e.target.name]: false });
         setCredenciales({ ...credenciales, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrorLogin(false);
+
+        let nuevosErrores = {};
+        if (!credenciales.usuario.trim()) nuevosErrores.usuario = true;
+        if (!credenciales.hashClave.trim()) nuevosErrores.hashClave = true;
+
+        if (Object.keys(nuevosErrores).length > 0) {
+            setErrores(nuevosErrores);
+            return;
+        }
         
         const params = new URLSearchParams();
         params.append('usuario', credenciales.usuario);
@@ -67,10 +78,10 @@ const Login = () => {
                     <input 
                         type="text" 
                         name="usuario" 
-                        className={errorLogin ? 'input-error' : ''}
-                        onChange={handleInputChange} 
-                        required 
+                        className={errorLogin || errores.usuario ? 'input-error' : ''}
+                        onChange={handleInputChange}
                     />
+                    {errores.usuario && <span className="error-text-login">El usuario es obligatorio</span>}
                 </div>
 
                 <div className="input-group">
@@ -78,10 +89,10 @@ const Login = () => {
                     <input 
                         type="password" 
                         name="hashClave" 
-                        className={errorLogin ? 'input-error' : ''} 
+                        className={errorLogin || errores.hashClave ? 'input-error' : ''} 
                         onChange={handleInputChange} 
-                        required 
                     />
+                    {errores.hashClave && <span className="error-text-login">La contraseña es obligatoria</span>}
                     {errorLogin && (
                         <span className="error-text-login">
                             Nombre de usuario o contraseña incorrectos

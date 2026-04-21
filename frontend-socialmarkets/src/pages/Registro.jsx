@@ -5,6 +5,7 @@ import axios from 'axios';
 const Registro = () => {
     const navigate = useNavigate();
     const [datos, setDatos] = useState({ usuario: '', hashClave: '', biografia: '' });
+    const [errores, setErrores] = useState({});
     const [foto, setFoto] = useState(null);
     const [cargando, setCargando] = useState(false);
     
@@ -15,12 +16,23 @@ const Registro = () => {
         setDatos({ ...datos, [e.target.name]: e.target.value });
 
         if (e.target.name === 'usuario') setErrorUsuario('');
+        setErrores({ ...errores, [e.target.name]: false });
     };
 
     const handleFileChange = (e) => setFoto(e.target.files[0]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        let nuevosErrores = {};
+        if (!datos.usuario.trim()) nuevosErrores.usuario = true;
+        if (!datos.hashClave.trim()) nuevosErrores.hashClave = true;
+
+        if (Object.keys(nuevosErrores).length > 0) {
+            setErrores(nuevosErrores);
+            return;
+        }
+
         setCargando(true);
         setMensajeGlobal({ texto: '', tipo: '' });
         setErrorUsuario('');
@@ -54,7 +66,7 @@ const Registro = () => {
             <h2>SocialMarkets</h2>
             <p className="subtitle">Crea tu cuenta de analista</p>
 
-            {/* Panel de Mensaje Global */}
+            
             {mensajeGlobal.texto && (
                 <div className={`alert-panel ${mensajeGlobal.tipo}`}>
                     {mensajeGlobal.texto}
@@ -67,17 +79,22 @@ const Registro = () => {
                     <input 
                         type="text" 
                         name="usuario" 
-                        className={errorUsuario ? 'input-error' : ''} 
+                        className={errorUsuario || errores.usuario ? 'input-error' : ''} 
                         onChange={handleInputChange} 
-                        required 
                     />
-                    {/* Error debajo del campo */}
-                    {errorUsuario && <span className="error-text">{errorUsuario}</span>}
+                    {errores.usuario && <span className="error-text-register">El usuario es necesario</span>}
+                    {errorUsuario && <span className="error-text-register">{errorUsuario}</span>}
                 </div>
 
                 <div className="input-group">
                     <label>Contraseña</label>
-                    <input type="password" name="hashClave" onChange={handleInputChange} required />
+                    <input 
+                        type="password" 
+                        name="hashClave" 
+                        className={errores.hashClave ? 'input-error' : ''}
+                        onChange={handleInputChange} 
+                    />
+                    {errores.hashClave && <span className="error-text-register">La contraseña es necesaria</span>}
                 </div>
 
                 <div className="input-group">
