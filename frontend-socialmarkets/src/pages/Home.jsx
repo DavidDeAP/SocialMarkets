@@ -113,7 +113,6 @@ const Home = () => {
                 <main className="main-content">
                     <div className="content-card">
                         <h1>Hola, {user.usuario}</h1>
-                        <p className="subtitle">Aquí irá el contenido principal de tu Panel.</p>
                         
                         <div className="stats-grid">
                             <div className="stat-box">Operaciones activas: 0</div>
