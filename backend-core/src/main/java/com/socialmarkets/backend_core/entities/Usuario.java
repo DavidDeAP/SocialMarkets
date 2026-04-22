@@ -23,10 +23,10 @@ public class Usuario {
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "hash_clave", nullable = false)
-    private String hashClave; // Contraseña cifrada
+    private String hashClave;
 
     @Column(name = "indice_acierto")
-    private Double indiceAcierto = 0.0; // El porcentaje de acierto del usuario
+    private Double indiceAcierto = 0.0;
 
     @Column(name = "numero_predicciones")
     private Integer numeroPredicciones = 0;
@@ -34,12 +34,13 @@ public class Usuario {
     @Column(columnDefinition = "TEXT")
     private String biografia;
 
-    private String imagen; // Puede ser una URL de AWS S3
+    private String imagen;
 
+    // Cambiamos el nombre en el JSON para que el frontend lo lea como 'fechaCreacion'
+    @JsonProperty("fechaCreacion")
     @Column(name = "fecha_registro")
     private LocalDateTime fechaRegistro;
 
-    // Relaciones
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     private List<Analisis> analisis;
 
@@ -53,6 +54,13 @@ public class Usuario {
         inverseJoinColumns = @JoinColumn(name = "seguidor_id")
     )
     private Set<Usuario> seguidores;
+
+    // --- CAMPO VIRTUAL PARA EL FRONTEND ---
+    // Esto hace que el JSON incluya "seguidores: 15" en lugar de toda la lista de personas
+    @JsonProperty("seguidores")
+    public int getNumeroSeguidores() {
+        return (seguidores != null) ? seguidores.size() : 0;
+    }
 
     @PrePersist
     protected void onCreate() {

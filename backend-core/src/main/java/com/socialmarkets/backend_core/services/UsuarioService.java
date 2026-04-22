@@ -40,6 +40,21 @@ public class UsuarioService {
         usuario.setNumeroPredicciones(0);
         return usuarioRepository.save(usuario);
     }
+    
+    public Usuario actualizarPerfil(String username, String biografia, String urlImagen) {
+        Usuario usuario = usuarioRepository.findByUsuario(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if (biografia != null) {
+            usuario.setBiografia(biografia);
+        }
+        
+        if (urlImagen != null) {
+            usuario.setImagen(urlImagen);
+        }
+
+        return usuarioRepository.save(usuario);
+    }
 
     public List<Usuario> obtenerTodos() {
         return usuarioRepository.findAll();

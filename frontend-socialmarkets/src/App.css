@@ -440,3 +440,195 @@ button:active {
   color: #e2e8f0;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
+
+/* --- PAGINA DE PERFIL --- */
+.profile-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.profile-header {
+  display: flex;
+  gap: 3rem;
+  align-items: flex-start;
+  padding: 1rem;
+}
+
+/* Foto de Perfil con Lápiz */
+.profile-avatar-wrapper {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  border: 4px solid var(--accent);
+  overflow: hidden;
+}
+
+.profile-avatar-large {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.edit-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 1.5rem;
+  opacity: 0;
+  transition: opacity 0.3s;
+  cursor: pointer;
+}
+
+.profile-avatar-wrapper:hover .edit-overlay {
+  opacity: 1;
+}
+
+/* Información de Perfil */
+.profile-info-section {
+  flex: 1;
+}
+
+.profile-username {
+  font-size: 2.5rem;
+  margin-bottom: 0.2rem;
+  color: white;
+}
+
+.profile-date {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  font-style: italic;
+}
+
+.bio-textarea {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: white;
+  padding: 1rem;
+  font-family: inherit;
+  resize: none;
+  min-height: 80px;
+  margin-bottom: 1.5rem;
+  transition: border-color 0.3s;
+}
+
+.bio-textarea:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+/* Estadísticas y Botón Verde */
+.profile-stats-row {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.stat-label {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.btn-stats-green {
+  background: #22c55e;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.btn-stats-green:hover {
+  background: #16a34a;
+  transform: translateY(-2px);
+}
+
+/* Acciones de Guardar/Descartar */
+.profile-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-save {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 0.8rem 2rem;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-discard {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: none;
+  padding: 0.8rem 2rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-discard:hover {
+  background: rgba(255, 80, 80, 0.2);
+}
+
+.notification-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 1rem 2rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: white;
+  font-weight: 600;
+  z-index: 9999;
+  animation: slideIn 0.3s ease-out;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+.notification-toast.exito {
+  background: #22c55e; /* Verde */
+  border-left: 5px solid #064e3b;
+}
+
+.notification-toast.error {
+  background: #ef4444; /* Rojo */
+  border-left: 5px solid #7f1d1d;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}

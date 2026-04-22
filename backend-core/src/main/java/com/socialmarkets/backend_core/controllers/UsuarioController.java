@@ -3,11 +3,13 @@ package com.socialmarkets.backend_core.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import java.security.Principal;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,20 +39,40 @@ public class UsuarioController {
             @RequestPart("usuario") Usuario usuario, // Spring lo convierte de JSON a Objeto automáticamente
             @RequestPart(value = "foto", required = false) MultipartFile foto) {
         try {
-            // 1. Ya no necesitas el ObjectMapper, 'usuario' ya viene relleno
 
-            // 2. Si hay foto, la subimos
+            // Si hay foto, la subimos
             if (foto != null && !foto.isEmpty()) {
                 String urlImagen = s3Service.subirArchivo(foto);
                 usuario.setImagen(urlImagen);
             }
 
-            // 3. Guardamos en la DB
+            // Guardamos en la DB
             Usuario nuevoUsuario = usuarioService.registrarUsuario(usuario);
             return ResponseEntity.ok(nuevoUsuario);
             
         } catch (Exception e) {
             e.printStackTrace();
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+    
+    @PutMapping(value = "/actualizar", consumes = {"multipart/form-data"})
+    public ResponseEntity<?> actualizarPerfil(
+            Principal principal,
+            @RequestPart(value = "biografia", required = false) String biografia,
+            @RequestPart(value = "foto", required = false) MultipartFile foto) {
+        try {
+            if (principal == null) return ResponseEntity.status(401).body("No autorizado");
+
+            String urlImagen = null;
+            if (foto != null && !foto.isEmpty()) {
+                urlImagen = s3Service.subirArchivo(foto);
+            }
+
+            Usuario usuarioActualizado = usuarioService.actualizarPerfil(principal.getName(), biografia, urlImagen);
+            return ResponseEntity.ok(usuarioActualizado);
+            
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
