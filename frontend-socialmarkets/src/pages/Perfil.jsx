@@ -5,6 +5,7 @@ import { FiEdit2, FiBarChart2, FiCheckCircle, FiXCircle } from 'react-icons/fi';
 
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
+import './Perfil.css';
 
 const Perfil = () => {
     const [user, setUser] = useState(null);

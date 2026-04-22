@@ -5,6 +5,7 @@ import { FiMenu, FiSearch, FiGrid, FiTrendingUp, FiUsers, FiAward, FiFileText, F
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
 import logoApp from '../assets/logo.png'; 
+import './Home.css';
 
 const Home = () => {
     const [user, setUser] = useState(null);
