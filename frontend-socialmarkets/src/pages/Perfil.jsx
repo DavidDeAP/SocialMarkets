@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { FiEdit2, FiBarChart2, FiCheckCircle, FiXCircle } from 'react-icons/fi';
+import { FiEdit2, FiBarChart2, FiCheckCircle, FiXCircle, FiCalendar, FiUsers, FiTrendingUp, FiTarget } from 'react-icons/fi';
 
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
@@ -35,28 +35,14 @@ const Perfil = () => {
         fetchPerfil();
     }, [navigate]);
 
-    const handleFotoClick = () => fileInputRef.current.click();
+    const handleFotoClick = () => { if (editando) fileInputRef.current.click(); };
 
-    const handleFotoChange = (e) => {
+    const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
             setTempFoto(file);
             setPreviewUrl(URL.createObjectURL(file));
-            setEditando(true);
         }
-    };
-
-    const descartarCambios = () => {
-        setTempBio(user.biografia || '');
-        setTempFoto(null);
-        if (previewUrl) URL.revokeObjectURL(previewUrl);
-        setPreviewUrl(null);
-        setEditando(false);
-    };
-
-    const mostrarAviso = (msg, tipo) => {
-        setNotificacion({ mostrar: true, mensaje: msg, tipo: tipo });
-        setTimeout(() => setNotificacion({ mostrar: false, mensaje: '', tipo: '' }), 4000);
     };
 
     const guardarCambios = async () => {
@@ -66,35 +52,38 @@ const Perfil = () => {
         if (tempFoto) formData.append('foto', tempFoto);
 
         try {
-            const respuesta = await axios.put('http://localhost:8080/api/usuarios/actualizar', formData, {
-                headers: { 
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data'
-                }
+            const res = await axios.put('http://localhost:8080/api/usuarios/actualizar', formData, {
+                headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
             });
-            setUser(respuesta.data); 
+            setUser(res.data);
             setEditando(false);
-            setTempFoto(null);
-            setPreviewUrl(null);
-            mostrarAviso("¡Perfil actualizado!", "exito");
+            setNotificacion({ mostrar: true, mensaje: 'Perfil actualizado con éxito', tipo: 'exito' });
+            setTimeout(() => setNotificacion(prev => ({ ...prev, mostrar: false })), 3000);
         } catch (err) {
-            mostrarAviso("Error al guardar cambios", "error");
+            setNotificacion({ mostrar: true, mensaje: 'Error al actualizar', tipo: 'error' });
         }
     };
 
-    if (!user) return <div className="cargando-pantalla">Cargando...</div>;
+    const descartarCambios = () => {
+        setTempBio(user.biografia || '');
+        setTempFoto(null);
+        setPreviewUrl(null);
+        setEditando(false);
+    };
+
+    if (!user) return <div className="loading-screen">Cargando analista...</div>;
+
+    const fechaRegistro = user?.fechaCreacion 
+    ? new Date(user.fechaCreacion).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
+    : "---";
 
     return (
         <div className="dashboard-layout">
-            {/* SIDEBAR COMÚN */}
             <Sidebar />
-
             <div className="main-wrapper">
-                {/* TOPBAR COMÚN (Pasándole el usuario) */}
                 <Topbar user={user} />
-
+                
                 <main className="main-content">
-                    {/* Notificación flotante */}
                     {notificacion.mostrar && (
                         <div className={`notification-toast ${notificacion.tipo}`}>
                             {notificacion.tipo === 'exito' ? <FiCheckCircle /> : <FiXCircle />}
@@ -102,61 +91,92 @@ const Perfil = () => {
                         </div>
                     )}
 
-                    <div className="profile-container content-card">
-                        <div className="profile-header">
-                            <div className="profile-photo-section">
-                                <div className="profile-avatar-wrapper">
-                                    <img 
-                                        src={previewUrl || user.imagen || 'https://via.placeholder.com/150'} 
-                                        alt="Avatar" 
-                                        className="profile-avatar-large"
-                                    />
-                                    <div className="edit-overlay" onClick={handleFotoClick}>
+                    <div className="profile-glass-card">
+                        {/* Header del Perfil */}
+                        <div className="profile-hero">
+                            <div className={`profile-avatar-container ${editando ? 'mode-edit' : ''}`} onClick={handleFotoClick}>
+                                <img 
+                                    src={previewUrl || user.imagen || 'https://via.placeholder.com/150'} 
+                                    alt="Avatar" 
+                                    className="profile-avatar-img"
+                                />
+                                {editando && (
+                                    <div className="avatar-overlay">
                                         <FiEdit2 />
+                                        <span>Cambiar</span>
                                     </div>
-                                    <input 
-                                        type="file" 
-                                        ref={fileInputRef} 
-                                        style={{display: 'none'}} 
-                                        onChange={handleFotoChange}
-                                        accept="image/*"
-                                    />
-                                </div>
+                                )}
+                                <input type="file" ref={fileInputRef} hidden onChange={handleFileChange} accept="image/*" />
                             </div>
 
-                            <div className="profile-info-section">
-                                <h1 className="profile-username">{user.usuario}</h1>
-                                <p className="profile-date">Miembro desde: {new Date(user.fechaCreacion).toLocaleDateString()}</p>
-                                
-                                <div className="profile-bio-edit">
-                                    <textarea 
-                                        className="bio-textarea"
-                                        value={tempBio}
-                                        onChange={(e) => {setTempBio(e.target.value); setEditando(true);}}
-                                        placeholder="Escribe algo sobre ti..."
-                                    />
+                            <div className="profile-main-info">
+                                <div className="name-row">
+                                    <h1>{user.usuario}</h1>
+                                    {!editando && (
+                                        <button className="btn-edit-profile" onClick={() => setEditando(true)}>
+                                            <FiEdit2 /> Editar Perfil
+                                        </button>
+                                    )}
                                 </div>
-
-                                <div className="profile-stats-row">
-                                    <div className="stat-item">
-                                        <span className="stat-value">{user.seguidores || 0}</span>
-                                        <span className="stat-label">Seguidores</span>
-                                    </div>
-                                    <button className="btn-stats-green" onClick={() => navigate('/panel-usuario')}>
-                                        <FiBarChart2 /> Ver Estadísticas
-                                    </button>
+                                <p className="member-since">
+                                    <FiCalendar /> Analista desde {fechaRegistro}
+                                </p>
+                                
+                                <div className="bio-section">
+                                    {editando ? (
+                                        <textarea 
+                                            className="bio-editor"
+                                            value={tempBio}
+                                            onChange={(e) => setTempBio(e.target.value)}
+                                            placeholder="Escribe tu biografía como analista..."
+                                            maxLength="160"
+                                        />
+                                    ) : (
+                                        <p className="bio-text">{user.biografia || "Sin biografía profesional todavía."}</p>
+                                    )}
                                 </div>
                             </div>
                         </div>
 
+                        <div className="stats-dashboard-grid">
+                            <div className="stat-card">
+                                <div className="stat-icon followers"><FiUsers /></div>
+                                <div className="stat-data">
+                                    <span className="stat-value">{user.seguidores || 0}</span>
+                                    <span className="stat-label">Seguidores</span>
+                                </div>
+                            </div>
+
+                            <div className="stat-card">
+                                <div className="stat-icon predictions"><FiTrendingUp /></div>
+                                <div className="stat-data">
+                                    <span className="stat-value">{user.numeroPredicciones || 0}</span>
+                                    <span className="stat-label">Predicciones</span>
+                                </div>
+                            </div>
+
+                            <div className="stat-card highlight">
+                                <div className="stat-icon success"><FiTarget /></div>
+                                <div className="stat-data">
+                                    <div className="success-header">
+                                        <span className="stat-value">{(user.indiceAcierto || 0).toFixed(1)}%</span>
+                                        <span className="stat-label">Efectividad</span>
+                                    </div>
+                                    <div className="success-progress-bar">
+                                        <div 
+                                            className="progress-fill" 
+                                            style={{ width: `${user.indiceAcierto || 0}%` }}
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Botones de Acción */}
                         {editando && (
-                            <div className="profile-actions animate-fade-in">
-                                <button className="btn-discard" onClick={descartarCambios}>
-                                    <FiXCircle /> Cancelar
-                                </button>
-                                <button className="btn-save" onClick={guardarCambios}>
-                                    <FiCheckCircle /> Guardar Cambios
-                                </button>
+                            <div className="action-bar-profile">
+                                <button className="btn-secondary" onClick={descartarCambios}>Descartar</button>
+                                <button className="btn-primary" onClick={guardarCambios}>Guardar Cambios</button>
                             </div>
                         )}
                     </div>

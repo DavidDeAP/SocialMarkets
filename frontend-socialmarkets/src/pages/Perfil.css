@@ -1,160 +1,319 @@
-/* --- PAGINA DE PERFIL --- */
-.profile-container {
-  max-width: 900px;
-  margin: 0 auto;
+.profile-glass-card {
+  background: rgba(30, 41, 59, 0.4);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 2.5rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.5s ease-out;
+  position: relative;
+  z-index: 1;
 }
 
-.profile-header {
+.profile-glass-card .btn-secondary,
+.profile-glass-card .btn-primary {
+  padding: 0.8rem 1.8rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: 0.3px;
+}
+
+.profile-glass-card .btn-primary {
+  background: linear-gradient(135deg, var(--accent), #6366f1); 
+  color: white;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); 
+}
+
+.profile-glass-card .btn-primary:hover {
+  background: linear-gradient(135deg, #4f8dfa, #7376f5); 
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5); 
+  transform: translateY(-2px); 
+}
+
+.profile-glass-card .btn-primary:active {
+  transform: translateY(1px) scale(0.98); 
+  box-shadow: 0 2px 10px rgba(59, 130, 246, 0.2);
+}
+
+.profile-glass-card .btn-secondary {
+  background: rgba(255, 255, 255, 0.03); 
+  border: 1px solid rgba(255, 255, 255, 0.1); 
+  color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(5px); 
+}
+
+.profile-glass-card .btn-secondary:hover {
+  background: rgba(252, 129, 129, 0.1); 
+  border-color: rgba(252, 129, 129, 0.3);
+  color: #fc8181; 
+  /* Efecto de elevación */
+  transform: translateY(-2px); 
+}
+
+.profile-glass-card .btn-secondary:active {
+  transform: translateY(1px) scale(0.98); 
+}
+
+/* Hero Section: Avatar + Info */
+.profile-hero {
   display: flex;
   gap: 3rem;
+  margin-bottom: 3rem;
   align-items: flex-start;
-  padding: 1rem;
 }
 
-/* Foto de Perfil con Lápiz */
-.profile-avatar-wrapper {
+.profile-avatar-container {
   position: relative;
-  width: 180px;
-  height: 180px;
+  width: 160px;
+  height: 160px;
   border-radius: 50%;
-  border: 4px solid var(--accent);
-  overflow: hidden;
+  padding: 5px;
+  background: linear-gradient(135deg, var(--accent), #6366f1);
+  flex-shrink: 0;
 }
 
-.profile-avatar-large {
+.profile-avatar-img {
   width: 100%;
   height: 100%;
+  border-radius: 50%;
   object-fit: cover;
+  border: 4px solid #0f172a;
 }
 
-.edit-overlay {
+.mode-edit {
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.mode-edit:hover {
+  transform: scale(1.03);
+}
+
+.avatar-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   color: white;
-  font-size: 1.5rem;
-  opacity: 0;
-  transition: opacity 0.3s;
-  cursor: pointer;
+  gap: 5px;
+  font-size: 0.9rem;
 }
 
-.profile-avatar-wrapper:hover .edit-overlay {
-  opacity: 1;
-}
-
-/* Información de Perfil */
-.profile-info-section {
+/* Info del analista */
+.profile-main-info {
   flex: 1;
 }
 
-.profile-username {
-  font-size: 2.5rem;
-  margin-bottom: 0.2rem;
-  color: white;
-}
-
-.profile-date {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  margin-bottom: 1.5rem;
-  font-style: italic;
-}
-
-.bio-textarea {
-  width: 100%;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  color: white;
-  padding: 1rem;
-  font-family: inherit;
-  resize: none;
-  min-height: 80px;
-  margin-bottom: 1.5rem;
-  transition: border-color 0.3s;
-}
-
-.bio-textarea:focus {
-  border-color: var(--accent);
-  outline: none;
-}
-
-/* Estadísticas y Botón Verde */
-.profile-stats-row {
+.name-row {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 2rem;
+  margin-bottom: 0.5rem;
 }
 
-.stat-item {
-  display: flex;
-  flex-direction: column;
+.name-row h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin: 0;
+  background: linear-gradient(to right, #fff, #94a3b8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.stat-value {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-.stat-label {
-  color: var(--text-muted);
-  font-size: 0.8rem;
-}
-
-.btn-stats-green {
-  background: #22c55e;
-  color: white;
-  border: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 8px;
+.member-since {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-weight: 600;
+  color: #94a3b8;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+.bio-text {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #cbd5e1;
+  max-width: 600px;
+}
+
+.bio-editor {
+  width: 100%;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  color: white;
+  padding: 1rem;
+  font-family: inherit;
+  font-size: 1rem;
+  resize: none;
+  min-height: 100px;
+}
+
+/* Dashboard de Estadísticas */
+.stats-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.stat-card {
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  transition: transform 0.3s;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  background: rgba(15, 23, 42, 0.6);
+}
+
+.stat-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+}
+
+.stat-icon.followers { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+.stat-icon.predictions { background: rgba(168, 85, 247, 0.1); color: #a855f7; }
+.stat-icon.success { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+
+.stat-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Especial para el índice de acierto */
+.stat-card.highlight {
+  grid-column: span 1;
+  min-width: 280px;
+}
+
+.success-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.success-progress-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(to right, #22c55e, #4ade80);
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+}
+
+/* Botones */
+.btn-edit-profile {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  padding: 0.7rem 1.4rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   cursor: pointer;
-  transition: transform 0.2s, background 0.2s;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.btn-stats-green:hover {
-  background: #16a34a;
+.btn-edit-profile:hover {
+  background: rgba(99, 102, 241, 0.15); 
+  border-color: var(--accent);
+  color: white;
   transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.2);
 }
 
-/* Acciones de Guardar/Descartar */
-.profile-actions {
+.btn-edit-profile:active {
+  transform: translateY(0);
+}
+
+.btn-edit-profile svg {
+  font-size: 1.1rem;
+  color: var(--accent);
+  transition: transform 0.3s ease;
+}
+
+.btn-edit-profile:hover svg {
+  transform: scale(1.1) rotate(-10deg);
+}
+
+.action-bar-profile {
+  margin-top: 2rem;
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-  margin-top: 2rem;
   padding-top: 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.btn-save {
-  background: var(--accent);
-  color: white;
-  border: none;
-  padding: 0.8rem 2rem;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
+/* Toasts de notificación */
+.notification-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 1000;
+  animation: slideIn 0.3s ease-out;
 }
 
-.btn-discard {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  border: none;
-  padding: 0.8rem 2rem;
-  border-radius: 8px;
-  cursor: pointer;
+
+.notification-toast.exito { background: #064e3b; color: #ffffff; border: 1px solid #059669; }
+.notification-toast.error { background: #7f1d1d; color: #fca5a5; border: 1px solid #dc2626; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.btn-discard:hover {
-  background: rgba(255, 80, 80, 0.2);
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
 }
