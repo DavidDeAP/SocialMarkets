@@ -60,16 +60,25 @@ public class UsuarioController {
     public ResponseEntity<?> actualizarPerfil(
             Principal principal,
             @RequestPart(value = "biografia", required = false) String biografia,
-            @RequestPart(value = "foto", required = false) MultipartFile foto) {
+            @RequestPart(value = "foto", required = false) MultipartFile foto,
+            @RequestPart(value = "eliminarFoto", required = false) String eliminarFotoStr) {
         try {
             if (principal == null) return ResponseEntity.status(401).body("No autorizado");
+
+            boolean eliminarFoto = Boolean.parseBoolean(eliminarFotoStr);
 
             String urlImagen = null;
             if (foto != null && !foto.isEmpty()) {
                 urlImagen = s3Service.subirArchivo(foto);
             }
 
-            Usuario usuarioActualizado = usuarioService.actualizarPerfil(principal.getName(), biografia, urlImagen);
+            Usuario usuarioActualizado = usuarioService.actualizarPerfil(
+                principal.getName(), 
+                biografia, 
+                urlImagen, 
+                eliminarFoto
+            );
+            
             return ResponseEntity.ok(usuarioActualizado);
             
         } catch (Exception e) {

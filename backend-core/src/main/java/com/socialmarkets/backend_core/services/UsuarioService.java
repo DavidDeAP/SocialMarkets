@@ -41,7 +41,7 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
     
-    public Usuario actualizarPerfil(String username, String biografia, String urlImagen) {
+    public Usuario actualizarPerfil(String username, String biografia, String urlImagen, boolean eliminarFoto) {
         Usuario usuario = usuarioRepository.findByUsuario(username)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
@@ -49,7 +49,9 @@ public class UsuarioService {
             usuario.setBiografia(biografia);
         }
         
-        if (urlImagen != null) {
+        if (eliminarFoto) {
+            usuario.setImagen(null);
+        } else if (urlImagen != null) {
             usuario.setImagen(urlImagen);
         }
 

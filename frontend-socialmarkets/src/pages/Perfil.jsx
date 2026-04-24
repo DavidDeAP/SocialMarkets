@@ -1,6 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiEdit2, FiBarChart2, FiCheckCircle, FiXCircle, FiCalendar, FiUsers, FiTrendingUp, FiTarget } from 'react-icons/fi';
+import defaultUser from '../assets/defaultuser.png';
+import { 
+    FiEdit2, FiBarChart2, FiCheckCircle, FiXCircle, 
+    FiCalendar, FiUsers, FiTrendingUp, FiTarget, 
+    FiTrash2
+} from 'react-icons/fi';
 
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
@@ -12,6 +17,7 @@ const Perfil = () => {
     const [notificacion, setNotificacion] = useState({ mostrar: false, mensaje: '', tipo: '' });
     const [tempBio, setTempBio] = useState('');
     const [tempFoto, setTempFoto] = useState(null);
+    const [borrarFoto, setBorrarFoto] = useState(false);
     const [previewUrl, setPreviewUrl] = useState(null);
     const [editando, setEditando] = useState(false);
     
@@ -35,18 +41,30 @@ const Perfil = () => {
 
     const handleFotoClick = () => { if (editando) fileInputRef.current.click(); };
 
+    const handleEliminarFoto = (e) => {
+        e.stopPropagation();
+        setTempFoto(null);
+        setPreviewUrl(null);
+        setBorrarFoto(true);
+    };
+
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
             setTempFoto(file);
             setPreviewUrl(URL.createObjectURL(file));
+            setBorrarFoto(false);
         }
     };
 
     const guardarCambios = async () => {
         const formData = new FormData();
         formData.append('biografia', tempBio);
-        if (tempFoto) formData.append('foto', tempFoto);
+        if (tempFoto) {
+            formData.append('foto', tempFoto);
+        } else if (borrarFoto) {
+            formData.append('eliminarFoto', 'true'); 
+        }
 
         try {
             const res = await api.put('/usuarios/actualizar', formData);
@@ -55,6 +73,7 @@ const Perfil = () => {
             setEditando(false);
             setTempFoto(null);
             setPreviewUrl(null);
+            setBorrarFoto(false);
             
             setNotificacion({ mostrar: true, mensaje: 'Perfil actualizado con éxito', tipo: 'exito' });
             setTimeout(() => setNotificacion(prev => ({ ...prev, mostrar: false })), 3000);
@@ -67,6 +86,7 @@ const Perfil = () => {
         setTempBio(user.biografia || '');
         setTempFoto(null);
         setPreviewUrl(null);
+        setBorrarFoto(false);
         setEditando(false);
     };
 
@@ -95,16 +115,28 @@ const Perfil = () => {
                         <div className="profile-hero">
                             <div className={`profile-avatar-container ${editando ? 'mode-edit' : ''}`} onClick={handleFotoClick}>
                                 <img 
-                                    src={previewUrl || user.imagen || 'https://via.placeholder.com/150'} 
+                                    src={previewUrl || (!borrarFoto && user.imagen ? user.imagen : defaultUser)} 
                                     alt="Avatar" 
                                     className="profile-avatar-img"
                                 />
                                 {editando && (
+        <>
                                     <div className="avatar-overlay">
                                         <FiEdit2 />
                                         <span>Cambiar</span>
                                     </div>
-                                )}
+                                    
+                                    {(previewUrl || (user.imagen && !borrarFoto)) && (
+                                        <button 
+                                            className="delete-photo-btn" 
+                                            onClick={handleEliminarFoto}
+                                            title="Eliminar foto"
+                                        >
+                                            <FiTrash2 />
+                                        </button>
+                                    )}
+                                </>
+                            )}
                                 <input type="file" ref={fileInputRef} hidden onChange={handleFileChange} accept="image/*" />
                             </div>
 
