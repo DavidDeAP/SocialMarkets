@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { FiMenu, FiSearch, FiGrid, FiTrendingUp, FiUsers, FiAward, FiFileText, FiUser, FiLogOut, FiBell } from 'react-icons/fi';
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
-import logoApp from '../assets/logo.png'; 
+import api from '../services/api';
 import './Home.css';
 
 const Home = () => {
@@ -16,9 +15,7 @@ const Home = () => {
             const token = localStorage.getItem('token');
             if (!token) { navigate('/login'); return; }
             try {
-                const respuesta = await axios.get('http://localhost:8080/api/usuarios/perfil', {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const respuesta = await api.get('/usuarios/perfil');
                 setUser(respuesta.data);
             } catch (err) {
                 localStorage.removeItem('token');

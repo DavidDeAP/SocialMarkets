@@ -1,10 +1,10 @@
 import { useEffect, useState, useRef } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { FiEdit2, FiBarChart2, FiCheckCircle, FiXCircle, FiCalendar, FiUsers, FiTrendingUp, FiTarget } from 'react-icons/fi';
 
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
+import api from '../services/api';
 import './Perfil.css';
 
 const Perfil = () => {
@@ -23,9 +23,7 @@ const Perfil = () => {
             const token = localStorage.getItem('token');
             if (!token) { navigate('/login'); return; }
             try {
-                const respuesta = await axios.get('http://localhost:8080/api/usuarios/perfil', {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const respuesta = await api.get('/usuarios/perfil');
                 setUser(respuesta.data);
                 setTempBio(respuesta.data.biografia || '');
             } catch (err) {
@@ -46,17 +44,18 @@ const Perfil = () => {
     };
 
     const guardarCambios = async () => {
-        const token = localStorage.getItem('token');
         const formData = new FormData();
         formData.append('biografia', tempBio);
         if (tempFoto) formData.append('foto', tempFoto);
 
         try {
-            const res = await axios.put('http://localhost:8080/api/usuarios/actualizar', formData, {
-                headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
-            });
+            const res = await api.put('/usuarios/actualizar', formData);
+
             setUser(res.data);
             setEditando(false);
+            setTempFoto(null);
+            setPreviewUrl(null);
+            
             setNotificacion({ mostrar: true, mensaje: 'Perfil actualizado con éxito', tipo: 'exito' });
             setTimeout(() => setNotificacion(prev => ({ ...prev, mostrar: false })), 3000);
         } catch (err) {
