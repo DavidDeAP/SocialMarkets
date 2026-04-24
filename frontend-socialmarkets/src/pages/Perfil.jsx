@@ -38,7 +38,6 @@ const Perfil = () => {
             setPreviewUrl(null);
             
             try {
-                // 1. Cargamos los datos básicos de ambos
                 const [meRes, perfilRes] = await Promise.all([
                     api.get('/usuarios/perfil'),
                     api.get(`/usuarios/publico/${username}`)
@@ -48,9 +47,6 @@ const Perfil = () => {
                 setUserProfile(perfilRes.data);
                 setTempBio(perfilRes.data.biografia || '');
                 
-                // 2. Si no es mi perfil, verificamos si lo sigo
-                // Lo hacemos en un try/catch separado para que si falla esto, 
-                // no se rompa la carga del perfil completo
                 if (meRes.data.usuario !== username) {
                     try {
                         const resSigue = await api.get(`/usuarios/${username}/siguiendo`);

@@ -90,15 +90,13 @@ public class UsuarioService {
         Usuario objetivo = obtenerPorNombre(nombreObjetivo);
 
         if (objetivo.getSeguidores().contains(seguidor)) {
-            // Si ya lo sigue, lo elimina
             objetivo.getSeguidores().remove(seguidor);
             usuarioRepository.save(objetivo);
-            return false; // Indica que ya no lo sigue
+            return false;
         } else {
-            // Si no lo sigue, lo añadimos (Follow)
             objetivo.getSeguidores().add(seguidor);
             usuarioRepository.save(objetivo);
-            return true; // Indica que ahora lo sigue
+            return true;
         }
     }
 }
