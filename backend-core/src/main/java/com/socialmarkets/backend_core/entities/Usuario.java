@@ -1,13 +1,31 @@
 package com.socialmarkets.backend_core.entities;
 
-import jakarta.persistence.*;
-import lombok.*;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
@@ -64,6 +82,24 @@ public class Usuario {
     @JsonProperty("seguidores")
     public int getNumeroSeguidores() {
         return (seguidores != null) ? seguidores.size() : 0;
+    }
+    
+    @JsonProperty("nivel")
+    public String getNivel() {
+        if (this.numeroPredicciones < 10) return "Analista Novato";
+        if (this.indiceAcierto > 75) return "Analista Senior";
+        return "Analista Pro";
+    }
+
+    @JsonProperty("resumenProyecciones")
+    public Map<String, Integer> getResumenProyecciones() {
+        // Aquí en el futuro pondré la lista 'private List<Analisis> analisis'
+        // Por ahora, devuelve valores de ejemplo para que mi UI no esté vacía
+        return Map.of(
+            "activas", 4,
+            "enVerde", 2,
+            "enRojo", 2
+        );
     }
 
     @PrePersist
