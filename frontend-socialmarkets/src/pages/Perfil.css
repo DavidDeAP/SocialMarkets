@@ -341,17 +341,74 @@
 }
 
 .btn-follow {
-  padding: 10px 20px;
-  border-radius: 12px;
+  padding: 0.7rem 1.6rem;
+  border-radius: 14px;
   border: none;
-  background: var(--accent);
-  color: white;
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 0.95rem;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-follow:not(.is-following) {
+  background: linear-gradient(135deg, #22c55e, #10b981);
+  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+}
+
+.btn-follow:not(.is-following):hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(34, 197, 94, 0.5);
+  filter: brightness(1.1);
+}
+
+.btn-follow.is-following {
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+
+.btn-follow.is-following:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.5);
+  background: linear-gradient(135deg, #7c3aed, #4f46e5); /* Un poco más oscuro al hacer hover */
+}
+
+.btn-follow.is-following:hover svg {
+  animation: shake 0.5s ease infinite;
+}
+
+.btn-follow:active {
+  transform: translateY(0) scale(0.96);
+}
+
+@keyframes shake {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-10deg); }
+  75% { transform: rotate(10deg); }
+}
+
+.btn-follow::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: rotate(45deg);
+  transition: 0.5s;
+  pointer-events: none;
+}
+
+.btn-follow:hover::after {
+  left: 120%;
 }
 
 .btn-follow:hover {

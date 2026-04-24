@@ -213,9 +213,15 @@ const Perfil = () => {
                                             onClick={handleFollow}
                                         >
                                             {isFollowing ? (
-                                                <><FiUserMinus /> Siguiendo</>
+                                                <>
+                                                    <FiUserMinus style={{ fontSize: '1.1rem' }} /> 
+                                                    <span>Siguiendo</span>
+                                                </>
                                             ) : (
-                                                <><FiUserPlus /> Seguir</>
+                                                <>
+                                                    <FiUserPlus style={{ fontSize: '1.1rem' }} /> 
+                                                    <span>Seguir</span>
+                                                </>
                                             )}
                                         </button>
                                     )}
