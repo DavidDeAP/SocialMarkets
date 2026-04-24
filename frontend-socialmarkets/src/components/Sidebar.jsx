@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FiGrid, FiTrendingUp, FiUsers, FiAward, FiFileText } from 'react-icons/fi';
 import logoApp from '../assets/logo.png';
+import './Sidebar.css';
 
 const Sidebar = () => {
     const navigate = useNavigate();

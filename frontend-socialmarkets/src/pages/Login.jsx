@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import axios from 'axios';
+import './Login.css';
 
 const Login = () => {
     const location = useLocation();
@@ -61,7 +62,7 @@ const Login = () => {
         >
             <div className="auth-header">
                 <h2 className="brand-logo">Social<span className="brand-green">Markets</span></h2>
-                <p className="subtitle">Tu terminal de inteligencia financiera</p>
+                <p className="subtitle">Conecta, analiza e invierte mejor</p>
             </div>
 
             <AnimatePresence>

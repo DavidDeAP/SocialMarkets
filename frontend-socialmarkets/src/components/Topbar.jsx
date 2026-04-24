@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiSearch, FiBell, FiMenu, FiUser, FiLogOut } from 'react-icons/fi';
+import './Topbar.css';
 
 const Topbar = ({ user }) => {
     const [menuAbierto, setMenuAbierto] = useState(false);
@@ -19,11 +20,11 @@ const Topbar = ({ user }) => {
         <header className="topbar">
             <div className="search-container">
                 <FiSearch className="search-icon" />
-                <input type="text" placeholder="Buscar mercados, analistas..." className="search-input" />
+                <input type="text" placeholder="Buscar analistas" className="search-input" />
             </div>
 
             <div className="user-controls">
-                {/* Foto de perfil pequeña que lleva al perfil al hacer click */}
+                {/* Foto de perfil que lleva al perfil al hacer click */}
                 <div className="avatar-container" onClick={irAMiPerfil} style={{cursor: 'pointer'}}>
                     {user?.imagen ? (
                         <img src={user.imagen} alt="Perfil" className="avatar-img" />

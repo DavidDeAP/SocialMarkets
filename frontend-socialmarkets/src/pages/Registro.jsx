@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { UserPlus, Camera, Info, ShieldCheck } from 'lucide-react';
 import axios from 'axios';
+import './Registro.css';
 
 const Registro = () => {
     const navigate = useNavigate();
