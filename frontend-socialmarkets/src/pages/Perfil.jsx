@@ -209,7 +209,7 @@ const Perfil = () => {
                                 <div className="stat-data">
                                     <div className="success-header">
                                         <span className="stat-value">{(userProfile.indiceAcierto || 0).toFixed(1)}%</span>
-                                        <span className="stat-label">Efectividad</span>
+                                        <span className="stat-label">Índice de Acierto</span>
                                     </div>
                                     <div className="success-progress-bar">
                                         <div 
