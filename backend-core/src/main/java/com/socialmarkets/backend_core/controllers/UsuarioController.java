@@ -126,6 +126,25 @@ public class UsuarioController {
         }
     }
     
+    @PostMapping("/{username}/follow")
+    public ResponseEntity<?> seguirUsuario(Principal principal, @PathVariable String username) {
+        if (principal == null) return ResponseEntity.status(401).body("No autorizado");
+        
+        try {
+            boolean siguiendo = usuarioService.toggleSeguimiento(principal.getName(), username);
+            return ResponseEntity.ok(siguiendo);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    
+    @GetMapping("/{username}/siguiendo")
+    public ResponseEntity<Boolean> comprobarSeguimiento(Principal principal, @PathVariable String username) {
+        if (principal == null) return ResponseEntity.ok(false);
+        boolean sigue = usuarioService.esSeguidor(principal.getName(), username);
+        return ResponseEntity.ok(sigue);
+    }
+    
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerUsuarioPorId(@PathVariable Long id) {
         try {

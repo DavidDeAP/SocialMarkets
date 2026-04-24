@@ -340,6 +340,37 @@
   animation: slideIn 0.3s ease-out;
 }
 
+.btn-follow {
+  padding: 10px 20px;
+  border-radius: 12px;
+  border: none;
+  background: var(--accent);
+  color: white;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-follow:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+}
+
+.btn-follow.following {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #e2e8f0;
+}
+
+.btn-follow.following:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
 
 .notification-toast.exito { background: #064e3b; color: #ffffff; border: 1px solid #059669; }
 .notification-toast.error { background: #7f1d1d; color: #fca5a5; border: 1px solid #dc2626; }

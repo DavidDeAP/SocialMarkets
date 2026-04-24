@@ -2,9 +2,11 @@ package com.socialmarkets.backend_core.services;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.socialmarkets.backend_core.entities.Usuario;
 import com.socialmarkets.backend_core.repositories.UsuarioRepository;
@@ -70,5 +72,33 @@ public class UsuarioService {
     public Usuario obtenerPorNombre(String nombre) {
         return usuarioRepository.findByUsuario(nombre)
                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    }
+    
+    public boolean esSeguidor(String nombreSeguidor, String nombreObjetivo) {
+        Usuario objetivo = obtenerPorNombre(nombreObjetivo);
+        Usuario seguidor = obtenerPorNombre(nombreSeguidor);
+        return objetivo.getSeguidores().contains(seguidor);
+    }
+    
+    @Transactional
+    public boolean toggleSeguimiento(String nombreSeguidor, String nombreObjetivo) {
+        if (nombreSeguidor.equals(nombreObjetivo)) {
+            throw new RuntimeException("No puedes seguirte a ti mismo");
+        }
+
+        Usuario seguidor = obtenerPorNombre(nombreSeguidor);
+        Usuario objetivo = obtenerPorNombre(nombreObjetivo);
+
+        if (objetivo.getSeguidores().contains(seguidor)) {
+            // Si ya lo sigue, lo elimina
+            objetivo.getSeguidores().remove(seguidor);
+            usuarioRepository.save(objetivo);
+            return false; // Indica que ya no lo sigue
+        } else {
+            // Si no lo sigue, lo añadimos (Follow)
+            objetivo.getSeguidores().add(seguidor);
+            usuarioRepository.save(objetivo);
+            return true; // Indica que ahora lo sigue
+        }
     }
 }

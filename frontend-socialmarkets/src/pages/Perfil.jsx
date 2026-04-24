@@ -4,7 +4,7 @@ import defaultUser from '../assets/defaultuser.png';
 import { 
     FiEdit2, FiBarChart2, FiCheckCircle, FiXCircle, 
     FiCalendar, FiUsers, FiTrendingUp, FiTarget, 
-    FiTrash2
+    FiTrash2, FiUserPlus, FiUserMinus
 } from 'react-icons/fi';
 
 import Sidebar from '../components/Sidebar';
@@ -15,6 +15,7 @@ import './Perfil.css';
 const Perfil = () => {
     const { username } = useParams(); 
     const [user, setUser] = useState(null);
+    const [isFollowing, setIsFollowing] = useState(false);
     const [userProfile, setUserProfile] = useState(null);
     const [cargando, setCargando] = useState(true);
 
@@ -31,19 +32,39 @@ const Perfil = () => {
     useEffect(() => {
         const cargarTodo = async () => {
             setCargando(true);
-            try {
-                const meRes = await api.get('/usuarios/perfil');
-                setUser(meRes.data);
 
-                const perfilRes = await api.get(`/usuarios/publico/${username}`);
+            setIsFollowing(false); 
+            setBorrarFoto(false);
+            setPreviewUrl(null);
+            
+            try {
+                // 1. Cargamos los datos básicos de ambos
+                const [meRes, perfilRes] = await Promise.all([
+                    api.get('/usuarios/perfil'),
+                    api.get(`/usuarios/publico/${username}`)
+                ]);
+
+                setUser(meRes.data);
                 setUserProfile(perfilRes.data);
                 setTempBio(perfilRes.data.biografia || '');
                 
+                // 2. Si no es mi perfil, verificamos si lo sigo
+                // Lo hacemos en un try/catch separado para que si falla esto, 
+                // no se rompa la carga del perfil completo
+                if (meRes.data.usuario !== username) {
+                    try {
+                        const resSigue = await api.get(`/usuarios/${username}/siguiendo`);
+                        setIsFollowing(resSigue.data);
+                    } catch (e) {
+                        console.error("Error al verificar seguimiento", e);
+                    }
+                }
+
                 setEditando(false);
             } catch (err) {
                 console.error("Error cargando perfil", err);
                 if (err.response?.status === 401) navigate('/login');
-                else navigate('/home');
+                else navigate('/home'); 
             } finally {
                 setCargando(false);
             }
@@ -53,6 +74,24 @@ const Perfil = () => {
             cargarTodo();
         }
     }, [username, navigate]);
+
+    const handleFollow = async () => {
+        try {
+            const response = await api.post(`/usuarios/${username}/follow`);
+            const siguiendo = response.data; // El backend devuelve true o false
+            
+            setIsFollowing(siguiendo);
+            
+            // Actualizamos visualmente el número de seguidores sin recargar
+            setUserProfile(prev => ({
+                ...prev,
+                seguidores: siguiendo ? prev.seguidores + 1 : prev.seguidores - 1
+            }));
+
+        } catch (error) {
+            console.error("Error al seguir/dejar de seguir", error);
+        }
+    };
 
     if (cargando) return <div className="loading-screen">Cargando perfil de analista...</div>;
     if (!user || !userProfile) return null;
@@ -161,9 +200,23 @@ const Perfil = () => {
                             <div className="profile-main-info">
                                 <div className="name-row">
                                     <h1>{userProfile.usuario}</h1>
-                                    {esMiPerfil && !editando && (
-                                        <button className="btn-edit-profile" onClick={() => setEditando(true)}>
-                                            <FiEdit2 /> Editar Perfil
+                                    
+                                    {esMiPerfil ? (
+                                        !editando && (
+                                            <button className="btn-edit-profile" onClick={() => setEditando(true)}>
+                                                <FiEdit2 /> Editar Perfil
+                                            </button>
+                                        )
+                                    ) : (
+                                        <button 
+                                            className={`btn-follow ${isFollowing ? 'is-following' : ''}`} 
+                                            onClick={handleFollow}
+                                        >
+                                            {isFollowing ? (
+                                                <><FiUserMinus /> Siguiendo</>
+                                            ) : (
+                                                <><FiUserPlus /> Seguir</>
+                                            )}
                                         </button>
                                     )}
                                 </div>
