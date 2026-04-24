@@ -1,30 +1,34 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { UserPlus, Camera, Info, ShieldCheck } from 'lucide-react';
 import axios from 'axios';
-import './Registro.css';
 
 const Registro = () => {
     const navigate = useNavigate();
     const [datos, setDatos] = useState({ usuario: '', hashClave: '', biografia: '' });
     const [errores, setErrores] = useState({});
     const [foto, setFoto] = useState(null);
+    const [preview, setPreview] = useState(null);
     const [cargando, setCargando] = useState(false);
-    
-    const [mensajeGlobal, setMensajeGlobal] = useState({ texto: '', tipo: '' }); // tipo: 'exito' o 'error'
-    const [errorUsuario, setErrorUsuario] = useState(''); // Específico para el nombre de usuario
+    const [errorUsuario, setErrorUsuario] = useState('');
 
     const handleInputChange = (e) => {
         setDatos({ ...datos, [e.target.name]: e.target.value });
-
         if (e.target.name === 'usuario') setErrorUsuario('');
         setErrores({ ...errores, [e.target.name]: false });
     };
 
-    const handleFileChange = (e) => setFoto(e.target.files[0]);
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setFoto(file);
+            setPreview(URL.createObjectURL(file));
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         let nuevosErrores = {};
         if (!datos.usuario.trim()) nuevosErrores.usuario = true;
         if (!datos.hashClave.trim()) nuevosErrores.hashClave = true;
@@ -35,27 +39,16 @@ const Registro = () => {
         }
 
         setCargando(true);
-        setMensajeGlobal({ texto: '', tipo: '' });
-        setErrorUsuario('');
-
         const formData = new FormData();
-        const usuarioBlob = new Blob([JSON.stringify(datos)], { type: 'application/json' });
-        formData.append('usuario', usuarioBlob); 
+        formData.append('usuario', new Blob([JSON.stringify(datos)], { type: 'application/json' }));
         if (foto) formData.append('foto', foto);
 
         try {
             await axios.post('http://localhost:8080/api/usuarios/registrar', formData);
-            
-            navigate('/login'); 
-
+            navigate('/login', { state: { mensajeExito: '¡Cuenta creada con éxito!' } });
         } catch (error) {
-            if (error.response) {
-                const msg = error.response.data;
-                if (typeof msg === 'string' && msg.toLowerCase().includes("existe")) {
-                    setErrorUsuario("Este nombre de usuario ya está en uso");
-                } else {
-                    setMensajeGlobal({ texto: "Error: " + (typeof msg === 'string' ? msg : "Datos inválidos"), tipo: 'error' });
-                }
+            if (error.response?.data?.toString().toLowerCase().includes("existe")) {
+                setErrorUsuario("Este analista ya está registrado");
             }
         } finally {
             setCargando(false);
@@ -63,60 +56,59 @@ const Registro = () => {
     };
 
     return (
-        <div className="container container-small">
-            <h2>SocialMarkets</h2>
-            <p className="subtitle">Crea tu cuenta de analista</p>
+        <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="container-auth wide"
+        >
+            <h2 className="brand-logo">Social<span className="brand-green">Markets</span></h2>
+            <p className="subtitle">Únete a la comunidad de analistas</p>
 
-            
-            {mensajeGlobal.texto && (
-                <div className={`alert-panel ${mensajeGlobal.tipo}`}>
-                    {mensajeGlobal.texto}
-                </div>
-            )}
-            
-            <form className="form-registro" onSubmit={handleSubmit}>
-                <div className="input-group">
-                    <label>Nombre de Usuario</label>
-                    <input 
-                        type="text" 
-                        name="usuario" 
-                        className={errorUsuario || errores.usuario ? 'input-error' : ''} 
-                        onChange={handleInputChange} 
-                    />
-                    {errores.usuario && <span className="error-text-register">El usuario es necesario</span>}
-                    {errorUsuario && <span className="error-text-register">{errorUsuario}</span>}
+            <form className="form-auth" onSubmit={handleSubmit}>
+                <div className="profile-upload-section">
+                    {/* Ahora el label envuelve TODO el círculo */}
+                    <label htmlFor="foto" className="avatar-clickable-area">
+                        <div className="avatar-preview-container">
+                            {preview ? <img src={preview} alt="Preview" /> : <Camera size={24} />}
+                            <div className="upload-badge">+</div>
+                        </div>
+                        <span className="upload-label-text">Foto de Perfil</span>
+                    </label>
+                    <input type="file" id="foto" accept="image/*" onChange={handleFileChange} hidden />
                 </div>
 
-                <div className="input-group">
-                    <label>Contraseña</label>
-                    <input 
-                        type="password" 
-                        name="hashClave" 
-                        className={errores.hashClave ? 'input-error' : ''}
-                        onChange={handleInputChange} 
-                    />
-                    {errores.hashClave && <span className="error-text-register">La contraseña es necesaria</span>}
+                <div className="grid-inputs">
+                    <div className={`input-group-modern ${errorUsuario || errores.usuario ? 'error' : ''}`}>
+                        <label><UserPlus size={14} /> Usuario</label>
+                        <input name="usuario" onChange={handleInputChange} />
+                    </div>
+
+                    <div className={`input-group-modern ${errores.hashClave ? 'error' : ''}`}>
+                        <label><ShieldCheck size={14} /> Contraseña</label>
+                        <input type="password" name="hashClave" onChange={handleInputChange} />
+                    </div>
                 </div>
 
-                <div className="input-group">
-                    <label>Biografía (Opcional)</label>
-                    <textarea name="biografia" rows="2" onChange={handleInputChange} />
-                </div>
-                
-                <div className="input-group">
-                    <label>Foto de Perfil</label>
-                    <input type="file" accept="image/*" onChange={handleFileChange} />
+                <div className="input-group-modern">
+                    <label><Info size={14} /> Biografía</label>
+                    <textarea name="biografia" rows="1" onChange={handleInputChange} />
                 </div>
 
-                <button type="submit" disabled={cargando} className="btn-main">
-                    {cargando ? 'Registrando...' : 'Crear Cuenta'}
-                </button>
+                <motion.button 
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    disabled={cargando} 
+                    className="btn-gradient"
+                    style={{ margin: '1rem auto 0', width: '100%' }}
+                >
+                    {cargando ? <span className="loader"></span> : 'Crear Cuenta'}
+                </motion.button>
 
-                <p className="subtitle" style={{ marginTop: '1rem' }}>
-                ¿Ya tienes cuenta? <Link to="/login" style={{ color: 'var(--accent)', textDecoration: 'none' }}>Iniciar sesión</Link>
+                <p className="auth-footer">
+                    ¿Ya eres miembro? <Link to="/login">Inicia sesión</Link>
                 </p>
             </form>
-        </div>
+        </motion.div>
     );
 };
 
