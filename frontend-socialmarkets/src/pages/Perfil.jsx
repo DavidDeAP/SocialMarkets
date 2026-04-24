@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import defaultUser from '../assets/defaultuser.png';
 import { 
     FiEdit2, FiBarChart2, FiCheckCircle, FiXCircle, 
@@ -13,7 +13,11 @@ import api from '../services/api';
 import './Perfil.css';
 
 const Perfil = () => {
+    const { username } = useParams(); 
     const [user, setUser] = useState(null);
+    const [userProfile, setUserProfile] = useState(null);
+    const [cargando, setCargando] = useState(true);
+
     const [notificacion, setNotificacion] = useState({ mostrar: false, mensaje: '', tipo: '' });
     const [tempBio, setTempBio] = useState('');
     const [tempFoto, setTempFoto] = useState(null);
@@ -25,28 +29,38 @@ const Perfil = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchPerfil = async () => {
-            const token = localStorage.getItem('token');
-            if (!token) { navigate('/login'); return; }
+        const cargarTodo = async () => {
+            setCargando(true);
             try {
-                const respuesta = await api.get('/usuarios/perfil');
-                setUser(respuesta.data);
-                setTempBio(respuesta.data.biografia || '');
+                const meRes = await api.get('/usuarios/perfil');
+                setUser(meRes.data);
+
+                const perfilRes = await api.get(`/usuarios/publico/${username}`);
+                setUserProfile(perfilRes.data);
+                setTempBio(perfilRes.data.biografia || '');
+                
+                setEditando(false);
             } catch (err) {
-                navigate('/login');
+                console.error("Error cargando perfil", err);
+                if (err.response?.status === 401) navigate('/login');
+                else navigate('/home');
+            } finally {
+                setCargando(false);
             }
         };
-        fetchPerfil();
-    }, [navigate]);
+        
+        if (username) {
+            cargarTodo();
+        }
+    }, [username, navigate]);
 
-    const handleFotoClick = () => { if (editando) fileInputRef.current.click(); };
+    if (cargando) return <div className="loading-screen">Cargando perfil de analista...</div>;
+    if (!user || !userProfile) return null;
 
-    const handleEliminarFoto = (e) => {
-        e.stopPropagation();
-        setTempFoto(null);
-        setPreviewUrl(null);
-        setBorrarFoto(true);
-    };
+    const esMiPerfil = user.usuario === userProfile.usuario;
+
+    // --- FUNCIONES DE ACCIÓN ---
+    const handleFotoClick = () => { if (editando && esMiPerfil) fileInputRef.current.click(); };
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -57,44 +71,51 @@ const Perfil = () => {
         }
     };
 
+    // NUEVA FUNCIÓN: Maneja la eliminación visual y prepara el estado para el backend
+    const handleEliminarFoto = (e) => {
+        e.stopPropagation(); // Evita que se dispare el click del contenedor (abrir archivo)
+        setTempFoto(null);
+        setPreviewUrl(null);
+        setBorrarFoto(true);
+    };
+
     const guardarCambios = async () => {
         const formData = new FormData();
         formData.append('biografia', tempBio);
+        
         if (tempFoto) {
             formData.append('foto', tempFoto);
         } else if (borrarFoto) {
-            formData.append('eliminarFoto', 'true'); 
+            formData.append('eliminarFoto', 'true'); // Enviamos la señal al backend
         }
 
         try {
             const res = await api.put('/usuarios/actualizar', formData);
-
             setUser(res.data);
+            setUserProfile(res.data); 
             setEditando(false);
+            setBorrarFoto(false);
             setTempFoto(null);
             setPreviewUrl(null);
-            setBorrarFoto(false);
-            
-            setNotificacion({ mostrar: true, mensaje: 'Perfil actualizado con éxito', tipo: 'exito' });
-            setTimeout(() => setNotificacion(prev => ({ ...prev, mostrar: false })), 3000);
+            setNotificacion({ mostrar: true, mensaje: 'Perfil actualizado', tipo: 'exito' });
         } catch (err) {
             setNotificacion({ mostrar: true, mensaje: 'Error al actualizar', tipo: 'error' });
+        } finally {
+            setTimeout(() => setNotificacion(p => ({ ...p, mostrar: false })), 3000);
         }
     };
 
     const descartarCambios = () => {
-        setTempBio(user.biografia || '');
+        setTempBio(userProfile.biografia || '');
         setTempFoto(null);
         setPreviewUrl(null);
         setBorrarFoto(false);
         setEditando(false);
     };
 
-    if (!user) return <div className="loading-screen">Cargando analista...</div>;
-
-    const fechaRegistro = user?.fechaCreacion 
-    ? new Date(user.fechaCreacion).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
-    : "---";
+    const fechaRegistro = userProfile?.fechaCreacion 
+        ? new Date(userProfile.fechaCreacion).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
+        : "---";
 
     return (
         <div className="dashboard-layout">
@@ -111,39 +132,36 @@ const Perfil = () => {
                     )}
 
                     <div className="profile-glass-card">
-                        {/* Header del Perfil */}
                         <div className="profile-hero">
                             <div className={`profile-avatar-container ${editando ? 'mode-edit' : ''}`} onClick={handleFotoClick}>
                                 <img 
-                                    src={previewUrl || (!borrarFoto && user.imagen ? user.imagen : defaultUser)} 
+                                    src={previewUrl || (!borrarFoto && userProfile.imagen ? userProfile.imagen : defaultUser)} 
                                     alt="Avatar" 
                                     className="profile-avatar-img"
                                 />
                                 {editando && (
-        <>
-                                    <div className="avatar-overlay">
-                                        <FiEdit2 />
-                                        <span>Cambiar</span>
-                                    </div>
-                                    
-                                    {(previewUrl || (user.imagen && !borrarFoto)) && (
-                                        <button 
-                                            className="delete-photo-btn" 
-                                            onClick={handleEliminarFoto}
-                                            title="Eliminar foto"
-                                        >
-                                            <FiTrash2 />
-                                        </button>
-                                    )}
-                                </>
-                            )}
+                                    <>
+                                        <div className="avatar-overlay"><FiEdit2 /><span>Cambiar</span></div>
+                                        
+                                        {/* BOTÓN DE ELIMINAR INTEGRADO */}
+                                        {(previewUrl || (userProfile.imagen && !borrarFoto)) && (
+                                            <button 
+                                                className="delete-photo-btn" 
+                                                onClick={handleEliminarFoto}
+                                                title="Eliminar foto"
+                                            >
+                                                <FiTrash2 />
+                                            </button>
+                                        )}
+                                    </>
+                                )}
                                 <input type="file" ref={fileInputRef} hidden onChange={handleFileChange} accept="image/*" />
                             </div>
 
                             <div className="profile-main-info">
                                 <div className="name-row">
-                                    <h1>{user.usuario}</h1>
-                                    {!editando && (
+                                    <h1>{userProfile.usuario}</h1>
+                                    {esMiPerfil && !editando && (
                                         <button className="btn-edit-profile" onClick={() => setEditando(true)}>
                                             <FiEdit2 /> Editar Perfil
                                         </button>
@@ -159,21 +177,21 @@ const Perfil = () => {
                                             className="bio-editor"
                                             value={tempBio}
                                             onChange={(e) => setTempBio(e.target.value)}
-                                            placeholder="Escribe tu biografía como analista..."
                                             maxLength="160"
                                         />
                                     ) : (
-                                        <p className="bio-text">{user.biografia || "Sin biografía profesional todavía."}</p>
+                                        <p className="bio-text">{userProfile.biografia || "Sin biografía profesional todavía."}</p>
                                     )}
                                 </div>
                             </div>
                         </div>
 
+                        {/* ESTADÍSTICAS */}
                         <div className="stats-dashboard-grid">
                             <div className="stat-card">
                                 <div className="stat-icon followers"><FiUsers /></div>
                                 <div className="stat-data">
-                                    <span className="stat-value">{user.seguidores || 0}</span>
+                                    <span className="stat-value">{userProfile.seguidores || 0}</span>
                                     <span className="stat-label">Seguidores</span>
                                 </div>
                             </div>
@@ -181,7 +199,7 @@ const Perfil = () => {
                             <div className="stat-card">
                                 <div className="stat-icon predictions"><FiTrendingUp /></div>
                                 <div className="stat-data">
-                                    <span className="stat-value">{user.numeroPredicciones || 0}</span>
+                                    <span className="stat-value">{userProfile.numeroPredicciones || 0}</span>
                                     <span className="stat-label">Predicciones</span>
                                 </div>
                             </div>
@@ -190,20 +208,19 @@ const Perfil = () => {
                                 <div className="stat-icon success"><FiTarget /></div>
                                 <div className="stat-data">
                                     <div className="success-header">
-                                        <span className="stat-value">{(user.indiceAcierto || 0).toFixed(1)}%</span>
+                                        <span className="stat-value">{(userProfile.indiceAcierto || 0).toFixed(1)}%</span>
                                         <span className="stat-label">Efectividad</span>
                                     </div>
                                     <div className="success-progress-bar">
                                         <div 
                                             className="progress-fill" 
-                                            style={{ width: `${user.indiceAcierto || 0}%` }}
+                                            style={{ width: `${userProfile.indiceAcierto || 0}%` }}
                                         ></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Botones de Acción */}
                         {editando && (
                             <div className="action-bar-profile">
                                 <button className="btn-secondary" onClick={descartarCambios}>Descartar</button>

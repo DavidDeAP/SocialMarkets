@@ -30,7 +30,7 @@ function App() {
           
           {/* 3. Contenido para usuarios logueados */}
           <Route path="/home" element={<Home />} />
-          <Route path="/perfil" element={<Perfil />} />
+          <Route path="/perfil/:username" element={<Perfil />} />
 
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

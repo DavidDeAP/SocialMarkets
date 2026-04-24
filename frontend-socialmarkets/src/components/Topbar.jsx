@@ -6,6 +6,10 @@ const Topbar = ({ user }) => {
     const [menuAbierto, setMenuAbierto] = useState(false);
     const navigate = useNavigate();
 
+    const irAMiPerfil = () => {
+        navigate(`/perfil/${user.usuario}`);
+    };
+
     const cerrarSesion = () => {
         localStorage.removeItem('token');
         navigate('/login');
@@ -20,7 +24,7 @@ const Topbar = ({ user }) => {
 
             <div className="user-controls">
                 {/* Foto de perfil pequeña que lleva al perfil al hacer click */}
-                <div className="avatar-container" onClick={() => navigate('/perfil')} style={{cursor: 'pointer'}}>
+                <div className="avatar-container" onClick={irAMiPerfil} style={{cursor: 'pointer'}}>
                     {user?.imagen ? (
                         <img src={user.imagen} alt="Perfil" className="avatar-img" />
                     ) : (
@@ -38,7 +42,7 @@ const Topbar = ({ user }) => {
                     
                     {menuAbierto && (
                         <div className="dropdown-menu">
-                            <button onClick={() => navigate('/perfil')} className="dropdown-item">
+                            <button onClick={irAMiPerfil} className="dropdown-item">
                                 <FiUser /> Ver Perfil
                             </button>
                             <button onClick={cerrarSesion} className="dropdown-item logout-btn">

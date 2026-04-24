@@ -115,6 +115,17 @@ public class UsuarioController {
         }
     }
     
+    @GetMapping("/publico/{nombreUsuario}")
+    public ResponseEntity<?> obtenerPerfilPublico(@PathVariable String nombreUsuario) {
+        try {
+            Usuario usuario = usuarioService.obtenerPorNombre(nombreUsuario);
+            // Devuelve el usuario encontrado por nombre
+            return ResponseEntity.ok(usuario);
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body("Usuario no encontrado");
+        }
+    }
+    
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerUsuarioPorId(@PathVariable Long id) {
         try {
