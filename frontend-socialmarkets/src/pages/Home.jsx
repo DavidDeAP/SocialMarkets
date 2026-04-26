@@ -31,13 +31,12 @@ const Home = () => {
     if (cargando) return (
         <div className="loading-container">
             <div className="loader"></div>
-            <p>Cargando ecosistema...</p>
+            <p>Sincronizando terminal de datos...</p>
         </div>
     );
 
     if (!user) return null;
 
-    // Formateo de datos consistente con Perfil.jsx
     const indiceAcierto = (user.indiceAcierto || 0).toFixed(1);
     const proyeccionesActivas = user.resumenProyecciones?.activas || 0;
     const proyeccionesTotales = user.numeroPredicciones || 0;
@@ -49,75 +48,79 @@ const Home = () => {
                 <Topbar user={user} />
                 <main className="main-content">
                     
-                    <header className="dashboard-header">
-                        <div className="header-titles">
-                            <span className="welcome-back">Bienvenido de nuevo, {user.usuario}</span>
+                    <header className="dashboard-header animate-in">
+                        <div className="header-info">
                             <h1>Panel de Control</h1>
+                            <p className="welcome-user">Bienvenido, <span>{user.usuario}</span>.</p>
                         </div>
-                        <button className="btn-new-projection" onClick={() => navigate('/comunidad')}>
-                            <div className="btn-icon-circle"><FiPlus /></div>
+                        <button className="btn-primary-modern" onClick={() => navigate('/comunidad')}>
+                            <FiPlus />
                             <span>Nueva Proyección</span>
                         </button>
                     </header>
 
-                    <div className="stats-dashboard-grid">
-                        <div className="glass-card stat-card-modern success-glow">
-                            <div className="card-info">
-                                <span className="card-label">Eficiencia de Análisis</span>
-                                <h2 className="card-value">{indiceAcierto}%</h2>
-                                <div className="card-progress-container">
-                                    <div className="card-progress-bar">
-                                        <div className="progress-fill" style={{ width: `${indiceAcierto}%` }}></div>
+                    <div className="stats-grid-modern">
+                        <div className="stat-card animate-card" style={{"--delay": "0.1s"}}>
+                            <div className="card-info-left">
+                                <div className="card-header-v2">
+                                    <div className="icon-box target"><FiTarget /></div>
+                                    <span className="label">Eficiencia</span>
+                                </div>
+                                <div className="card-footer-v2">
+                                    <span className="trend positive"><FiArrowUpRight /> +2.4% este mes</span>
+                                    <div className="progress-track-v2">
+                                        <div className="progress-bar-fill" style={{ width: `${indiceAcierto}%` }}></div>
                                     </div>
-                                    <span className="card-subtext trend-up">
-                                        <FiArrowUpRight /> +2.4% <small>este mes</small>
-                                    </span>
                                 </div>
                             </div>
-                            <div className="card-icon-wrapper success">
-                                <FiTarget />
+                            <div className="card-value-right">
+                                <div className="main-value-v2 success-glow">{indiceAcierto}<span>%</span></div>
                             </div>
                         </div>
 
-                        {/* CARD 2: PROYECCIONES TOTALES */}
-                        <div className="glass-card stat-card-modern primary-glow">
-                            <div className="card-info">
-                                <span className="card-label">Total Proyecciones</span>
-                                <h2 className="card-value">{proyeccionesTotales}</h2>
-                                <span className="card-subtext">
-                                    Rango: <strong className="rank-badge">{user.nivel || 'Analista'}</strong>
-                                </span>
+                        <div className="stat-card animate-card" style={{"--delay": "0.2s"}}>
+                            <div className="card-info-left">
+                                <div className="card-header-v2">
+                                    <div className="icon-box total"><FiTrendingUp /></div>
+                                    <span className="label">Proyecciones</span>
+                                </div>
+                                <div className="card-footer-v2">
+                                    <div className="badge-rank-v2">
+                                        Nivel: <span>{user.nivel || 'Analista'}</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="card-icon-wrapper total">
-                                <FiTrendingUp />
+                            <div className="card-value-right">
+                                <div className="main-value-v2 primary-glow">{proyeccionesTotales}</div>
                             </div>
                         </div>
 
-                        {/* CARD 3: PROYECCIONES ACTIVAS */}
-                        <div className="glass-card stat-card-modern warning-glow">
-                            <div className="card-info">
-                                <span className="card-label">Operaciones Activas</span>
-                                <h2 className="card-value">{proyeccionesActivas}</h2>
-                                <div className="active-split">
-                                    <span className="text-green">{user.resumenProyecciones?.enVerde || 0} Ganadoras</span>
-                                    <span className="separator">|</span>
-                                    <span className="text-red">{user.resumenProyecciones?.enRojo || 0} Perdedoras</span>
+                        <div className="stat-card animate-card" style={{"--delay": "0.3s"}}>
+                            <div className="card-info-left">
+                                <div className="card-header-v2">
+                                    <div className="icon-box active"><FiActivity /></div>
+                                    <span className="label">En Curso</span>
+                                </div>
+                                <div className="card-footer-v2">
+                                    <div className="status-split-v2">
+                                        <div className="split-item win">{user.resumenProyecciones?.enVerde || 0} Ganadoras</div>
+                                        <div className="split-item loss">{user.resumenProyecciones?.enRojo || 0} Perdedoras</div>
+                                    </div>
                                 </div>
                             </div>
-                            <div className="card-icon-wrapper active">
-                                <FiActivity />
+                            <div className="card-value-right">
+                                <div className="main-value-v2 warning-glow">{proyeccionesActivas}</div>
                             </div>
                         </div>
                     </div>
 
-                    <section className="recent-projections-section">
-                        <div className="section-header">
-                            <h3><FiClock />Proyecciones Recientes</h3>
-                            <button className="btn-text-only">Ver todas</button>
+                    <section className="table-section-modern animate-in-up">
+                        <div className="section-title-bar">
+                            <h3><FiClock /> Actividad Reciente</h3>
                         </div>
                         
-                        <div className="glass-card table-container-modern">
-                            <table className="modern-table">
+                        <div className="table-container-glass">
+                            <table className="custom-table">
                                <thead>
                                    <tr>
                                        <th>Activo</th>
@@ -128,36 +131,19 @@ const Home = () => {
                                    </tr>
                                </thead>
                                <tbody>
-                                   {/* Ejemplo estático que se sustituirá por map de proyecciones */}
-                                   <tr>
-                                       <td className="asset-cell">
-                                           <div className="asset-info">
-                                               <span className="asset-name">BTC/USDT</span>
-                                           </div>
-                                       </td>
-                                       <td><span className="badge badge-long">LONG</span></td>
-                                       <td className="price-cell">$62,100</td>
-                                       <td className="text-green font-bold">$68,000</td>
-                                       <td>
-                                           <span className="status-indicator pending">
-                                               <span className="dot"></span> Pendiente
-                                           </span>
-                                       </td>
+                                   <tr className="row-hover">
+                                       <td><div className="asset-tag">BTC/USDT</div></td>
+                                       <td><span className="order-badge long">LONG</span></td>
+                                       <td className="mono">$62,100</td>
+                                       <td className="mono green-text">$68,000</td>
+                                       <td><div className="status-pill waiting">Pendiente</div></td>
                                    </tr>
-                                   <tr>
-                                       <td className="asset-cell">
-                                           <div className="asset-info">
-                                               <span className="asset-name">EUR/USD</span>
-                                           </div>
-                                       </td>
-                                       <td><span className="badge badge-short">SHORT</span></td>
-                                       <td className="price-cell">1.0950</td>
-                                       <td className="text-green font-bold">1.0800</td>
-                                       <td>
-                                           <span className="status-indicator success">
-                                               <span className="dot"></span> Completado
-                                           </span>
-                                       </td>
+                                   <tr className="row-hover">
+                                       <td><div className="asset-tag">EUR/USD</div></td>
+                                       <td><span className="order-badge short">SHORT</span></td>
+                                       <td className="mono">$1.0950</td>
+                                       <td className="mono green-text">$1.0800</td>
+                                       <td><div className="status-pill done">Acierto</div></td>
                                    </tr>
                                </tbody>
                             </table>
