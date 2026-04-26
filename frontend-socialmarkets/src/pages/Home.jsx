@@ -31,7 +31,7 @@ const Home = () => {
     if (cargando) return (
         <div className="loading-container">
             <div className="loader"></div>
-            <p>Sincronizando terminal de datos...</p>
+            <p>Cargando Panel...</p>
         </div>
     );
 

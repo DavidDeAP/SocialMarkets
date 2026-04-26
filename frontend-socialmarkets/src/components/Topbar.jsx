@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { FiSearch, FiBell, FiMenu, FiUser, FiLogOut } from 'react-icons/fi';
 import './Topbar.css';
 
+const API_BASE_URL = 'http://localhost:8080';
+
 const Topbar = ({ user }) => {
     const [menuAbierto, setMenuAbierto] = useState(false);
     const navigate = useNavigate();
@@ -16,6 +18,12 @@ const Topbar = ({ user }) => {
         navigate('/login');
     };
 
+    const getAvatarUrl = () => {
+        if (!user?.imagen) return null;
+        if (user.imagen.startsWith('http')) return user.imagen;
+        return `${API_BASE_URL}${user.imagen}`;
+    };
+
     return (
         <header className="topbar">
             <div className="search-container">
@@ -24,12 +32,13 @@ const Topbar = ({ user }) => {
             </div>
 
             <div className="user-controls">
-                {/* Foto de perfil que lleva al perfil al hacer click */}
                 <div className="avatar-container" onClick={irAMiPerfil} style={{cursor: 'pointer'}}>
                     {user?.imagen ? (
-                        <img src={user.imagen} alt="Perfil" className="avatar-img" />
+                        <img src={getAvatarUrl()} alt="Perfil" className="avatar-img" />
                     ) : (
-                        <div className="avatar-placeholder">{user?.usuario?.charAt(0).toUpperCase()}</div>
+                        <div className="avatar-placeholder">
+                            {user?.usuario?.charAt(0).toUpperCase() || '?'}
+                        </div>
                     )}
                 </div>
 

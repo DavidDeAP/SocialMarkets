@@ -1,15 +1,31 @@
-import { useState } from 'react';
-import { 
-    FiPlus, FiMessageSquare, FiImage, FiTarget, 
-    FiCalendar, FiBarChart2, FiX, FiActivity 
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+    FiPlus, FiMessageSquare, FiImage, FiTarget,
+    FiCalendar, FiBarChart2, FiX, FiActivity
 } from 'react-icons/fi';
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
+import api from '../services/api';
 import './Comunidad.css';
 
 const Comunidad = () => {
-    const user = { usuario: "Usuario" }; 
-    
+    const [user, setUser] = useState(null);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchPerfil = async () => {
+            try {
+                const respuesta = await api.get('/usuarios/perfil');
+                setUser(respuesta.data);
+            } catch (err) {
+                console.error("Error al obtener perfil:", err);
+                navigate('/login');
+            }
+        };
+        fetchPerfil();
+    }, [navigate]);
+
     const [showModal, setShowModal] = useState(false);
     const [imagenes, setImagenes] = useState([]);
 
@@ -32,7 +48,7 @@ const Comunidad = () => {
             <Sidebar />
             <div className="main-wrapper">
                 <Topbar user={user} />
-                
+
                 <main className="comunidad-container">
                     <header className="comunidad-header">
                         <h1>Comunidad</h1>
@@ -106,16 +122,16 @@ const Comunidad = () => {
                                     <label className="upload-box">
                                         <FiImage />
                                         <span>Subir</span>
-                                        <input 
-                                            type="file" 
-                                            multiple 
-                                            accept="image/*" 
-                                            onChange={handleImageChange} 
-                                            hidden 
+                                        <input
+                                            type="file"
+                                            multiple
+                                            accept="image/*"
+                                            onChange={handleImageChange}
+                                            hidden
                                             disabled={imagenes.length >= 4}
                                         />
                                     </label>
-                                    
+
                                     {imagenes.map((img, index) => (
                                         <div key={index} className="image-preview">
                                             <img src={img} alt="Preview" />
