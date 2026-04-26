@@ -89,7 +89,12 @@ const Perfil = () => {
         }
     };
 
-    if (cargando) return <div className="loading-screen">Cargando perfil de analista...</div>;
+    if (cargando) return (
+        <div className="loading-container">
+            <div className="loader"></div>
+            <p className="loading-text">Cargando perfil de analista...</p>
+        </div>
+    );
     if (!user || !userProfile) return null;
 
     const esMiPerfil = user.usuario === userProfile.usuario;

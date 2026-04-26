@@ -202,7 +202,3 @@
 .asset-tag { font-weight: 800; background: rgba(255,255,255,0.04); padding: 6px 12px; border-radius: 10px; }
 .mono { font-family: var(--font-mono); }
 .green-text { color: var(--success); font-weight: 700; }
-
-.loading-container { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: var(--bg-dark); }
-.loader { width: 40px; height: 40px; border: 3px solid rgba(59, 130, 246, 0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s infinite linear; }
-@keyframes spin { to { transform: rotate(360deg); } }

@@ -31,7 +31,7 @@ const Home = () => {
     if (cargando) return (
         <div className="loading-container">
             <div className="loader"></div>
-            <p>Cargando Panel...</p>
+            <p className="loading-text">Cargando Panel...</p>
         </div>
     );
 
@@ -53,9 +53,9 @@ const Home = () => {
                             <h1>Panel de Control</h1>
                             <p className="welcome-user">Bienvenido, <span>{user.usuario}</span>.</p>
                         </div>
-                        <button className="btn-primary-modern" onClick={() => navigate('/comunidad')}>
+                        <button className="btn-primary-modern" onClick={() => navigate('/comunidad', { state: { abrirModal: true } })}>
                             <FiPlus />
-                            <span>Nueva Proyección</span>
+                            <span>Nuevo Análisis</span>
                         </button>
                     </header>
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
     FiPlus, FiMessageSquare, FiImage, FiTarget,
     FiCalendar, FiBarChart2, FiX, FiActivity, FiDollarSign,
@@ -12,7 +12,21 @@ import './Comunidad.css';
 
 const Comunidad = () => {
     const [user, setUser] = useState(null);
+    const [cargando, setCargando] = useState(true);
+    const [showModal, setShowModal] = useState(false);
+    const [imagenes, setImagenes] = useState([]);
+    const [tipoAnalisis, setTipoAnalisis] = useState('TECNICO');
+    const [toast, setToast] = useState({ mostrar: false, mensaje: '', tipo: '' });
     const navigate = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+        if (location.state?.abrirModal) {
+            setShowModal(true);
+            // Limpiamos el estado para que no se abra cada vez que recarguemos
+            window.history.replaceState({}, document.title);
+        }
+    }, [location]);
 
     useEffect(() => {
         const fetchPerfil = async () => {
@@ -22,15 +36,19 @@ const Comunidad = () => {
             } catch (err) {
                 console.error("Error al obtener perfil:", err);
                 navigate('/login');
+            } finally {
+                setCargando(false);
             }
         };
         fetchPerfil();
     }, [navigate]);
 
-    const [showModal, setShowModal] = useState(false);
-    const [imagenes, setImagenes] = useState([]);
-    const [tipoAnalisis, setTipoAnalisis] = useState('TECNICO');
-    const [toast, setToast] = useState({ mostrar: false, mensaje: '', tipo: '' });
+    if (cargando) return (
+        <div className="loading-container">
+            <div className="loader"></div>
+            <p className="loading-text">Cargando Comunidad...</p>
+        </div>
+    );
 
     const handleImageChange = (e) => {
         if (e.target.files.length + imagenes.length > 4) {
