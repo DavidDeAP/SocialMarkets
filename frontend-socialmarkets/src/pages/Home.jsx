@@ -51,7 +51,7 @@ const Home = () => {
                     <header className="dashboard-header animate-in">
                         <div className="header-info">
                             <h1 className="text-neon-glow">Panel de Control</h1>
-                            <p className="welcome-user">Bienvenido, <span className="username-neon">{user.usuario}</span>.</p>
+                            <p className="welcome-user">Bienvenido, <span className="username-neon">{user.usuario}</span></p>
                         </div>
                         <button className="btn-primary-modern" onClick={() => navigate('/comunidad', { state: { abrirModal: true } })}>
                             <FiPlus />
