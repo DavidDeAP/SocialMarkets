@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     FiPlus, FiMessageSquare, FiImage, FiTarget,
-    FiCalendar, FiBarChart2, FiX, FiActivity
+    FiCalendar, FiBarChart2, FiX, FiActivity, FiDollarSign,
+    FiXCircle, FiCheckCircle
 } from 'react-icons/fi';
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
@@ -28,10 +29,13 @@ const Comunidad = () => {
 
     const [showModal, setShowModal] = useState(false);
     const [imagenes, setImagenes] = useState([]);
+    const [tipoAnalisis, setTipoAnalisis] = useState('TECNICO');
+    const [toast, setToast] = useState({ mostrar: false, mensaje: '', tipo: '' });
 
     const handleImageChange = (e) => {
         if (e.target.files.length + imagenes.length > 4) {
-            alert("Máximo 4 imágenes permitidas");
+            setToast({ mostrar: true, mensaje: "Máximo 4 imágenes permitidas", tipo: "error" });
+            setTimeout(() => setToast({ mostrar: false, mensaje: '', tipo: '' }), 3000);
             return;
         }
         const files = Array.from(e.target.files);
@@ -89,15 +93,23 @@ const Comunidad = () => {
                             <div className="form-row">
                                 <div className="form-group">
                                     <label>Tipo de Análisis</label>
-                                    <select>
-                                        <option value="TECNICO">Técnico</option>
-                                        <option value="FUNDAMENTAL">Fundamental</option>
-                                    </select>
+                                    <div className="tipo-analisis-pills">
+                                        <button 
+                                            type="button"
+                                            className={`pill ${tipoAnalisis === 'TECNICO' ? 'active-tecnico' : ''}`}
+                                            onClick={() => setTipoAnalisis('TECNICO')}
+                                        >Técnico</button>
+                                        <button 
+                                            type="button"
+                                            className={`pill ${tipoAnalisis === 'FUNDAMENTAL' ? 'active-fundamental' : ''}`}
+                                            onClick={() => setTipoAnalisis('FUNDAMENTAL')}
+                                        >Fundamental</button>
+                                    </div>
                                 </div>
                                 <div className="form-group">
                                     <label>Precio Objetivo</label>
                                     <div className="input-with-icon">
-                                        <FiTarget />
+                                        <FiDollarSign />
                                         <input type="number" step="0.01" placeholder="0.00" />
                                     </div>
                                 </div>
@@ -146,6 +158,13 @@ const Comunidad = () => {
                             </button>
                         </form>
                     </div>
+                </div>
+            )}
+
+            {toast.mostrar && (
+                <div className={`toast-comunidad-alert ${toast.tipo}`}>
+                    {toast.tipo === 'error' ? <FiXCircle /> : <FiCheckCircle />}
+                    {toast.mensaje}
                 </div>
             )}
         </div>
