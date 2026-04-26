@@ -6,38 +6,66 @@ import Perfil from './pages/Perfil';
 import Comunidad from './pages/Comunidad';
 import './App.css';
 
-function App() {
-  const isAuthenticated = !!localStorage.getItem('token');
+const PrivateRoute = ({ children }) => {
+  const token = localStorage.getItem('token');
+  return token ? children : <Navigate to="/login" />;
+};
 
+const PublicRoute = ({ children }) => {
+  const token = localStorage.getItem('token');
+  return token ? <Navigate to="/home" /> : children;
+};
+
+function App() {
   return (
     <Router>
       <div className="App">
         <Routes>
           <Route 
             path="/" 
-            element={isAuthenticated ? <Navigate to="/home" /> : <Navigate to="/login" />} 
+            element={<Navigate to="/home" />} 
           />
 
           <Route 
             path="/login" 
-            element={isAuthenticated ? <Navigate to="/home" /> : <Login />} 
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            } 
           />
           <Route 
             path="/registro" 
-            element={isAuthenticated ? <Navigate to="/home" /> : <Registro />} 
+            element={
+              <PublicRoute>
+                <Registro />
+              </PublicRoute>
+            } 
           />
           
           <Route 
             path="/home" 
-            element={isAuthenticated ? <Home /> : <Navigate to="/login" />} 
+            element={
+              <PrivateRoute>
+                <Home />
+              </PrivateRoute>
+            } 
           />
           <Route 
             path="/comunidad" 
-            element={isAuthenticated ? <Comunidad /> : <Navigate to="/login" />} 
+            element={
+              <PrivateRoute>
+                <Comunidad />
+              </PrivateRoute>
+            } 
           />
           <Route 
             path="/perfil/:username" 
-            element={isAuthenticated ? <Perfil /> : <Navigate to="/login" />} 
+            element={
+              <PrivateRoute>
+                <Perfil />
+              </PrivateRoute>
+            } 
           />
 
           <Route path="*" element={<Navigate to="/" />} />
