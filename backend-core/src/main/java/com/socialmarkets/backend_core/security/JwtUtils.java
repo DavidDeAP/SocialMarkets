@@ -17,7 +17,7 @@ public class JwtUtils {
 	
 	@Value("${app.jwt.secret}")
     private String JWT_SECRET;
-    private final long JWT_EXPIRATION = 86400000L; // 24 horas
+    private final long JWT_EXPIRATION = 60000L; // 24 horas
     private Key key;
 
     @PostConstruct

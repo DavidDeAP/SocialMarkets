@@ -145,6 +145,31 @@ button:active {
   background: transparent;
 }
 
+/* Estilos semi-neón para títulos */
+.text-neon-glow {
+    background: linear-gradient(135deg, #6366f1 0%, #3b82f6 50%, #2dd4bf 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.6)) !important;
+    font-weight: 800 !important;
+}
+
+.username-neon {
+    color: #ffffff !important;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.4), 0 0 20px rgba(148, 163, 184, 0.3) !important;
+    font-weight: 800 !important;
+}
+
+.text-neon-green {
+    background: linear-gradient(135deg, #2dd4bf 0%, #10b981 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.6)) !important;
+    font-weight: 800 !important;
+}
+
+
+
 .notification-toast {
   position: fixed;
   top: 20px;

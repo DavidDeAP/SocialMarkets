@@ -200,7 +200,7 @@ const Perfil = () => {
 
                             <div className="profile-main-info">
                                 <div className="name-row">
-                                    <h1>{userProfile.usuario}</h1>
+                                    <h1 className="text-neon-green">{userProfile.usuario}</h1>
                                     
                                     {esMiPerfil ? (
                                         !editando && (

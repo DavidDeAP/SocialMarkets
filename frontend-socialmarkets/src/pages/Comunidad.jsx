@@ -73,7 +73,7 @@ const Comunidad = () => {
 
                 <main className="comunidad-container">
                     <header className="comunidad-header">
-                        <h1>Comunidad</h1>
+                        <h1 className="text-neon-glow">Comunidad</h1>
                         <p>Explora y comparte análisis de mercado con otros analistas.</p>
                     </header>
 
@@ -96,7 +96,7 @@ const Comunidad = () => {
                 <div className="modal-overlay">
                     <div className="modal-content glass-card">
                         <div className="modal-header">
-                            <h2><FiActivity /> Crear Análisis</h2>
+                            <h2 className="text-neon-green"><FiActivity /> Crear Análisis</h2>
                             <button className="close-btn" onClick={() => setShowModal(false)}>
                                 <FiX />
                             </button>
@@ -135,7 +135,13 @@ const Comunidad = () => {
 
                             <div className="form-group">
                                 <label>Fecha de Vencimiento Estimada</label>
-                                <div className="input-with-icon">
+                                <div className="input-with-icon" 
+                                     onClick={(e) => {
+                                         const input = e.currentTarget.querySelector('input');
+                                         if (input && input.showPicker) input.showPicker();
+                                     }}
+                                     style={{ cursor: 'pointer' }}
+                                >
                                     <FiCalendar />
                                     <input type="datetime-local" />
                                 </div>
@@ -172,7 +178,8 @@ const Comunidad = () => {
                             </div>
 
                             <button type="submit" className="btn-submit-analisis">
-                                Publicar Análisis
+                                <span>Publicar Análisis</span>
+                                <FiCheckCircle />
                             </button>
                         </form>
                     </div>
