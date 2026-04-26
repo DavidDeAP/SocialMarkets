@@ -17,6 +17,13 @@ const Comunidad = () => {
     const [imagenes, setImagenes] = useState([]);
     const [tipoAnalisis, setTipoAnalisis] = useState('TECNICO');
     const [toast, setToast] = useState({ mostrar: false, mensaje: '', tipo: '' });
+    const [contenido, setContenido] = useState('');
+    const [activo, setActivo] = useState('');
+    const [precioObjetivo, setPrecioObjetivo] = useState('');
+    const [fechaVencimiento, setFechaVencimiento] = useState('');
+    const [intentadoPublicar, setIntentadoPublicar] = useState(false);
+    
+    const MAX_CARACTERES = 1000;
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -102,10 +109,35 @@ const Comunidad = () => {
                             </button>
                         </div>
 
-                        <form className="analisis-form" onSubmit={(e) => e.preventDefault()}>
+                        <form className="analisis-form" onSubmit={(e) => {
+                            e.preventDefault();
+                            setIntentadoPublicar(true);
+
+                            // Validación de campos vacíos
+                            if (!activo || !precioObjetivo || !fechaVencimiento || !contenido) {
+                                setToast({ mostrar: true, mensaje: "Por favor, completa todos los campos requeridos", tipo: "error" });
+                                setTimeout(() => setToast({ mostrar: false, mensaje: '', tipo: '' }), 3000);
+                                return;
+                            }
+
+                            // Validación de longitud
+                            if (contenido.length > MAX_CARACTERES) {
+                                setToast({ mostrar: true, mensaje: `El contenido excede el límite de ${MAX_CARACTERES} caracteres`, tipo: "error" });
+                                setTimeout(() => setToast({ mostrar: false, mensaje: '', tipo: '' }), 3000);
+                                return;
+                            }
+
+                            console.log("Publicando análisis...");
+                        }}>
                             <div className="form-group">
                                 <label>Activo (Ej: BTC/USD, AAPL)</label>
-                                <input type="text" placeholder="Escribe el símbolo del activo..." />
+                                <input 
+                                    type="text" 
+                                    placeholder="Escribe el símbolo del activo..." 
+                                    value={activo}
+                                    onChange={(e) => setActivo(e.target.value)}
+                                    className={intentadoPublicar && !activo ? 'input-error' : ''}
+                                />
                             </div>
 
                             <div className="form-row">
@@ -128,14 +160,21 @@ const Comunidad = () => {
                                     <label>Precio Objetivo</label>
                                     <div className="input-with-icon">
                                         <FiDollarSign />
-                                        <input type="number" step="0.01" placeholder="0.00" />
+                                        <input 
+                                            type="number" 
+                                            step="0.01" 
+                                            placeholder="0.00" 
+                                            value={precioObjetivo}
+                                            onChange={(e) => setPrecioObjetivo(e.target.value)}
+                                            className={intentadoPublicar && !precioObjetivo ? 'input-error' : ''}
+                                        />
                                     </div>
                                 </div>
                             </div>
 
                             <div className="form-group">
                                 <label>Fecha de Vencimiento Estimada</label>
-                                <div className="input-with-icon" 
+                                <div className={`input-with-icon clickable-date ${intentadoPublicar && !fechaVencimiento ? 'input-error' : ''}`} 
                                      onClick={(e) => {
                                          const input = e.currentTarget.querySelector('input');
                                          if (input && input.showPicker) input.showPicker();
@@ -143,13 +182,31 @@ const Comunidad = () => {
                                      style={{ cursor: 'pointer' }}
                                 >
                                     <FiCalendar />
-                                    <input type="datetime-local" />
+                                    <input 
+                                        type="datetime-local" 
+                                        value={fechaVencimiento}
+                                        onChange={(e) => setFechaVencimiento(e.target.value)}
+                                    />
                                 </div>
                             </div>
 
                             <div className="form-group">
                                 <label>Contenido del Análisis</label>
-                                <textarea rows="4" placeholder="Explica tu tesis de inversión..."></textarea>
+                                <textarea 
+                                    rows="4" 
+                                    placeholder="Explica tu análisis..."
+                                    value={contenido}
+                                    onChange={(e) => setContenido(e.target.value)}
+                                    className={(intentadoPublicar && !contenido) || contenido.length > MAX_CARACTERES ? 'input-error' : ''}
+                                ></textarea>
+                                <div className="textarea-footer">
+                                    <div className={`char-counter ${contenido.length > MAX_CARACTERES ? 'text-error' : ''}`}>
+                                        {contenido.length} / {MAX_CARACTERES}
+                                    </div>
+                                    {contenido.length > MAX_CARACTERES && (
+                                        <p className="error-hint">Límite de caracteres excedido</p>
+                                    )}
+                                </div>
                             </div>
 
                             <div className="form-group">

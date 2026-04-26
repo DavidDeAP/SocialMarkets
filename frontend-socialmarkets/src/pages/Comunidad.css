@@ -178,6 +178,37 @@
     box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
 }
 
+.input-error {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1) !important;
+}
+
+.textarea-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
+.char-counter {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+.char-counter.text-error {
+    color: #ef4444;
+}
+
+.error-hint {
+    color: #ef4444;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin: 0;
+    animation: fadeIn 0.3s ease;
+}
+
+
 .form-group label {
     display: block;
     margin-bottom: 0.7rem;
