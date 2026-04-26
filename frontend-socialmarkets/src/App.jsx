@@ -2,7 +2,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login from './pages/Login';
 import Registro from './pages/Registro';
 import Home from './pages/Home';
-import Perfil from './pages/Perfil'; // Asegúrate de tenerlo importado
+import Perfil from './pages/Perfil';
+import Comunidad from './pages/Comunidad';
 import './App.css';
 
 function App() {
@@ -12,13 +13,11 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
-          {/* Si hay token va a Home, si no a Login */}
           <Route 
             path="/" 
             element={isAuthenticated ? <Navigate to="/home" /> : <Navigate to="/login" />} 
           />
 
-          {/* Si ya está logueado y trata de entrar, va al Home */}
           <Route 
             path="/login" 
             element={isAuthenticated ? <Navigate to="/home" /> : <Login />} 
@@ -28,9 +27,18 @@ function App() {
             element={isAuthenticated ? <Navigate to="/home" /> : <Registro />} 
           />
           
-          {/* 3. Contenido para usuarios logueados */}
-          <Route path="/home" element={<Home />} />
-          <Route path="/perfil/:username" element={<Perfil />} />
+          <Route 
+            path="/home" 
+            element={isAuthenticated ? <Home /> : <Navigate to="/login" />} 
+          />
+          <Route 
+            path="/comunidad" 
+            element={isAuthenticated ? <Comunidad /> : <Navigate to="/login" />} 
+          />
+          <Route 
+            path="/perfil/:username" 
+            element={isAuthenticated ? <Perfil /> : <Navigate to="/login" />} 
+          />
 
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

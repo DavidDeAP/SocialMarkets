@@ -24,15 +24,21 @@ const Sidebar = () => {
                 <button className={`nav-item ${isActive('/home')}`} onClick={() => navigate('/home')}>
                     <FiGrid className="nav-icon" /> Panel
                 </button>
+                
                 <button className="nav-item">
                     <FiTrendingUp className="nav-icon" /> Mercados
                 </button>
-                <button className="nav-item">
+                <button 
+                    className={`nav-item ${isActive('/comunidad')}`} 
+                    onClick={() => navigate('/comunidad')}
+                >
                     <FiUsers className="nav-icon" /> Comunidad
                 </button>
+
                 <button className="nav-item">
                     <FiAward className="nav-icon" /> Clasificación
                 </button>
+                
                 <button className="nav-item">
                     <FiFileText className="nav-icon" /> Noticias
                 </button>

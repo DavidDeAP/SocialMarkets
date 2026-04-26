@@ -1,12 +1,29 @@
 package com.socialmarkets.backend_core.entities;
 
-import jakarta.persistence.*;
-import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import com.socialmarkets.backend_core.enums.EstadoAnalisis;
 import com.socialmarkets.backend_core.enums.TipoAnalisis;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -33,6 +50,12 @@ public class Analisis {
 
     @Column(name = "fecha_vencimiento")
     private LocalDateTime fechaVencimiento; // Fecha que pone el usuario para que se cumpla o no su análisis
+    
+    @ElementCollection
+    @CollectionTable(name = "analisis_imagenes", joinColumns = @JoinColumn(name = "id_analisis"))
+    @Column(name = "url_imagen")
+    @Size(max = 4, message = "No puedes subir más de 4 imágenes")
+    private List<String> imagenes;
 
     @Enumerated(EnumType.STRING)
     private TipoAnalisis tipo;
