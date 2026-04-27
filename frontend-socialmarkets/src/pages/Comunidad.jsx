@@ -243,7 +243,7 @@ const Comunidad = () => {
                                     contenido,
                                     tipo: tipoAnalisis,
                                     precioObjetivo: parseFloat(precioObjetivo),
-                                    fechaVencimiento: new Date(fechaVencimiento).toISOString(),
+                                    fechaVencimiento: fechaVencimiento, // Enviamos el formato local del input (YYYY-MM-DDTHH:mm)
                                     activo: { nombre: activo }
                                 };
 
