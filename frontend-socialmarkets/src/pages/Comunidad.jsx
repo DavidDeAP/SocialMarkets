@@ -32,6 +32,7 @@ const Comunidad = () => {
     const [mostrarSugerencias, setMostrarSugerencias] = useState(false);
     const [cargandoSugerencias, setCargandoSugerencias] = useState(false);
     const [activoSeleccionado, setActivoSeleccionado] = useState(null);
+    const [precioActual, setPrecioActual] = useState(null);
     
     const MAX_CARACTERES = 1000;
     const navigate = useNavigate();
@@ -87,8 +88,58 @@ const Comunidad = () => {
         }
     };
 
+    const fetchPrecioActual = async (symbol) => {
+        try {
+            const respuesta = await api.get(`/market/price?symbol=${symbol}`);
+            const data = typeof respuesta.data === 'string' ? JSON.parse(respuesta.data) : respuesta.data;
+            
+            console.log(`Precio obtenido para ${symbol}:`, data);
+
+            if (data.chart?.result?.length > 0) {
+                const meta = data.chart.result[0].meta;
+                const price = meta.regularMarketPrice;
+                const prevClose = meta.chartPreviousClose || price;
+                const changePercent = ((price - prevClose) / prevClose) * 100;
+
+                setPrecioActual({
+                    price: price,
+                    currency: meta.currency || 'USD',
+                    change: changePercent || 0,
+                    symbol: meta.symbol,
+                    loading: false
+                });
+            } else {
+                throw new Error("No hay resultados en la respuesta del chart");
+            }
+        } catch (err) {
+            console.error("Error obteniendo precio:", err);
+            setPrecioActual({ 
+                error: true, 
+                message: "No se pudo obtener el precio en vivo",
+                loading: false 
+            });
+        }
+    };
+
+    useEffect(() => {
+        let intervalId;
+        if (activoSeleccionado) {
+            // Carga inicial
+            fetchPrecioActual(activoSeleccionado.symbol);
+            
+            // Intervalo cada 30 segundos para evitar saturación (429 Too Many Requests)
+            intervalId = setInterval(() => {
+                fetchPrecioActual(activoSeleccionado.symbol);
+            }, 30000);
+        } else {
+            setPrecioActual(null);
+        }
+        return () => clearInterval(intervalId);
+    }, [activoSeleccionado]);
+
     const handleSeleccionarActivo = (item) => {
         setActivo(`${item.symbol} - ${item.shortname}`);
+        setPrecioActual({ loading: true }); // Estado de carga inmediato
         setActivoSeleccionado(item);
         setMostrarSugerencias(false);
     };
@@ -300,7 +351,8 @@ const Comunidad = () => {
                                     fechaVencimiento: fechaVencimiento, // Enviamos el formato local del input (YYYY-MM-DDTHH:mm)
                                     activo: { 
                                         nombre: activoSeleccionado.symbol,
-                                        tipo: activoSeleccionado.quoteType
+                                        tipo: activoSeleccionado.quoteType,
+                                        precioEntrada: precioActual?.price || 0
                                     }
                                 };
 
@@ -372,10 +424,39 @@ const Comunidad = () => {
                                         )}
                                     </ul>
                                 )}
-                                {intentadoPublicar && !activoSeleccionado && (
-                                    <p className="error-hint">Debes seleccionar un activo de la lista</p>
-                                )}
                             </div>
+
+                            {(activoSeleccionado || precioActual) && (
+                                <div className="live-price-badge glass-card">
+                                    {precioActual?.loading ? (
+                                        <div className="price-loading">
+                                            <div className="loader-small"></div>
+                                            <span>Obteniendo cotización real de {activoSeleccionado?.symbol}...</span>
+                                        </div>
+                                    ) : precioActual?.error ? (
+                                        <div className="price-error">
+                                            <span>{precioActual.message}</span>
+                                            <button type="button" onClick={() => fetchPrecioActual(activoSeleccionado?.symbol)}>Reintentar</button>
+                                        </div>
+                                    ) : precioActual ? (
+                                        <>
+                                            <div className="price-info">
+                                                <span className="price-label">Precio Actual:</span>
+                                                <span className="price-value">
+                                                    {precioActual.price?.toLocaleString('es-ES', { style: 'currency', currency: precioActual.currency || 'USD' })}
+                                                </span>
+                                                <span className={`price-change ${precioActual.change >= 0 ? 'up' : 'down'}`}>
+                                                    {precioActual.change >= 0 ? '+' : ''}{precioActual.change?.toFixed(2)}%
+                                                </span>
+                                            </div>
+                                            <div className="live-indicator">
+                                                <div className="dot"></div>
+                                                EN VIVO
+                                            </div>
+                                        </>
+                                    ) : null}
+                                </div>
+                            )}
 
                             <div className="form-row">
                                 <div className="form-group">
