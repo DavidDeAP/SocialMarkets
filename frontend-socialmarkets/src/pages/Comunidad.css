@@ -907,7 +907,7 @@
 /* Market Info Row */
 .card-market-info {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     background: rgba(15, 23, 42, 0.4);
     border-radius: 16px;
     padding: 1rem;
@@ -939,8 +939,12 @@
     color: #6366f1;
 }
 
+.market-value.price-entry {
+    color: #60a5fa;
+}
+
 .market-value.price {
-    color: #10b981;
+    color: #f8fafc;
 }
 
 /* Card Content */

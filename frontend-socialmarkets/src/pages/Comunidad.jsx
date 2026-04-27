@@ -297,6 +297,10 @@ const Comunidad = () => {
                                             <span className="market-value activo-name">{analisis.activo?.nombre}</span>
                                         </div>
                                         <div className="market-item">
+                                            <label>Precio Entrada</label>
+                                            <span className="market-value price-entry">${analisis.precioEntrada?.toLocaleString()}</span>
+                                        </div>
+                                        <div className="market-item">
                                             <label>Precio Objetivo</label>
                                             <span className="market-value price">${analisis.precioObjetivo?.toLocaleString()}</span>
                                         </div>
@@ -383,11 +387,11 @@ const Comunidad = () => {
                                     contenido,
                                     tipo: tipoAnalisis,
                                     precioObjetivo: parseFloat(precioObjetivo),
+                                    precioEntrada: precioActual?.price || 0,
                                     fechaVencimiento: fechaVencimiento, // Enviamos el formato local del input (YYYY-MM-DDTHH:mm)
                                     activo: { 
                                         nombre: activoSeleccionado.symbol,
-                                        tipo: activoSeleccionado.quoteType,
-                                        precioEntrada: precioActual?.price || 0
+                                        tipo: activoSeleccionado.quoteType
                                     }
                                 };
 
