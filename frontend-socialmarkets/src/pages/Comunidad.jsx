@@ -153,6 +153,18 @@ const Comunidad = () => {
         setMostrarSugerencias(false);
     };
 
+    const getTipoLegible = (type) => {
+        const types = {
+            'EQUITY': 'Acción',
+            'INDEX': 'Índice',
+            'CRYPTOCURRENCY': 'Crypto',
+            'CURRENCY': 'Divisa',
+            'ETF': 'ETF',
+            'FUTURE': 'Futuro'
+        };
+        return types[type] || type;
+    };
+
     const fetchAnalisis = async () => {
         setCargandoFeed(true);
         try {
@@ -433,11 +445,16 @@ const Comunidad = () => {
                                     <ul className="autocomplete-dropdown glass-card">
                                         {busquedaActivos.length > 0 ? (
                                             busquedaActivos.map((item, idx) => (
-                                                <li key={idx} onClick={() => handleSeleccionarActivo(item)}>
-                                                    <div className="item-symbol">{item.symbol}</div>
+                                                <li key={idx} onClick={() => handleSeleccionarActivo(item)} className="dropdown-item">
+                                                    <div className="item-main">
+                                                        <span className="item-symbol">{item.symbol}</span>
+                                                        <span className={`item-badge ${item.quoteType.toLowerCase()}`}>
+                                                            {getTipoLegible(item.quoteType)}
+                                                        </span>
+                                                    </div>
                                                     <div className="item-details">
                                                         <span className="item-name">{item.shortname}</span>
-                                                        <span className="item-type">{item.quoteType} • {item.exchDisp}</span>
+                                                        <span className="item-exchange">Mercado: {item.exchDisp}</span>
                                                     </div>
                                                 </li>
                                             ))
