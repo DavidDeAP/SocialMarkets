@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import com.socialmarkets.backend_core.entities.Analisis;
 import com.socialmarkets.backend_core.enums.EstadoAnalisis;
 import com.socialmarkets.backend_core.repositories.AnalisisRepository;
+import com.socialmarkets.backend_core.repositories.UsuarioRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AnalisisService {
@@ -24,6 +26,10 @@ public class AnalisisService {
     @Autowired
     private S3Service s3Service;
 
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Transactional
     public Analisis crearAnalisis(Analisis analisis, String username, org.springframework.web.multipart.MultipartFile[] imagenes) throws Exception {
         // 1. Asignar Usuario
         com.socialmarkets.backend_core.entities.Usuario usuario = usuarioService.obtenerPorNombre(username);
@@ -57,6 +63,10 @@ public class AnalisisService {
         // 4. Configurar Metadatos
         analisis.setEstado(EstadoAnalisis.PENDIENTE);
         analisis.setFechaCreacion(java.time.LocalDateTime.now());
+        
+        // 5. Incrementar número de predicciones del usuario
+        usuario.setNumeroPredicciones(usuario.getNumeroPredicciones() + 1);
+        usuarioRepository.save(usuario);
         
         return analisisRepository.save(analisis);
     }
