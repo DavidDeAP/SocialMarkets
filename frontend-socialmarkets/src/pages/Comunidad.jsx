@@ -165,6 +165,8 @@ const Comunidad = () => {
         return types[type] || type;
     };
 
+
+
     const fetchAnalisis = async () => {
         setCargandoFeed(true);
         try {
@@ -479,14 +481,17 @@ const Comunidad = () => {
                                         </div>
                                     ) : precioActual ? (
                                         <>
-                                            <div className="price-info">
-                                                <span className="price-label">Precio Actual:</span>
-                                                <span className="price-value">
-                                                    {precioActual.price?.toLocaleString('es-ES', { style: 'currency', currency: precioActual.currency || 'USD' })}
-                                                </span>
-                                                <span className={`price-change ${precioActual.change >= 0 ? 'up' : 'down'}`}>
-                                                    {precioActual.change >= 0 ? '+' : ''}{precioActual.change?.toFixed(2)}%
-                                                </span>
+                                            <div className="price-container">
+                                                <div className="price-main">
+                                                    <span className="price-label">Precio Actual</span>
+                                                    <span className="price-value">
+                                                        {precioActual.price?.toLocaleString('es-ES', { style: 'currency', currency: precioActual.currency || 'USD' })}
+                                                    </span>
+                                                </div>
+                                                <div className={`price-badge ${precioActual.change >= 0 ? 'up' : 'down'}`}>
+                                                    <span className="change-arrow">{precioActual.change >= 0 ? '▲' : '▼'}</span>
+                                                    <span className="change-percent">{Math.abs(precioActual.change).toFixed(2)}%</span>
+                                                </div>
                                             </div>
                                             <div className="live-indicator">
                                                 <div className="dot"></div>
