@@ -328,6 +328,21 @@
     border-radius: 12px;
 }
 
+.price-countdown {
+    text-align: right;
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-top: -12px;
+    margin-bottom: 20px;
+    padding-right: 5px;
+    font-weight: 600;
+}
+
+.price-countdown span {
+    color: #10b981;
+    font-weight: 800;
+}
+
 .price-loading {
     display: flex;
     align-items: center;

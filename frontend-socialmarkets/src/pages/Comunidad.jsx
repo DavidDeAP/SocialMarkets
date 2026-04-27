@@ -33,6 +33,7 @@ const Comunidad = () => {
     const [cargandoSugerencias, setCargandoSugerencias] = useState(false);
     const [activoSeleccionado, setActivoSeleccionado] = useState(null);
     const [precioActual, setPrecioActual] = useState(null);
+    const [cuentaAtras, setCuentaAtras] = useState(30);
     
     const MAX_CARACTERES = 1000;
     const navigate = useNavigate();
@@ -122,19 +123,34 @@ const Comunidad = () => {
     };
 
     useEffect(() => {
-        let intervalId;
+        let timerId;
+        let fetchId;
+
         if (activoSeleccionado) {
-            // Carga inicial
+            setCuentaAtras(30);
             fetchPrecioActual(activoSeleccionado.symbol);
             
-            // Intervalo cada 30 segundos para evitar saturación (429 Too Many Requests)
-            intervalId = setInterval(() => {
+            // Timer para la cuenta atrás visual
+            timerId = setInterval(() => {
+                setCuentaAtras(prev => {
+                    if (prev <= 1) return 30;
+                    return prev - 1;
+                });
+            }, 1000);
+
+            // Intervalo para la petición real (cada 30s)
+            fetchId = setInterval(() => {
                 fetchPrecioActual(activoSeleccionado.symbol);
             }, 30000);
         } else {
             setPrecioActual(null);
+            setCuentaAtras(30);
         }
-        return () => clearInterval(intervalId);
+
+        return () => {
+            clearInterval(timerId);
+            clearInterval(fetchId);
+        };
     }, [activoSeleccionado]);
 
     const handleSeleccionarActivo = (item) => {
@@ -455,6 +471,12 @@ const Comunidad = () => {
                                             </div>
                                         </>
                                     ) : null}
+                                </div>
+                            )}
+
+                            {precioActual && !precioActual.loading && !precioActual.error && (
+                                <div className="price-countdown">
+                                    Próxima actualización en: <span>{cuentaAtras}s</span>
                                 </div>
                             )}
 
