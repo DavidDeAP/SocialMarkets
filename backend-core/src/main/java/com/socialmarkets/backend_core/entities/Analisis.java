@@ -51,6 +51,9 @@ public class Analisis {
     @Column(name = "fecha_vencimiento")
     private LocalDateTime fechaVencimiento; // Fecha que pone el usuario para que se cumpla o no su análisis
     
+    @Column(name = "fecha_creacion")
+    private LocalDateTime fechaCreacion;
+
     @ElementCollection
     @CollectionTable(name = "analisis_imagenes", joinColumns = @JoinColumn(name = "id_analisis"))
     @Column(name = "url_imagen")

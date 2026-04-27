@@ -18,6 +18,7 @@ public class AnalisisService {
     public Analisis crearAnalisis(Analisis analisis) {
         // Al crear un análisis, el estado inicial siempre es "Pendiente" 
     	analisis.setEstado(EstadoAnalisis.PENDIENTE); 
+        analisis.setFechaCreacion(java.time.LocalDateTime.now());
         return analisisRepository.save(analisis);
     }
 

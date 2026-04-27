@@ -24,7 +24,7 @@ h2 {
   height: 100%;
   background: url('./assets/fondo-bolsa.jpg') no-repeat center center;
   background-size: cover;
-  filter: blur(5px) brightness(0.6); 
+  filter: blur(5px) brightness(0.6);
   z-index: -1;
   transform: scale(1.1);
 }
@@ -38,7 +38,8 @@ h2 {
   --text-muted: #94a3b8;
 }
 
-input, textarea {
+input,
+textarea {
   background: #0f172a;
   border: 1px solid var(--border);
   padding: 0.75rem 1rem;
@@ -47,7 +48,8 @@ input, textarea {
   transition: all 0.2s ease;
 }
 
-input:focus, textarea:focus {
+input:focus,
+textarea:focus {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
@@ -92,29 +94,36 @@ button:active {
 }
 
 .alert-panel {
-    padding: 12px;
-    border-radius: 6px;
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
-    text-align: center;
-    animation: fadeIn 0.3s ease;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
 }
 
 .alert-panel.exito {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
 }
 
 .alert-panel.error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .dashboard-layout {
@@ -147,25 +156,25 @@ button:active {
 
 /* Estilos semi-neón para títulos */
 .text-neon-glow {
-    background: linear-gradient(135deg, #6366f1 0%, #3b82f6 50%, #2dd4bf 100%) !important;
-    -webkit-background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
-    filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.6)) !important;
-    font-weight: 800 !important;
+  background: linear-gradient(135deg, #6366f1 0%, #3b82f6 50%, #2dd4bf 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.6)) !important;
+  font-weight: 800 !important;
 }
 
 .username-neon {
-    color: #ffffff !important;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.4), 0 0 20px rgba(148, 163, 184, 0.3) !important;
-    font-weight: 800 !important;
+  color: #ffffff !important;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.4), 0 0 20px rgba(148, 163, 184, 0.3) !important;
+  font-weight: 800 !important;
 }
 
 .text-neon-green {
-    background: linear-gradient(135deg, #2dd4bf 0%, #10b981 100%) !important;
-    -webkit-background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
-    filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.6)) !important;
-    font-weight: 800 !important;
+  background: linear-gradient(135deg, #2dd4bf 0%, #10b981 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.6)) !important;
+  font-weight: 800 !important;
 }
 
 
@@ -183,7 +192,7 @@ button:active {
   font-weight: 600;
   z-index: 9999;
   animation: slideIn 0.3s ease-out;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
 
 .notification-toast.exito {
@@ -198,72 +207,86 @@ button:active {
 
 /* Modern Global Loader Styles */
 .loading-container {
-    height: 100vh;
-    width: 100vw;
-    position: fixed;
-    top: 0;
-    left: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: #070a11;
-    color: #f8fafc;
-    gap: 1.5rem;
-    z-index: 999999;
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #070a11;
+  color: #f8fafc;
+  gap: 1.5rem;
+  z-index: 999999;
 }
 
 .loader {
-    width: 64px;
-    height: 64px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  width: 64px;
+  height: 64px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .loader::before,
 .loader::after {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    border: 4px solid transparent;
-    mix-blend-mode: screen;
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 4px solid transparent;
+  mix-blend-mode: screen;
 }
 
 .loader::before {
-    border-top-color: #3b82f6;
-    border-left-color: #3b82f6;
-    animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-    box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+  border-top-color: #3b82f6;
+  border-left-color: #3b82f6;
+  animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
 }
 
 .loader::after {
-    border-bottom-color: #10b981;
-    border-right-color: #10b981;
-    animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite reverse;
-    box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+  border-bottom-color: #10b981;
+  border-right-color: #10b981;
+  animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite reverse;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
 }
 
 .loading-text {
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-    background: linear-gradient(to right, #3b82f6, #10b981);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: pulse 2s infinite ease-in-out;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  background: linear-gradient(to right, #3b82f6, #10b981);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: pulse 2s infinite ease-in-out;
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes pulse {
-    0%, 100% { opacity: 0.6; transform: scale(0.98); }
-    50% { opacity: 1; transform: scale(1.02); }
+
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(0.98);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
 }
