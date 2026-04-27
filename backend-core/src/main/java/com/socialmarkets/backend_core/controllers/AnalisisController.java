@@ -3,7 +3,10 @@ package com.socialmarkets.backend_core.controllers;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import java.security.Principal;
 
 import com.socialmarkets.backend_core.entities.Analisis;
 import com.socialmarkets.backend_core.services.AnalisisService;
@@ -16,13 +19,18 @@ public class AnalisisController {
     @Autowired
     private AnalisisService analisisService;
 
-    // POST: http://localhost:8080/api/analisis/crear
-    @PostMapping("/crear")
-    public ResponseEntity<?> crear(@RequestBody Analisis analisis) {
+    @PostMapping(value = "/crear", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> crear(
+            Principal principal,
+            @RequestPart("analisis") Analisis analisis,
+            @RequestPart(value = "imagenes", required = false) MultipartFile[] imagenes) {
         try {
-            Analisis nuevoAnalisis = analisisService.crearAnalisis(analisis);
+            if (principal == null) return ResponseEntity.status(401).body("No autorizado");
+            
+            Analisis nuevoAnalisis = analisisService.crearAnalisis(analisis, principal.getName(), imagenes);
             return ResponseEntity.ok(nuevoAnalisis);
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

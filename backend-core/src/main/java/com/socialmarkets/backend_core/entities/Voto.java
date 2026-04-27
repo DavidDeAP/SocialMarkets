@@ -3,6 +3,7 @@ package com.socialmarkets.backend_core.entities;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Data
 @NoArgsConstructor
@@ -23,6 +24,7 @@ public class Voto {
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "id_analisis", nullable = false)
     private Analisis analisis;

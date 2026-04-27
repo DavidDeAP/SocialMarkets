@@ -15,10 +15,49 @@ public class AnalisisService {
     @Autowired
     private AnalisisRepository analisisRepository;
 
-    public Analisis crearAnalisis(Analisis analisis) {
-        // Al crear un análisis, el estado inicial siempre es "Pendiente" 
-    	analisis.setEstado(EstadoAnalisis.PENDIENTE); 
+    @Autowired
+    private UsuarioService usuarioService;
+
+    @Autowired
+    private ActivoService activoService;
+
+    @Autowired
+    private S3Service s3Service;
+
+    public Analisis crearAnalisis(Analisis analisis, String username, org.springframework.web.multipart.MultipartFile[] imagenes) throws Exception {
+        // 1. Asignar Usuario
+        com.socialmarkets.backend_core.entities.Usuario usuario = usuarioService.obtenerPorNombre(username);
+        analisis.setUsuario(usuario);
+
+        // 2. Gestionar Activo
+        if (analisis.getActivo() != null && analisis.getActivo().getNombre() != null) {
+            String nombreActivo = analisis.getActivo().getNombre().toUpperCase();
+            try {
+                analisis.setActivo(activoService.obtenerPorNombre(nombreActivo));
+            } catch (Exception e) {
+                // Si no existe, creamos uno básico
+                com.socialmarkets.backend_core.entities.Activo nuevoActivo = new com.socialmarkets.backend_core.entities.Activo();
+                nuevoActivo.setNombre(nombreActivo);
+                nuevoActivo.setTipo("CRIPTO"); // Por defecto
+                analisis.setActivo(activoService.guardarOActualizar(nuevoActivo));
+            }
+        }
+
+        // 3. Subir Imágenes a S3
+        if (imagenes != null && imagenes.length > 0) {
+            java.util.List<String> urls = new java.util.ArrayList<>();
+            for (org.springframework.web.multipart.MultipartFile img : imagenes) {
+                if (img != null && !img.isEmpty()) {
+                    urls.add(s3Service.subirArchivo(img));
+                }
+            }
+            analisis.setImagenes(urls);
+        }
+
+        // 4. Configurar Metadatos
+        analisis.setEstado(EstadoAnalisis.PENDIENTE);
         analisis.setFechaCreacion(java.time.LocalDateTime.now());
+        
         return analisisRepository.save(analisis);
     }
 
