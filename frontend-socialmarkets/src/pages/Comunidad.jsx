@@ -33,7 +33,7 @@ const Comunidad = () => {
     const [cargandoSugerencias, setCargandoSugerencias] = useState(false);
     const [activoSeleccionado, setActivoSeleccionado] = useState(null);
     const [precioActual, setPrecioActual] = useState(null);
-    const [cuentaAtras, setCuentaAtras] = useState(30);
+    const [cuentaAtras, setCuentaAtras] = useState(10);
     
     const MAX_CARACTERES = 1000;
     const navigate = useNavigate();
@@ -124,33 +124,26 @@ const Comunidad = () => {
 
     useEffect(() => {
         let timerId;
-        let fetchId;
 
         if (activoSeleccionado) {
-            setCuentaAtras(30);
+            setCuentaAtras(10);
             fetchPrecioActual(activoSeleccionado.symbol);
             
-            // Timer para la cuenta atrás visual
             timerId = setInterval(() => {
                 setCuentaAtras(prev => {
-                    if (prev <= 1) return 30;
+                    if (prev === 1) {
+                        fetchPrecioActual(activoSeleccionado.symbol);
+                        return 10;
+                    }
                     return prev - 1;
                 });
             }, 1000);
-
-            // Intervalo para la petición real (cada 30s)
-            fetchId = setInterval(() => {
-                fetchPrecioActual(activoSeleccionado.symbol);
-            }, 30000);
         } else {
             setPrecioActual(null);
-            setCuentaAtras(30);
+            setCuentaAtras(10);
         }
 
-        return () => {
-            clearInterval(timerId);
-            clearInterval(fetchId);
-        };
+        return () => clearInterval(timerId);
     }, [activoSeleccionado]);
 
     const handleSeleccionarActivo = (item) => {
@@ -344,16 +337,28 @@ const Comunidad = () => {
                             setIntentadoPublicar(true);
 
                             // Validación de campos vacíos
-                            if (!activo || !precioObjetivo || !fechaVencimiento || !contenido || !activoSeleccionado) {
-                                setToast({ mostrar: true, mensaje: "Por favor, selecciona un activo válido de la lista", tipo: "error" });
-                                setTimeout(() => setToast({ mostrar: false, mensaje: '', tipo: '' }), 3000);
+                            if (!activoSeleccionado) {
+                                setToast({ mostrar: true, mensaje: "Por favor, selecciona un activo válido de la lista de sugerencias", tipo: "error" });
+                                setTimeout(() => setToast({ mostrar: false, mensaje: '', tipo: '' }), 5000);
+                                return;
+                            }
+                            if (!precioObjetivo || !fechaVencimiento || !contenido) {
+                                setToast({ mostrar: true, mensaje: "Por favor, completa todos los campos (Precio Objetivo, Fecha y Contenido)", tipo: "error" });
+                                setTimeout(() => setToast({ mostrar: false, mensaje: '', tipo: '' }), 5000);
                                 return;
                             }
 
-                            // Validación de longitud
+                            // Validación de fecha de vencimiento (debe ser futura)
+                            const ahora = new Date();
+                            const venci = new Date(fechaVencimiento);
+                            if (venci <= ahora) {
+                                setToast({ mostrar: true, mensaje: "La fecha de vencimiento debe ser posterior al momento actual", tipo: "error" });
+                                setTimeout(() => setToast({ mostrar: false, mensaje: '', tipo: '' }), 5000);
+                                return;
+                            }
                             if (contenido.length > MAX_CARACTERES) {
                                 setToast({ mostrar: true, mensaje: `El contenido excede el límite de ${MAX_CARACTERES} caracteres`, tipo: "error" });
-                                setTimeout(() => setToast({ mostrar: false, mensaje: '', tipo: '' }), 3000);
+                                setTimeout(() => setToast({ mostrar: false, mensaje: '', tipo: '' }), 5000);
                                 return;
                             }
 
@@ -381,12 +386,13 @@ const Comunidad = () => {
                                 await api.post('/analisis/crear', formData);
 
                                 setToast({ mostrar: true, mensaje: "Análisis publicado con éxito", tipo: "success" });
-                                setTimeout(() => setToast({ mostrar: false, mensaje: '', tipo: '' }), 3000);
+                                setTimeout(() => setToast({ mostrar: false, mensaje: '', tipo: '' }), 5000);
                                 
                                 // Resetear form
                                 setContenido('');
                                 setActivo('');
                                 setActivoSeleccionado(null);
+                                setCuentaAtras(10);
                                 setPrecioObjetivo('');
                                 setFechaVencimiento('');
                                 setImagenes([]);
@@ -400,7 +406,7 @@ const Comunidad = () => {
                             } catch (err) {
                                 console.error("Error al publicar:", err);
                                 setToast({ mostrar: true, mensaje: "Error al publicar el análisis", tipo: "error" });
-                                setTimeout(() => setToast({ mostrar: false, mensaje: '', tipo: '' }), 3000);
+                                setTimeout(() => setToast({ mostrar: false, mensaje: '', tipo: '' }), 5000);
                             } finally {
                                 setPublicando(false);
                             }

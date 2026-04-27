@@ -17,7 +17,7 @@ public class MarketDataController {
     
     // Caché simple para evitar 429 Too Many Requests
     private final java.util.Map<String, CachedPrice> priceCache = new java.util.concurrent.ConcurrentHashMap<>();
-    private static final long CACHE_DURATION = 60000; // 60 segundos
+    private static final long CACHE_DURATION = 8000; // 8 segundos para asegurar que el intervalo de 10s del front siempre pille dato nuevo
 
     private static class CachedPrice {
         String data;
