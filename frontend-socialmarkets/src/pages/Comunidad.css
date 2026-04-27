@@ -184,7 +184,12 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
-    align-items: flex-end; /* Alinea los fondos de los inputs y botones */
+    align-items: flex-end; 
+    margin-bottom: 25px; /* Espacio extra para el indicador absoluto */
+}
+
+.form-group {
+    position: relative;
 }
 
 .analisis-form input,
@@ -261,6 +266,39 @@
 
 .input-with-icon input {
     padding-left: 38px;
+}
+
+.sentiment-indicator {
+    position: absolute;
+    top: 100%;
+    left: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    width: fit-content;
+    animation: fadeIn 0.3s ease;
+    z-index: 10;
+}
+
+.sentiment-indicator.bullish {
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.sentiment-indicator.bearish {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.sentiment-indicator svg {
+    font-size: 1rem;
 }
 
 /* Autocomplete Activos */

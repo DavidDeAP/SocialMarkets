@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import {
     FiPlus, FiMessageSquare, FiImage, FiTarget,
     FiCalendar, FiBarChart2, FiX, FiActivity, FiDollarSign,
-    FiXCircle, FiCheckCircle
+    FiXCircle, FiCheckCircle, FiArrowUpRight, FiArrowDownRight
 } from 'react-icons/fi';
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
@@ -537,6 +537,15 @@ const Comunidad = () => {
                                             className={intentadoPublicar && !precioObjetivo ? 'input-error' : ''}
                                         />
                                     </div>
+                                    {precioObjetivo && precioActual?.price && (
+                                        <div className={`sentiment-indicator ${parseFloat(precioObjetivo) >= precioActual.price ? 'bullish' : 'bearish'}`}>
+                                            {parseFloat(precioObjetivo) >= precioActual.price ? (
+                                                <><FiArrowUpRight /> Análisis Alcista</>
+                                            ) : (
+                                                <><FiArrowDownRight /> Análisis Bajista</>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
