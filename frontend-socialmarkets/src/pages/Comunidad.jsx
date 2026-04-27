@@ -27,6 +27,12 @@ const Comunidad = () => {
     const [cargandoFeed, setCargandoFeed] = useState(true);
     const [selectedFiles, setSelectedFiles] = useState([]);
     
+    // Autocompletado de Activos
+    const [busquedaActivos, setBusquedaActivos] = useState([]);
+    const [mostrarSugerencias, setMostrarSugerencias] = useState(false);
+    const [cargandoSugerencias, setCargandoSugerencias] = useState(false);
+    const [activoSeleccionado, setActivoSeleccionado] = useState(null);
+    
     const MAX_CARACTERES = 1000;
     const navigate = useNavigate();
     const location = useLocation();
@@ -38,6 +44,54 @@ const Comunidad = () => {
             window.history.replaceState({}, document.title);
         }
     }, [location]);
+
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            if (activo && !activoSeleccionado) {
+                buscarActivos(activo);
+            } else if (!activo) {
+                setBusquedaActivos([]);
+            }
+        }, 400);
+
+        return () => clearTimeout(timeoutId);
+    }, [activo]);
+
+    const buscarActivos = async (query) => {
+        if (query.length < 2) return;
+        setCargandoSugerencias(true);
+        try {
+            // Llamamos a nuestro propio backend para evitar problemas de CORS
+            const respuesta = await api.get(`/market/search?q=${query}`);
+            console.log("Respuesta búsqueda activos:", respuesta.data);
+            
+            const data = typeof respuesta.data === 'string' ? JSON.parse(respuesta.data) : respuesta.data;
+            
+            if (data.quotes && data.quotes.length > 0) {
+                const filtrados = data.quotes.map(q => ({
+                    symbol: q.symbol,
+                    shortname: q.shortname || q.longname || q.symbol,
+                    quoteType: q.quoteType || 'STOCK',
+                    exchDisp: q.exchDisp || 'Global'
+                }));
+                setBusquedaActivos(filtrados);
+                setMostrarSugerencias(true);
+            } else {
+                setBusquedaActivos([]);
+                setMostrarSugerencias(true); // Para mostrar el mensaje de "No encontrado"
+            }
+        } catch (err) {
+            console.error("Error buscando activos:", err);
+        } finally {
+            setCargandoSugerencias(false);
+        }
+    };
+
+    const handleSeleccionarActivo = (item) => {
+        setActivo(`${item.symbol} - ${item.shortname}`);
+        setActivoSeleccionado(item);
+        setMostrarSugerencias(false);
+    };
 
     const fetchAnalisis = async () => {
         setCargandoFeed(true);
@@ -223,8 +277,8 @@ const Comunidad = () => {
                             setIntentadoPublicar(true);
 
                             // Validación de campos vacíos
-                            if (!activo || !precioObjetivo || !fechaVencimiento || !contenido) {
-                                setToast({ mostrar: true, mensaje: "Por favor, completa todos los campos requeridos", tipo: "error" });
+                            if (!activo || !precioObjetivo || !fechaVencimiento || !contenido || !activoSeleccionado) {
+                                setToast({ mostrar: true, mensaje: "Por favor, selecciona un activo válido de la lista", tipo: "error" });
                                 setTimeout(() => setToast({ mostrar: false, mensaje: '', tipo: '' }), 3000);
                                 return;
                             }
@@ -244,7 +298,10 @@ const Comunidad = () => {
                                     tipo: tipoAnalisis,
                                     precioObjetivo: parseFloat(precioObjetivo),
                                     fechaVencimiento: fechaVencimiento, // Enviamos el formato local del input (YYYY-MM-DDTHH:mm)
-                                    activo: { nombre: activo }
+                                    activo: { 
+                                        nombre: activoSeleccionado.symbol,
+                                        tipo: activoSeleccionado.quoteType
+                                    }
                                 };
 
                                 formData.append('analisis', new Blob([JSON.stringify(analisisData)], { type: 'application/json' }));
@@ -261,6 +318,7 @@ const Comunidad = () => {
                                 // Resetear form
                                 setContenido('');
                                 setActivo('');
+                                setActivoSeleccionado(null);
                                 setPrecioObjetivo('');
                                 setFechaVencimiento('');
                                 setImagenes([]);
@@ -279,15 +337,44 @@ const Comunidad = () => {
                                 setPublicando(false);
                             }
                         }}>
-                            <div className="form-group">
-                                <label>Activo (Ej: BTC/USD, AAPL)</label>
-                                <input 
-                                    type="text" 
-                                    placeholder="Escribe el símbolo del activo..." 
-                                    value={activo}
-                                    onChange={(e) => setActivo(e.target.value)}
-                                    className={intentadoPublicar && !activo ? 'input-error' : ''}
-                                />
+                            <div className="form-group autocomplete-container">
+                                <label>Activo (Busca por símbolo o nombre)</label>
+                                <div className="input-with-icon">
+                                    <FiActivity />
+                                    <input 
+                                        type="text" 
+                                        placeholder="Ej: BTC, Apple, Tesla..." 
+                                        value={activo}
+                                        onChange={(e) => {
+                                            setActivo(e.target.value);
+                                            setActivoSeleccionado(null); // Reseteamos al escribir
+                                        }}
+                                        onFocus={() => busquedaActivos.length > 0 && setMostrarSugerencias(true)}
+                                        className={intentadoPublicar && !activoSeleccionado ? 'input-error' : ''}
+                                    />
+                                    {cargandoSugerencias && <div className="loader-input"></div>}
+                                </div>
+                                
+                                {mostrarSugerencias && activo.length >= 2 && !activoSeleccionado && (
+                                    <ul className="autocomplete-dropdown glass-card">
+                                        {busquedaActivos.length > 0 ? (
+                                            busquedaActivos.map((item, idx) => (
+                                                <li key={idx} onClick={() => handleSeleccionarActivo(item)}>
+                                                    <div className="item-symbol">{item.symbol}</div>
+                                                    <div className="item-details">
+                                                        <span className="item-name">{item.shortname}</span>
+                                                        <span className="item-type">{item.quoteType} • {item.exchDisp}</span>
+                                                    </div>
+                                                </li>
+                                            ))
+                                        ) : !cargandoSugerencias && (
+                                            <li className="no-results">No se encontraron activos</li>
+                                        )}
+                                    </ul>
+                                )}
+                                {intentadoPublicar && !activoSeleccionado && (
+                                    <p className="error-hint">Debes seleccionar un activo de la lista</p>
+                                )}
                             </div>
 
                             <div className="form-row">

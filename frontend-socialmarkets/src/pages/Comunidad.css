@@ -262,6 +262,99 @@
     padding-left: 38px;
 }
 
+/* Autocomplete Activos */
+.autocomplete-container {
+    position: relative;
+}
+
+.autocomplete-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    max-height: 250px;
+    overflow-y: auto;
+    background: rgba(15, 23, 42, 0.95) !important;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: none;
+    border-radius: 0 0 16px 16px;
+    z-index: 1000;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.autocomplete-dropdown li {
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.autocomplete-dropdown li:last-child {
+    border-bottom: none;
+}
+
+.autocomplete-dropdown li:hover {
+    background: rgba(99, 102, 241, 0.15);
+}
+
+.no-results {
+    padding: 15px;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    text-align: center;
+    cursor: default !important;
+}
+
+.no-results:hover {
+    background: transparent !important;
+}
+
+.item-symbol {
+    background: rgba(99, 102, 241, 0.2);
+    color: #818cf8;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    min-width: 70px;
+    text-align: center;
+}
+
+.item-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.item-name {
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.item-type {
+    color: #94a3b8;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+.loader-input {
+    position: absolute;
+    right: 15px;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(99, 102, 241, 0.2);
+    border-top: 2px solid #6366f1;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
 .tipo-analisis-pills {
     display: flex;
     gap: 15px;
