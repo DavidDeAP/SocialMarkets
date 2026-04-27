@@ -139,7 +139,7 @@ const Comunidad = () => {
                             listaAnalisis.map((analisis) => (
                                 <article key={analisis.identificador} className="analisis-card glass-card">
                                     <div className="card-header">
-                                        <div className="user-info-section">
+                                        <div className="user-info-section clickable-profile" onClick={() => navigate(`/perfil/${analisis.usuario?.usuario}`)}>
                                             <img 
                                                 src={analisis.usuario?.imagen || 'https://via.placeholder.com/150'} 
                                                 alt={analisis.usuario?.usuario} 

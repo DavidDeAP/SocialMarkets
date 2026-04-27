@@ -479,6 +479,20 @@
     gap: 12px;
 }
 
+.clickable-profile {
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.clickable-profile:hover {
+    opacity: 0.8;
+}
+
+.clickable-profile:hover .username {
+    text-decoration: underline;
+    color: #6366f1;
+}
+
 .user-avatar-small {
     width: 48px;
     height: 48px;
@@ -595,13 +609,39 @@
     overflow: hidden;
 }
 
-.analysis-gallery.grid-1 { grid-template-columns: 1fr; }
-.analysis-gallery.grid-2 { grid-template-columns: 1fr 1fr; }
-.analysis-gallery.grid-3 { grid-template-columns: 1fr 1fr; }
-.analysis-gallery.grid-4 { grid-template-columns: 1fr 1fr; }
+/* Layout para 1 imagen: Mediana y contenida */
+.analysis-gallery.grid-1 {
+    grid-template-columns: 1fr;
+    max-width: 500px;
+}
+
+.analysis-gallery.grid-1 .gallery-item {
+    aspect-ratio: auto;
+    max-height: 400px;
+}
+
+/* Layout para 2 imagenes: 50/50 */
+.analysis-gallery.grid-2 {
+    grid-template-columns: 1fr 1fr;
+}
+
+/* Layout para 3 imagenes: 2 arriba, 1 abajo ocupando todo */
+.analysis-gallery.grid-3 {
+    grid-template-columns: 1fr 1fr;
+}
+
+.analysis-gallery.grid-3 .gallery-item:last-child {
+    grid-column: span 2;
+}
+
+/* Layout para 4 imagenes: 2x2 */
+.analysis-gallery.grid-4 {
+    grid-template-columns: 1fr 1fr;
+}
 
 .gallery-item {
     aspect-ratio: 16 / 9;
+    background: rgba(15, 23, 42, 0.6);
     border-radius: 12px;
     overflow: hidden;
     cursor: pointer;
