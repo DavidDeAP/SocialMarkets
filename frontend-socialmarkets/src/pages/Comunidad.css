@@ -609,38 +609,41 @@
     overflow: hidden;
 }
 
-/* Layout para 1 imagen: Mediana y contenida */
+/* Layout para 1 imagen: Más pequeña y contenida */
 .analysis-gallery.grid-1 {
     grid-template-columns: 1fr;
-    max-width: 500px;
+    max-width: 420px;
 }
 
 .analysis-gallery.grid-1 .gallery-item {
     aspect-ratio: auto;
-    max-height: 400px;
+    max-height: 320px;
 }
 
-/* Layout para 2 imagenes: 50/50 */
+/* Layout para 2 imagenes: 50/50 pero limitando ancho total */
 .analysis-gallery.grid-2 {
     grid-template-columns: 1fr 1fr;
+    max-width: 600px;
 }
 
-/* Layout para 3 imagenes: 2 arriba, 1 abajo ocupando todo */
+/* Layout para 3 imagenes */
 .analysis-gallery.grid-3 {
     grid-template-columns: 1fr 1fr;
+    max-width: 600px;
 }
 
 .analysis-gallery.grid-3 .gallery-item:last-child {
     grid-column: span 2;
 }
 
-/* Layout para 4 imagenes: 2x2 */
+/* Layout para 4 imagenes */
 .analysis-gallery.grid-4 {
     grid-template-columns: 1fr 1fr;
+    max-width: 600px;
 }
 
 .gallery-item {
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 16 / 10; /* Un poco más cuadrada para que ocupe menos verticalmente */
     background: rgba(15, 23, 42, 0.6);
     border-radius: 12px;
     overflow: hidden;
