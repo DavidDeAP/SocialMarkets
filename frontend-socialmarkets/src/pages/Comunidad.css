@@ -905,14 +905,30 @@
 }
 
 /* Market Info Row */
-.card-market-info {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+.card-market-info-new {
     background: rgba(15, 23, 42, 0.4);
     border-radius: 16px;
-    padding: 1rem;
+    padding: 1.2rem;
     margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.market-row-top, .market-row-bottom {
+    display: grid;
     gap: 1rem;
+}
+
+.market-row-top {
+    grid-template-columns: 1fr 1fr;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.market-row-bottom {
+    grid-template-columns: repeat(3, 1fr);
 }
 
 .market-item {
@@ -943,7 +959,13 @@
     color: #60a5fa;
 }
 
-.market-value.price {
+.market-value.price-live {
+    color: #10b981;
+    font-weight: 800;
+    text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+.market-value.price-target {
     color: #f8fafc;
 }
 

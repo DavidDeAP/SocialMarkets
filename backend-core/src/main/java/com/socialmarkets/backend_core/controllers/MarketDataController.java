@@ -3,10 +3,17 @@ package com.socialmarkets.backend_core.controllers;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.ResponseEntity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/market")
@@ -14,86 +21,92 @@ import org.springframework.stereotype.Component;
 public class MarketDataController {
 
     private final RestTemplate restTemplate = new RestTemplate();
-    
-    // Caché simple para evitar 429 Too Many Requests
-    private final java.util.Map<String, CachedPrice> priceCache = new java.util.concurrent.ConcurrentHashMap<>();
-    private static final long CACHE_DURATION = 8000; // 8 segundos para asegurar que el intervalo de 10s del front siempre pille dato nuevo
-
-    private static class CachedPrice {
-        String data;
-        long timestamp;
-        CachedPrice(String data) {
-            this.data = data;
-            this.timestamp = System.currentTimeMillis();
-        }
-    }
+    private final Map<String, String> priceCache = new ConcurrentHashMap<>();
+    private final Map<String, Long> cacheTimestamps = new ConcurrentHashMap<>();
+    private static final long CACHE_DURATION = 10000; // 10 segundos
 
     @GetMapping("/search")
     public ResponseEntity<?> searchAssets(@RequestParam String q) {
         try {
-            String url = "https://query1.finance.yahoo.com/v1/finance/search?q=" + q + "&quotesCount=10&newsCount=0";
-            
-            // Yahoo Finance bloquea peticiones sin un User-Agent de navegador
-            org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
-            headers.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
-            headers.set("Accept", "application/json");
-            
-            org.springframework.http.HttpEntity<String> entity = new org.springframework.http.HttpEntity<>(headers);
-            
-            ResponseEntity<String> response = restTemplate.exchange(url, org.springframework.http.HttpMethod.GET, entity, String.class);
-            
-            return ResponseEntity.ok(response.getBody());
+            String url = "https://query2.finance.yahoo.com/v1/finance/search?q=" + q + "&quotesCount=10&newsCount=0";
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36");
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            return restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Error al buscar activos: " + e.getMessage());
+            return ResponseEntity.status(500).body("Error: " + e.getMessage());
         }
     }
 
     @GetMapping("/price")
     public ResponseEntity<?> getPrice(@RequestParam String symbol) {
-        // 1. Verificar caché
-        CachedPrice cached = priceCache.get(symbol);
-        if (cached != null && (System.currentTimeMillis() - cached.timestamp) < CACHE_DURATION) {
-            return ResponseEntity.ok()
-                    .header("Content-Type", "application/json")
-                    .body(cached.data);
+        String data = fetchSinglePrice(symbol);
+        if (data != null) {
+            return ResponseEntity.ok().header("Content-Type", "application/json").body(data);
+        }
+        return ResponseEntity.status(500).body("{\"error\": \"No se pudo obtener el precio\"}");
+    }
+
+    @GetMapping("/prices")
+    public ResponseEntity<?> getPrices(@RequestParam String symbols) {
+        String[] symbolArray = symbols.split(",");
+        
+        // Ejecutar peticiones en paralelo para que sea rápido
+        List<CompletableFuture<Map<String, Object>>> futures = Arrays.stream(symbolArray)
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .map(s -> CompletableFuture.supplyAsync(() -> {
+                String json = fetchSinglePrice(s);
+                Map<String, Object> result = new HashMap<>();
+                if (json != null) {
+                    try {
+                        // Mapeo mínimo para que el front lo entienda (formato quoteResponse)
+                        com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                        com.fasterxml.jackson.databind.JsonNode root = mapper.readTree(json);
+                        com.fasterxml.jackson.databind.JsonNode meta = root.path("chart").path("result").get(0).path("meta");
+                        
+                        result.put("symbol", s);
+                        result.put("regularMarketPrice", meta.path("regularMarketPrice").asDouble());
+                        result.put("currency", meta.path("currency").asText());
+                    } catch (Exception e) {
+                        System.err.println("Error parseando v8 para " + s);
+                    }
+                }
+                return result;
+            }))
+            .collect(Collectors.toList());
+
+        List<Map<String, Object>> results = futures.stream()
+            .map(CompletableFuture::join)
+            .filter(m -> !m.isEmpty())
+            .collect(Collectors.toList());
+
+        Map<String, Object> response = new HashMap<>();
+        Map<String, Object> quoteResponse = new HashMap<>();
+        quoteResponse.put("result", results);
+        response.put("quoteResponse", quoteResponse);
+
+        return ResponseEntity.ok(response);
+    }
+
+    private String fetchSinglePrice(String symbol) {
+        long now = System.currentTimeMillis();
+        if (priceCache.containsKey(symbol) && (now - cacheTimestamps.get(symbol)) < CACHE_DURATION) {
+            return priceCache.get(symbol);
         }
 
         try {
-            // Usamos el endpoint de chart v8 que suele ser más estable
-            String url = "https://query1.finance.yahoo.com/v8/finance/chart/" + symbol + "?interval=1m&range=1d";
+            String url = "https://query2.finance.yahoo.com/v8/finance/chart/" + symbol + "?interval=1m&range=1d";
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36");
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
             
-            org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
-            headers.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
-            headers.set("Accept", "application/json");
-            
-            org.springframework.http.HttpEntity<String> entity = new org.springframework.http.HttpEntity<>(headers);
-            ResponseEntity<String> response = restTemplate.exchange(url, org.springframework.http.HttpMethod.GET, entity, String.class);
-            
-            String body = response.getBody();
-            priceCache.put(symbol, new CachedPrice(body)); // Guardar en caché
-
-            return ResponseEntity.ok()
-                    .header("Content-Type", "application/json")
-                    .body(body);
-        } catch (org.springframework.web.client.HttpClientErrorException.TooManyRequests e) {
-            // FALLBACK PARA CRIPTO si Yahoo falla por 429
-            if (symbol.endsWith("-USD")) {
-                try {
-                    String cryptoSymbol = symbol.replace("-USD", "USDT");
-                    String fallbackUrl = "https://api.binance.com/api/v3/ticker/24hr?symbol=" + cryptoSymbol;
-                    String binanceRes = restTemplate.getForObject(fallbackUrl, String.class);
-                    // Transformar mínimamente para que el frontend lo entienda o devolverlo tal cual
-                    // Por simplicidad, devolvemos un error controlado pero informando que es por límites
-                    return ResponseEntity.status(429).body("{\"error\": \"Límite de Yahoo alcanzado. Intenta de nuevo en 1 minuto.\"}");
-                } catch (Exception ex) {
-                    return ResponseEntity.status(429).body("{\"error\": \"Demasiadas peticiones a Yahoo Finance.\"}");
-                }
-            }
-            return ResponseEntity.status(429).body("{\"error\": \"Demasiadas peticiones. Por favor, espera un momento.\"}");
+            priceCache.put(symbol, response.getBody());
+            cacheTimestamps.put(symbol, now);
+            return response.getBody();
         } catch (Exception e) {
-            System.err.println("Error en proxy de precio para " + symbol + ": " + e.getMessage());
-            return ResponseEntity.status(500).body("{\"error\": \"" + e.getMessage() + "\"}");
+            return null;
         }
     }
 }

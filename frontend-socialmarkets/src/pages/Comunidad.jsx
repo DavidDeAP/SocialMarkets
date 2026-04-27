@@ -11,6 +11,8 @@ import api from '../services/api';
 import './Comunidad.css';
 
 const Comunidad = () => {
+    const [preciosVivos, setPreciosVivos] = useState({});
+    
     const [user, setUser] = useState(null);
     const [cargando, setCargando] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -203,6 +205,48 @@ const Comunidad = () => {
         fetchAnalisis();
     }, [navigate]);
 
+    // Polling de precios para el feed
+    useEffect(() => {
+        if (listaAnalisis.length === 0) return;
+
+        const actualizarPreciosFeed = async () => {
+            const simbolosRaw = listaAnalisis.map(a => a.activo?.nombre).filter(Boolean);
+            const simbolosUnicos = [...new Set(simbolosRaw.map(s => s.trim().toUpperCase()))];
+            
+            if (simbolosUnicos.length === 0) return;
+
+            try {
+                // Usamos una URL limpia
+                const url = `/market/prices?symbols=${simbolosUnicos.join(',')}`;
+                const res = await api.get(url);
+                const data = typeof res.data === 'string' ? JSON.parse(res.data) : res.data;
+                
+                const resultados = data.quoteResponse?.result || data.finance?.result || [];
+                
+                if (resultados.length > 0) {
+                    const nuevosPrecios = {};
+                    resultados.forEach(quote => {
+                        const simbolo = quote.symbol?.toUpperCase();
+                        if (simbolo) {
+                            nuevosPrecios[simbolo] = {
+                                price: quote.regularMarketPrice || quote.price || quote.ask || 0,
+                                currency: quote.currency
+                            };
+                        }
+                    });
+                    setPreciosVivos(prev => ({ ...prev, ...nuevosPrecios }));
+                }
+            } catch (err) {
+                console.error("Error en polling de precios:", err);
+            }
+        };
+
+        actualizarPreciosFeed(); 
+        const interval = setInterval(actualizarPreciosFeed, 10000);
+        return () => clearInterval(interval);
+    }, [listaAnalisis]);
+
+
     if (cargando) return (
         <div className="loading-container">
             <div className="loader"></div>
@@ -291,22 +335,35 @@ const Comunidad = () => {
                                         </div>
                                     </div>
 
-                                    <div className="card-market-info">
-                                        <div className="market-item">
-                                            <label>Activo</label>
-                                            <span className="market-value activo-name">{analisis.activo?.nombre}</span>
+                                    <div className="card-market-info-new">
+                                        <div className="market-row-top">
+                                            <div className="market-item">
+                                                <label>Activo</label>
+                                                <span className="market-value activo-name">{analisis.activo?.nombre}</span>
+                                            </div>
+                                            <div className="market-item">
+                                                <label>Vencimiento</label>
+                                                <span className="market-value date">{formatFecha(analisis.fechaVencimiento)}</span>
+                                            </div>
                                         </div>
-                                        <div className="market-item">
-                                            <label>Precio Entrada</label>
-                                            <span className="market-value price-entry">${analisis.precioEntrada?.toLocaleString()}</span>
-                                        </div>
-                                        <div className="market-item">
-                                            <label>Precio Objetivo</label>
-                                            <span className="market-value price">${analisis.precioObjetivo?.toLocaleString()}</span>
-                                        </div>
-                                        <div className="market-item">
-                                            <label>Vencimiento</label>
-                                            <span className="market-value date">{formatFecha(analisis.fechaVencimiento)}</span>
+                                        
+                                        <div className="market-row-bottom">
+                                            <div className="market-item">
+                                                <label>Entrada</label>
+                                                <span className="market-value price-entry">${analisis.precioEntrada?.toLocaleString()}</span>
+                                            </div>
+                                            <div className="market-item">
+                                                <label>Actual</label>
+                                                <span className="market-value price-live">
+                                                    {preciosVivos[analisis.activo?.nombre?.toUpperCase()] 
+                                                        ? `$${preciosVivos[analisis.activo?.nombre?.toUpperCase()].price.toLocaleString()}`
+                                                        : 'Cargando...'}
+                                                </span>
+                                            </div>
+                                            <div className="market-item">
+                                                <label>Objetivo</label>
+                                                <span className="market-value price-target">${analisis.precioObjetivo?.toLocaleString()}</span>
+                                            </div>
                                         </div>
                                     </div>
 
