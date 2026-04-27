@@ -274,17 +274,29 @@
     left: 4px;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 10px;
     margin-top: 4px;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    padding: 2px 8px;
-    border-radius: 6px;
+    padding: 3px 10px;
+    border-radius: 8px;
     width: fit-content;
     animation: fadeIn 0.3s ease;
     z-index: 10;
+}
+
+.sentiment-text {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.sentiment-percentage {
+    font-weight: 800;
+    padding-left: 8px;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .sentiment-indicator.bullish {

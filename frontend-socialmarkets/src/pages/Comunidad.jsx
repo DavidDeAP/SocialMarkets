@@ -539,11 +539,19 @@ const Comunidad = () => {
                                     </div>
                                     {precioObjetivo && precioActual?.price && (
                                         <div className={`sentiment-indicator ${parseFloat(precioObjetivo) >= precioActual.price ? 'bullish' : 'bearish'}`}>
-                                            {parseFloat(precioObjetivo) >= precioActual.price ? (
-                                                <><FiArrowUpRight /> Análisis Alcista</>
-                                            ) : (
-                                                <><FiArrowDownRight /> Análisis Bajista</>
-                                            )}
+                                            <div className="sentiment-text">
+                                                {parseFloat(precioObjetivo) >= precioActual.price ? (
+                                                    <><FiArrowUpRight /> Análisis Alcista</>
+                                                ) : (
+                                                    <><FiArrowDownRight /> Análisis Bajista</>
+                                                )}
+                                            </div>
+                                            <div className="sentiment-percentage">
+                                                {(() => {
+                                                    const diff = ((parseFloat(precioObjetivo) - precioActual.price) / precioActual.price) * 100;
+                                                    return `${diff >= 0 ? '+' : ''}${diff.toFixed(2)}%`;
+                                                })()}
+                                            </div>
                                         </div>
                                     )}
                                 </div>
