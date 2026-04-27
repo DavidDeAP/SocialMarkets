@@ -50,9 +50,6 @@ public class Usuario {
     @Column(name = "indice_acierto")
     private Double indiceAcierto = 0.0;
 
-    @Column(name = "numero_predicciones")
-    private Integer numeroPredicciones = 0;
-
     @Column(columnDefinition = "TEXT")
     private String biografia;
 
@@ -86,9 +83,15 @@ public class Usuario {
         return (seguidores != null) ? seguidores.size() : 0;
     }
     
+    @JsonProperty("numeroPredicciones")
+    public int getNumeroPredicciones() {
+        return (analisis != null) ? analisis.size() : 0;
+    }
+
     @JsonProperty("nivel")
     public String getNivel() {
-        if (this.numeroPredicciones < 10) return "Analista Novato";
+        int preds = getNumeroPredicciones();
+        if (preds < 10) return "Analista Novato";
         if (this.indiceAcierto > 75) return "Analista Senior";
         return "Analista Pro";
     }

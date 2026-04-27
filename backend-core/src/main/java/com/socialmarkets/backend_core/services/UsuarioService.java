@@ -39,7 +39,6 @@ public class UsuarioService {
         usuario.setHashClave(passwordEncoder.encode(usuario.getHashClave()));
         usuario.setFechaRegistro(LocalDateTime.now());
         usuario.setIndiceAcierto(0.0);
-        usuario.setNumeroPredicciones(0);
         return usuarioRepository.save(usuario);
     }
     

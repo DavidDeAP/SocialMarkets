@@ -205,7 +205,7 @@ const Comunidad = () => {
         fetchAnalisis();
     }, [navigate]);
 
-    // Polling de precios para el feed
+    // Polling de precios para el feed (Cada 10 segundos)
     useEffect(() => {
         if (listaAnalisis.length === 0) return;
 
@@ -216,7 +216,7 @@ const Comunidad = () => {
             if (simbolosUnicos.length === 0) return;
 
             try {
-                // Usamos una URL limpia
+                console.log(`[${new Date().toLocaleTimeString()}] Actualizando precios del feed...`);
                 const url = `/market/prices?symbols=${simbolosUnicos.join(',')}`;
                 const res = await api.get(url);
                 const data = typeof res.data === 'string' ? JSON.parse(res.data) : res.data;
@@ -230,7 +230,8 @@ const Comunidad = () => {
                         if (simbolo) {
                             nuevosPrecios[simbolo] = {
                                 price: quote.regularMarketPrice || quote.price || quote.ask || 0,
-                                currency: quote.currency
+                                currency: quote.currency,
+                                lastUpdate: new Date().getTime()
                             };
                         }
                     });

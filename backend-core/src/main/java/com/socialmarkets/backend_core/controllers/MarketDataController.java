@@ -23,7 +23,7 @@ public class MarketDataController {
     private final RestTemplate restTemplate = new RestTemplate();
     private final Map<String, String> priceCache = new ConcurrentHashMap<>();
     private final Map<String, Long> cacheTimestamps = new ConcurrentHashMap<>();
-    private static final long CACHE_DURATION = 10000; // 10 segundos
+    private static final long CACHE_DURATION = 8000; // 8 segundos para que el front de 10s siempre pille dato fresco
 
     @GetMapping("/search")
     public ResponseEntity<?> searchAssets(@RequestParam String q) {

@@ -64,10 +64,6 @@ public class AnalisisService {
         analisis.setEstado(EstadoAnalisis.PENDIENTE);
         analisis.setFechaCreacion(java.time.LocalDateTime.now());
         
-        // 5. Incrementar número de predicciones del usuario
-        usuario.setNumeroPredicciones(usuario.getNumeroPredicciones() + 1);
-        usuarioRepository.save(usuario);
-        
         return analisisRepository.save(analisis);
     }
 
