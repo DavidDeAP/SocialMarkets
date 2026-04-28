@@ -390,9 +390,15 @@ const Comunidad = () => {
                                             <div className="market-item">
                                                 <label>Rendimiento</label>
                                                 <span className={`market-value price-performance ${statusClass}`}>
-                                                    {precioActual && analisis.precioEntrada
+                                                    {precioActual && analisis.precioEntrada && analisis.precioObjetivo
                                                         ? (() => {
-                                                            const perf = ((precioActual - analisis.precioEntrada) / analisis.precioEntrada * 100);
+                                                            const isBullish = analisis.precioObjetivo > analisis.precioEntrada;
+                                                            let perf;
+                                                            if (isBullish) {
+                                                                perf = ((precioActual - analisis.precioEntrada) / analisis.precioEntrada * 100);
+                                                            } else {
+                                                                perf = ((analisis.precioEntrada - precioActual) / analisis.precioEntrada * 100);
+                                                            }
                                                             return `${perf >= 0 ? '+' : ''}${perf.toFixed(2)}%`;
                                                           })()
                                                         : '0.00%'}
