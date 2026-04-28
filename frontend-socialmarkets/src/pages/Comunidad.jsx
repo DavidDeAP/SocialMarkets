@@ -4,7 +4,7 @@ import {
     FiPlus, FiMessageSquare, FiImage, FiTarget,
     FiCalendar, FiBarChart2, FiX, FiActivity, FiDollarSign,
     FiXCircle, FiCheckCircle, FiArrowUpRight, FiArrowDownRight,
-    FiChevronLeft, FiChevronRight, FiHeart
+    FiChevronLeft, FiChevronRight, FiHeart, FiFilter
 } from 'react-icons/fi';
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
@@ -29,6 +29,11 @@ const Comunidad = () => {
     const [publicando, setPublicando] = useState(false);
     const [cargandoFeed, setCargandoFeed] = useState(true);
     const [selectedFiles, setSelectedFiles] = useState([]);
+    
+    // Estados de filtrado
+    const [filtroActivo, setFiltroActivo] = useState('recientes');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [showFilters, setShowFilters] = useState(false);
 
     // Estado para el Lightbox de imágenes
     const [lightbox, setLightbox] = useState({
@@ -352,6 +357,39 @@ const Comunidad = () => {
         }
     };
 
+    const obtenerAnalisisFiltrados = () => {
+        let filtrados = [...listaAnalisis];
+
+        if (searchQuery.trim()) {
+            const q = searchQuery.toLowerCase();
+            filtrados = filtrados.filter(a => 
+                a.contenido?.toLowerCase().includes(q) || 
+                a.activo?.nombre?.toLowerCase().includes(q) ||
+                a.usuario?.usuario?.toLowerCase().includes(q)
+            );
+        }
+
+        switch (filtroActivo) {
+            case 'likes':
+                filtrados.sort((a, b) => (b.votos?.length || 0) - (a.votos?.length || 0));
+                break;
+            case 'preds':
+                filtrados.sort((a, b) => (b.usuario?.numeroPredicciones || 0) - (a.usuario?.numeroPredicciones || 0));
+                break;
+            case 'acierto':
+                filtrados.sort((a, b) => (b.usuario?.indiceAcierto || 0) - (a.usuario?.indiceAcierto || 0));
+                break;
+            case 'recientes':
+            default:
+                filtrados.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
+                break;
+        }
+
+        return filtrados;
+    };
+
+    const analisisFiltrados = obtenerAnalisisFiltrados();
+
     return (
         <div className="dashboard-layout">
             <Sidebar />
@@ -360,7 +398,52 @@ const Comunidad = () => {
 
                 <main className="comunidad-container">
                     <header className="comunidad-header">
-                        <h1 className="text-neon-glow">Comunidad</h1>
+                        <div className="header-top-row">
+                            <h1 className="text-neon-glow">Comunidad</h1>
+                        </div>
+
+                        <div className={`filters-panel ${showFilters ? 'show' : ''}`}>
+                            <div className="search-bar-modern">
+                                <FiMessageSquare />
+                                <input 
+                                    type="text" 
+                                    placeholder="Buscar por activo, analista o palabra clave..." 
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+                                {searchQuery && <FiX className="clear-search" onClick={() => setSearchQuery('')} />}
+                            </div>
+
+                            <div className="filter-options">
+                                <span className="filter-label">Ordenar por:</span>
+                                <div className="filter-chips">
+                                    <button 
+                                        className={filtroActivo === 'recientes' ? 'active' : ''} 
+                                        onClick={() => setFiltroActivo('recientes')}
+                                    >
+                                        Más Recientes
+                                    </button>
+                                    <button 
+                                        className={filtroActivo === 'likes' ? 'active' : ''} 
+                                        onClick={() => setFiltroActivo('likes')}
+                                    >
+                                        Más Votados
+                                    </button>
+                                    <button 
+                                        className={filtroActivo === 'acierto' ? 'active' : ''} 
+                                        onClick={() => setFiltroActivo('acierto')}
+                                    >
+                                        Mayor % Acierto
+                                    </button>
+                                    <button 
+                                        className={filtroActivo === 'preds' ? 'active' : ''} 
+                                        onClick={() => setFiltroActivo('preds')}
+                                    >
+                                        Más Activos
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </header>
 
                     <div className="feed-analisis">
@@ -369,13 +452,13 @@ const Comunidad = () => {
                                 <div className="loader-small"></div>
                                 <p>Cargando análisis...</p>
                             </div>
-                        ) : listaAnalisis.length === 0 ? (
+                        ) : analisisFiltrados.length === 0 ? (
                             <div className="placeholder-feed">
                                 <FiMessageSquare size={40} />
-                                <p>Aún no hay análisis. ¡Sé el primero en publicar!</p>
+                                <p>{searchQuery ? 'No se encontraron resultados para tu búsqueda.' : 'Aún no hay análisis. ¡Sé el primero en publicar!'}</p>
                             </div>
                         ) : (
-                            listaAnalisis.map((analisis) => {
+                            analisisFiltrados.map((analisis) => {
                                 const precioActual = analisis.estado === 'PENDIENTE' 
                                     ? preciosVivos[analisis.activo?.nombre?.toUpperCase()]?.price 
                                     : analisis.precioCierre;
@@ -523,9 +606,20 @@ const Comunidad = () => {
                         )}
                     </div>
 
-                    <div className="action-bar-comunidad">
-                        <button className="btn-publish" onClick={() => setShowModal(true)}>
-                            <FiPlus /> Publicar Nuevo Análisis
+                    <div className="action-bar-comunidad-fab">
+                        <button 
+                            className={`btn-fab-round filter ${showFilters ? 'active' : ''}`}
+                            onClick={() => setShowFilters(!showFilters)}
+                            title="Filtrar análisis"
+                        >
+                            <FiFilter />
+                        </button>
+                        <button 
+                            className="btn-fab-round publish" 
+                            onClick={() => setShowModal(true)}
+                            title="Publicar Nuevo Análisis"
+                        >
+                            <FiPlus />
                         </button>
                     </div>
                 </main>
