@@ -155,6 +155,13 @@ public class AnalisisService {
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         
         List<Analisis> todos = analisisRepository.findByUsuario(usuario);
+        
+        // Ordenar por fecha descendente para "Actividad Reciente"
+        List<Analisis> recientes = todos.stream()
+                .sorted((a, b) -> b.getFechaCreacion().compareTo(a.getFechaCreacion()))
+                .limit(10)
+                .collect(Collectors.toList());
+
         List<Analisis> activos = todos.stream()
                 .filter(a -> a.getEstado() == EstadoAnalisis.PENDIENTE)
                 .collect(Collectors.toList());
@@ -162,7 +169,8 @@ public class AnalisisService {
         java.util.Map<String, Object> resumen = new java.util.HashMap<>();
         resumen.put("total", todos.size());
         resumen.put("indiceAcierto", usuario.getIndiceAcierto());
-        resumen.put("activos", activos);
+        resumen.put("recientes", recientes);
+        resumen.put("activos", activos); // Mantenemos activos para el conteo live del header
         
         LocalDateTime inicioMes = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0);
         long acertadosMes = todos.stream()

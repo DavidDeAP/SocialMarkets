@@ -262,6 +262,254 @@
   animation-delay: var(--delay);
 }
 
+.section-title-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.section-title-bar h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.2rem;
+  color: var(--text-main);
+}
+
+.activity-feed-modern {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.activity-row-card {
+  background: rgba(17, 24, 39, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 1.4rem 2.2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 0.8rem;
+}
+
+.activity-row-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 5px;
+  height: 100%;
+  opacity: 0.8;
+}
+
+.activity-row-card.status-winning {
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.1) 0%, rgba(17, 24, 39, 0.7) 100%);
+  border-left: 1px solid rgba(16, 185, 129, 0.4);
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.05);
+}
+
+.activity-row-card.status-winning::before {
+  background: var(--success);
+  box-shadow: 0 0 20px var(--success);
+}
+
+.activity-row-card.status-losing {
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.1) 0%, rgba(17, 24, 39, 0.7) 100%);
+  border-left: 1px solid rgba(239, 68, 68, 0.4);
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.05);
+}
+
+.activity-row-card.status-losing::before {
+  background: var(--danger);
+  box-shadow: 0 0 20px var(--danger);
+}
+
+.activity-row-card:hover {
+  transform: translateX(8px) scale(1.005);
+  background: rgba(17, 24, 39, 0.85);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.activity-row-card.status-winning:hover {
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.15) 0%, rgba(17, 24, 39, 0.9) 100%);
+}
+
+.activity-row-card.status-losing:hover {
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.15) 0%, rgba(17, 24, 39, 0.9) 100%);
+}
+
+.activity-main-info {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+  flex: 1;
+}
+
+.asset-info-dash {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 140px;
+}
+
+.asset-dash-name {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.dash-tags-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.order-badge-dash {
+  font-size: 0.65rem;
+  font-weight: 900;
+  padding: 3px 10px;
+  border-radius: 6px;
+  text-transform: uppercase;
+}
+
+.order-badge-dash.long {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.order-badge-dash.short {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.prices-row-dash {
+  display: flex;
+  gap: 3.5rem;
+  margin-left: 2rem;
+}
+
+.price-item-dash {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.price-item-dash label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
+
+.price-item-dash span {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.price-item-dash.highlight .live-val {
+  color: white;
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+.expiry-dash-tag {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.expiry-dash-tag svg {
+  color: var(--primary);
+  font-size: 0.75rem;
+}
+
+.activity-performance-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  min-width: 140px;
+}
+
+.perf-value-dash {
+  font-size: 1.4rem;
+  font-weight: 900;
+  font-family: var(--font-mono);
+  letter-spacing: -0.5px;
+}
+
+.perf-value-dash.plus {
+  color: #10b981;
+  text-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+}
+
+.perf-value-dash.minus {
+  color: #ef4444;
+  text-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+}
+
+.status-dash-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 100px;
+  letter-spacing: 0.5px;
+}
+
+.status-dash-badge.pendiente {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.status-dash-badge.acertado {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.status-dash-badge.fallido {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+@keyframes pulse-simple {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.icon-pulse {
+  animation: pulse-simple 1.5s infinite;
+}
+
+.activity-row-card.status-winning .asset-dash-name {
+  color: #d1fae5;
+}
+
+.activity-row-card.status-losing .asset-dash-name {
+  color: #fee2e2;
+}
+
 .table-container-glass {
   background: var(--bg-card);
   border: 1px solid var(--border-glass);

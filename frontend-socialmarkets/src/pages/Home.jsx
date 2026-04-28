@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-    FiTrendingUp, FiTarget, FiClock, FiPlus, FiArrowUpRight, FiActivity 
+    FiTrendingUp, FiTarget, FiClock, FiPlus, FiArrowUpRight, FiActivity, FiXCircle, FiCheckCircle, FiCalendar 
 } from 'react-icons/fi';
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
@@ -15,6 +15,27 @@ const Home = () => {
     const [cargando, setCargando] = useState(true);
     const navigate = useNavigate();
 
+    // Helper para calcular rendimiento
+    const calculatePerformance = (entry, current) => {
+        if (!entry || !current) return 0;
+        return (((current - entry) / entry) * 100).toFixed(2);
+    };
+
+    const fetchPrices = useCallback(async (activos) => {
+        if (!activos || activos.length === 0) return;
+        try {
+            const symbols = [...new Set(activos.map(a => a.activo.nombre.toUpperCase()))].join(',');
+            const pRes = await api.get(`/market/prices?symbols=${symbols}`);
+            const mapPrecios = {};
+            pRes.data.quoteResponse.result.forEach(q => {
+                mapPrecios[q.symbol] = q.regularMarketPrice;
+            });
+            setPreciosVivos(mapPrecios);
+        } catch (err) {
+            console.error("Error actualizando precios:", err);
+        }
+    }, []);
+
     useEffect(() => {
         const fetchDatos = async () => {
             try {
@@ -25,15 +46,12 @@ const Home = () => {
                 setUser(perfilRes.data);
                 setResumen(resumenRes.data);
 
-                // Si hay activos, pedir precios
-                if (resumenRes.data.activos?.length > 0) {
-                    const symbols = [...new Set(resumenRes.data.activos.map(a => a.activo.nombre.toUpperCase()))].join(',');
-                    const pRes = await api.get(`/market/prices?symbols=${symbols}`);
-                    const mapPrecios = {};
-                    pRes.data.quoteResponse.result.forEach(q => {
-                        mapPrecios[q.symbol] = q.regularMarketPrice;
-                    });
-                    setPreciosVivos(mapPrecios);
+                // Primera carga de precios
+                const activosParaPrecio = resumenRes.data.recientes
+                    ?.filter(a => a.estado === 'PENDIENTE') || [];
+                
+                if (activosParaPrecio.length > 0) {
+                    await fetchPrices(activosParaPrecio);
                 }
             } catch (err) {
                 console.error("Error al obtener datos:", err);
@@ -43,9 +61,18 @@ const Home = () => {
             }
         };
         fetchDatos();
-    }, [navigate]);
 
-    // Calcular cuantas van ganando/perdiendo en vivo
+        // Polling de precios cada 30 segundos
+        const interval = setInterval(() => {
+            if (resumen?.recientes) {
+                const activosParaPrecio = resumen.recientes.filter(a => a.estado === 'PENDIENTE');
+                fetchPrices(activosParaPrecio);
+            }
+        }, 30000);
+
+        return () => clearInterval(interval);
+    }, [navigate, fetchPrices, resumen?.recientes]);
+
     const calculateLiveStats = () => {
         if (!resumen || !resumen.activos) return { wins: 0, losses: 0 };
         let wins = 0;
@@ -54,8 +81,15 @@ const Home = () => {
             const precioActual = preciosVivos[a.activo.nombre.toUpperCase()];
             if (precioActual) {
                 const isBullish = a.precioObjetivo > a.precioEntrada;
-                if ((isBullish && precioActual >= a.precioEntrada) || (!isBullish && precioActual <= a.precioEntrada)) {
-                    wins++;
+                const perf = parseFloat(calculatePerformance(a.precioEntrada, precioActual));
+                if ((isBullish && perf >= 0) || (!isBullish && perf >= 0)) {
+                    // En mi sistema, el rendimiento es relativo a la direccion.
+                    // Pero para simplificar, si el precio actual favorece la direccion:
+                    if (isBullish ? precioActual >= a.precioEntrada : precioActual <= a.precioEntrada) {
+                        wins++;
+                    } else {
+                        losses++;
+                    }
                 } else {
                     losses++;
                 }
@@ -160,52 +194,86 @@ const Home = () => {
                             <h3><FiClock /> Actividad Reciente</h3>
                         </div>
                         
-                        <div className="table-container-glass">
-                            <table className="custom-table">
-                               <thead>
-                                   <tr>
-                                       <th>Activo</th>
-                                       <th>Dirección</th>
-                                       <th>Entrada</th>
-                                       <th>Objetivo</th>
-                                       <th>Estado</th>
-                                   </tr>
-                               </thead>
-                               <tbody>
-                                    {(resumen?.activos || []).slice(0, 5).map((a) => {
-                                        const precioActual = preciosVivos[a.activo.nombre.toUpperCase()];
-                                        const isWinning = precioActual ? (
-                                            (a.precioObjetivo > a.precioEntrada && precioActual >= a.precioEntrada) ||
-                                            (a.precioObjetivo < a.precioEntrada && precioActual <= a.precioEntrada)
-                                        ) : false;
+                        <div className="activity-feed-modern">
+                            {(resumen?.recientes || []).map((a) => {
+                                const isPending = a.estado === 'PENDIENTE';
+                                const precioActual = preciosVivos[a.activo.nombre.toUpperCase()];
+                                const precioComparar = isPending ? precioActual : a.precioCierre;
+                                
+                                const isBullish = a.precioObjetivo > a.precioEntrada;
+                                const perf = precioComparar ? (
+                                    isBullish 
+                                        ? calculatePerformance(a.precioEntrada, precioComparar)
+                                        : calculatePerformance(precioComparar, a.precioEntrada)
+                                ) : 0;
 
-                                        return (
-                                            <tr key={a.identificador} className="row-hover">
-                                                <td><div className="asset-tag">{a.activo.nombre}</div></td>
-                                                <td>
-                                                    <span className={`order-badge ${a.precioObjetivo > a.precioEntrada ? 'long' : 'short'}`}>
-                                                        {a.precioObjetivo > a.precioEntrada ? 'LONG' : 'SHORT'}
+                                let statusClass = "";
+                                if (isPending) {
+                                    statusClass = parseFloat(perf) >= 0 ? "status-winning" : "status-losing";
+                                } else {
+                                    statusClass = a.estado === 'ACERTADO' ? "status-winning" : "status-losing";
+                                }
+
+                                return (
+                                    <div key={a.identificador} className={`activity-row-card ${statusClass}`}>
+                                        <div className="activity-main-info">
+                                            <div className="asset-info-dash">
+                                                <span className="asset-dash-name">{a.activo.nombre}</span>
+                                                <div className="dash-tags-row">
+                                                    <span className={`order-badge-dash ${isBullish ? 'long' : 'short'}`}>
+                                                        {isBullish ? 'COMPRA' : 'VENTA'}
                                                     </span>
-                                                </td>
-                                                <td className="mono">${a.precioEntrada?.toLocaleString()}</td>
-                                                <td className="mono green-text">${a.precioObjetivo?.toLocaleString()}</td>
-                                                <td>
-                                                    <div className={`status-pill ${isWinning ? 'done' : 'waiting'}`}>
-                                                        {isWinning ? 'Ganando' : 'Perdiendo'}
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                    {(!resumen?.activos || resumen?.activos?.length === 0) && (
-                                        <tr>
-                                            <td colSpan="5" style={{textAlign: 'center', padding: '2rem', color: '#94a3b8'}}>
-                                                No tienes proyecciones activas. ¡Publica una!
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
+                                                    <span className="expiry-dash-tag">
+                                                        <FiCalendar /> {new Date(a.fechaVencimiento).toLocaleDateString()}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="prices-row-dash">
+                                                <div className="price-item-dash">
+                                                    <label>Entrada</label>
+                                                    <span>${a.precioEntrada?.toLocaleString()}</span>
+                                                </div>
+                                                
+                                                <div className="price-item-dash highlight">
+                                                    <label>{isPending ? 'Actual' : 'Cierre'}</label>
+                                                    <span className="live-val">
+                                                        {isPending 
+                                                            ? (precioActual ? `$${precioActual.toLocaleString()}` : '---')
+                                                            : `$${a.precioCierre?.toLocaleString()}`}
+                                                    </span>
+                                                </div>
+
+                                                <div className="price-item-dash">
+                                                    <label>Objetivo</label>
+                                                    <span>${a.precioObjetivo?.toLocaleString()}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="activity-performance-section">
+                                            <div className={`perf-value-dash ${parseFloat(perf) >= 0 ? 'plus' : 'minus'}`}>
+                                                {parseFloat(perf) >= 0 ? '+' : ''}{perf}%
+                                            </div>
+                                            <div className={`status-dash-badge ${a.estado.toLowerCase()}`}>
+                                                {a.estado === 'PENDIENTE' ? (
+                                                    <><FiActivity className="icon-pulse" /> ACTIVA</>
+                                                ) : a.estado === 'ACERTADO' ? (
+                                                    <><FiCheckCircle /> ACERTADA</>
+                                                ) : (
+                                                    <><FiXCircle /> FALLIDA</>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                            
+                            {(!resumen?.recientes || resumen?.recientes.length === 0) && (
+                                <div className="no-activity-message">
+                                    Todavía no has publicado ningún análisis.
+                                </div>
+                            )}
                         </div>
                     </section>
                 </main>
