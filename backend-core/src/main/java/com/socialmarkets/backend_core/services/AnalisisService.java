@@ -103,17 +103,19 @@ public class AnalisisService {
                         
                         if ((isBullish && precioActual >= a.getPrecioObjetivo()) || 
                             (!isBullish && precioActual <= a.getPrecioObjetivo())) {
-                            a.setEstado(EstadoAnalisis.ACERTADO);
-                            a.setPrecioCierre(precioActual);
-                            cerrado = true;
-                        }
-                    }
-
-                    if (!cerrado && a.getFechaVencimiento().isBefore(ahora)) {
-                        a.setEstado(EstadoAnalisis.FALLIDO);
-                        a.setPrecioCierre(precioActual != null ? precioActual : a.getPrecioEntrada());
+                        a.setEstado(EstadoAnalisis.ACERTADO);
+                        a.setPrecioCierre(precioActual);
+                        a.setFechaCierre(ahora);
                         cerrado = true;
                     }
+                }
+
+                if (!cerrado && a.getFechaVencimiento().isBefore(ahora)) {
+                    a.setEstado(EstadoAnalisis.FALLIDO);
+                    a.setPrecioCierre(precioActual != null ? precioActual : a.getPrecioEntrada());
+                    a.setFechaCierre(ahora);
+                    cerrado = true;
+                }
 
                     if (cerrado) {
                         analisisRepository.save(a);
@@ -131,14 +133,36 @@ public class AnalisisService {
     @Transactional
     public void actualizarEstadisticasUsuario(Usuario usuario) {
         List<Analisis> todos = analisisRepository.findByUsuario(usuario);
-        long cerrados = todos.stream().filter(a -> a.getEstado() != EstadoAnalisis.PENDIENTE).count();
-        if (cerrados == 0) {
+        
+        // 1. Índice de Acierto Total
+        long cerradosTotales = todos.stream().filter(a -> a.getEstado() != EstadoAnalisis.PENDIENTE).count();
+        if (cerradosTotales == 0) {
             usuario.setIndiceAcierto(0.0);
         } else {
-            long acertados = todos.stream().filter(a -> a.getEstado() == EstadoAnalisis.ACERTADO).count();
-            double indice = (double) acertados / cerrados * 100.0;
-            usuario.setIndiceAcierto(indice);
+            long acertadosTotales = todos.stream().filter(a -> a.getEstado() == EstadoAnalisis.ACERTADO).count();
+            usuario.setIndiceAcierto((double) acertadosTotales / cerradosTotales * 100.0);
         }
+
+        // 2. Rendimiento Mensual (Diferencia entre hoy y hace 30 días)
+        // Calculamos el índice que tenía hace 30 días
+        LocalDateTime haceUnMes = LocalDateTime.now().minusDays(30);
+        List<Analisis> cerradosHaceUnMes = todos.stream()
+                .filter(a -> a.getEstado() != EstadoAnalisis.PENDIENTE)
+                .filter(a -> a.getFechaCierre() != null && a.getFechaCierre().isBefore(haceUnMes))
+                .collect(Collectors.toList());
+
+        double indiceHaceUnMes = 0.0;
+        if (!cerradosHaceUnMes.isEmpty()) {
+            long acertadosHaceUnMes = cerradosHaceUnMes.stream()
+                    .filter(a -> a.getEstado() == EstadoAnalisis.ACERTADO)
+                    .count();
+            indiceHaceUnMes = (double) acertadosHaceUnMes / cerradosHaceUnMes.size() * 100.0;
+        }
+
+        // El rendimiento es la ganancia de índice en este periodo
+        // Si es nuevo (indiceHaceUnMes = 0), el rendimiento es su índice actual completo
+        usuario.setRendimientoMes(usuario.getIndiceAcierto() - indiceHaceUnMes);
+
         usuarioRepository.save(usuario);
     }
 

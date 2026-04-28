@@ -50,6 +50,9 @@ public class Usuario {
     @Column(name = "indice_acierto")
     private Double indiceAcierto = 0.0;
 
+    @Column(name = "rendimiento_mes")
+    private Double rendimientoMes = 0.0;
+
     @Column(columnDefinition = "TEXT")
     private String biografia;
 

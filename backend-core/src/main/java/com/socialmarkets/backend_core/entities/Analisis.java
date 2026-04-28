@@ -54,6 +54,9 @@ public class Analisis {
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;
 
+    @Column(name = "fecha_cierre")
+    private LocalDateTime fechaCierre;
+
     @ElementCollection
     @CollectionTable(name = "analisis_imagenes", joinColumns = @JoinColumn(name = "id_analisis"))
     @Column(name = "url_imagen")
