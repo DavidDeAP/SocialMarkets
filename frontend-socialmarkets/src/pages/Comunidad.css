@@ -1,5 +1,5 @@
 .comunidad-container {
-    padding: 2rem;
+    padding: 1rem 2rem;
     height: calc(100vh - 70px);
     /* Ajustar según altura de Topbar */
     display: flex;
@@ -9,19 +9,17 @@
 
 .comunidad-header h1 {
     font-size: 2rem;
-    margin-bottom: 0.5rem;
-    color: white;
-}
-
-.comunidad-header p {
-    color: #94a3b8;
     margin-bottom: 2rem;
+    /* Aumentado de 1.5rem a 2rem para alejarlo del feed */
+    color: white;
 }
 
 /* Espacio para el feed */
 .feed-analisis {
     flex: 1;
     overflow-y: auto;
+    padding-top: 10px;
+    /* Espacio extra para que la animación hover no toque el título */
     padding-bottom: 120px;
     /* Más espacio para que no tape el botón */
     display: flex;
@@ -836,7 +834,7 @@
     background: rgba(30, 41, 59, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 24px;
-    padding: 1.5rem;
+    padding: 1.2rem;
     transition: all 0.3s ease;
     animation: slideUp 0.5s ease-out;
 }
@@ -850,34 +848,34 @@
 
 /* Estados de predicción */
 .analisis-card.status-winning {
-    border-color: rgba(16, 185, 129, 0.4);
-    background: rgba(16, 185, 129, 0.08);
-    box-shadow: inset 0 0 20px rgba(16, 185, 129, 0.05);
+    border-color: rgba(16, 185, 129, 0.5);
+    background: rgba(16, 185, 129, 0.15);
+    box-shadow: inset 0 0 20px rgba(16, 185, 129, 0.08);
 }
 
 .analisis-card.status-winning:hover {
-    border-color: rgba(16, 185, 129, 0.6);
-    background: rgba(16, 185, 129, 0.12);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 0 25px rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.7);
+    background: rgba(16, 185, 129, 0.22);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 0 25px rgba(16, 185, 129, 0.15);
 }
 
 .analisis-card.status-losing {
-    border-color: rgba(239, 68, 68, 0.4);
-    background: rgba(239, 68, 68, 0.08);
-    box-shadow: inset 0 0 20px rgba(239, 68, 68, 0.05);
+    border-color: rgba(239, 68, 68, 0.5);
+    background: rgba(239, 68, 68, 0.15);
+    box-shadow: inset 0 0 20px rgba(239, 68, 68, 0.08);
 }
 
 .analisis-card.status-losing:hover {
-    border-color: rgba(239, 68, 68, 0.6);
-    background: rgba(239, 68, 68, 0.12);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 0 25px rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.7);
+    background: rgba(239, 68, 68, 0.22);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 0 25px rgba(239, 68, 68, 0.15);
 }
 
 .card-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.2rem;
 }
 
 .user-info-section {
@@ -901,8 +899,8 @@
 }
 
 .user-avatar-small {
-    width: 48px;
-    height: 48px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid rgba(99, 102, 241, 0.4);
@@ -994,11 +992,11 @@
 .card-market-info-new {
     background: rgba(15, 23, 42, 0.4);
     border-radius: 16px;
-    padding: 1.2rem;
-    margin-bottom: 1.5rem;
+    padding: 1rem;
+    margin-bottom: 1.2rem;
     display: flex;
     flex-direction: column;
-    gap: 1.2rem;
+    gap: 1rem;
     border: 1px solid rgba(255, 255, 255, 0.03);
 }
 
@@ -1010,7 +1008,7 @@
 
 .market-row-top {
     grid-template-columns: 1fr 1fr;
-    padding-bottom: 1rem;
+    padding-bottom: 0.8rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
@@ -1062,7 +1060,7 @@
 .market-value {
     font-weight: 700;
     color: white;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
 }
 
 .market-value.activo-name {
@@ -1087,59 +1085,47 @@
 .analysis-text {
     color: #cbd5e1;
     line-height: 1.6;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.2rem;
     white-space: pre-wrap;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
 }
 
 .analysis-gallery {
-    display: grid;
-    gap: 10px;
+    display: flex;
+    gap: 12px;
     margin-bottom: 1.5rem;
-    border-radius: 16px;
-    overflow: hidden;
+    overflow-x: auto;
+    padding: 4px 4px 12px 4px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(99, 102, 241, 0.4) transparent;
 }
 
-/* Layout para 1 imagen: Más pequeña y contenida */
-.analysis-gallery.grid-1 {
-    grid-template-columns: 1fr;
-    max-width: 420px;
+.analysis-gallery::-webkit-scrollbar {
+    height: 6px;
 }
 
-.analysis-gallery.grid-1 .gallery-item {
-    aspect-ratio: auto;
-    max-height: 320px;
-}
-
-/* Layout para 2 imagenes: 50/50 pero limitando ancho total */
-.analysis-gallery.grid-2 {
-    grid-template-columns: 1fr 1fr;
-    max-width: 600px;
-}
-
-/* Layout para 3 imagenes */
-.analysis-gallery.grid-3 {
-    grid-template-columns: 1fr 1fr;
-    max-width: 600px;
-}
-
-.analysis-gallery.grid-3 .gallery-item:last-child {
-    grid-column: span 2;
-}
-
-/* Layout para 4 imagenes */
-.analysis-gallery.grid-4 {
-    grid-template-columns: 1fr 1fr;
-    max-width: 600px;
+.analysis-gallery::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.3);
+    border-radius: 10px;
 }
 
 .gallery-item {
-    aspect-ratio: 16 / 10;
-    /* Un poco más cuadrada para que ocupe menos verticalmente */
+    flex: 0 0 150px;
+    /* Ancho un poco más pequeño */
+    height: 90px;
+    /* Alto un poco más pequeño */
     background: rgba(15, 23, 42, 0.6);
     border-radius: 12px;
     overflow: hidden;
     cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gallery-item:hover {
+    transform: translateY(-3px);
+    border-color: rgba(99, 102, 241, 0.5);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .gallery-item img {
@@ -1150,7 +1136,7 @@
 }
 
 .gallery-item:hover img {
-    transform: scale(1.05);
+    transform: scale(1.1);
 }
 
 .card-footer {
@@ -1335,6 +1321,7 @@
         opacity: 0;
         transform: scale(0.9);
     }
+
     to {
         opacity: 1;
         transform: scale(1);
@@ -1348,7 +1335,19 @@
         height: 45px;
         font-size: 20px;
     }
-    .lightbox-nav.prev { left: 10px; }
-    .lightbox-nav.next { right: 10px; }
-    .lightbox-close { top: 15px; right: 15px; width: 40px; height: 40px; }
+
+    .lightbox-nav.prev {
+        left: 10px;
+    }
+
+    .lightbox-nav.next {
+        right: 10px;
+    }
+
+    .lightbox-close {
+        top: 15px;
+        right: 15px;
+        width: 40px;
+        height: 40px;
+    }
 }

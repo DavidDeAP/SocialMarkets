@@ -13,7 +13,7 @@ import './Comunidad.css';
 
 const Comunidad = () => {
     const [preciosVivos, setPreciosVivos] = useState({});
-    
+
     const [user, setUser] = useState(null);
     const [cargando, setCargando] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -29,14 +29,14 @@ const Comunidad = () => {
     const [publicando, setPublicando] = useState(false);
     const [cargandoFeed, setCargandoFeed] = useState(true);
     const [selectedFiles, setSelectedFiles] = useState([]);
-    
+
     // Estado para el Lightbox de imágenes
     const [lightbox, setLightbox] = useState({
         isOpen: false,
         images: [],
         currentIndex: 0
     });
-    
+
     // Autocompletado de Activos
     const [busquedaActivos, setBusquedaActivos] = useState([]);
     const [mostrarSugerencias, setMostrarSugerencias] = useState(false);
@@ -44,7 +44,7 @@ const Comunidad = () => {
     const [activoSeleccionado, setActivoSeleccionado] = useState(null);
     const [precioActual, setPrecioActual] = useState(null);
     const [cuentaAtras, setCuentaAtras] = useState(10);
-    
+
     const MAX_CARACTERES = 1000;
     const navigate = useNavigate();
     const location = useLocation();
@@ -76,9 +76,9 @@ const Comunidad = () => {
             // Llamamos a nuestro propio backend para evitar problemas de CORS
             const respuesta = await api.get(`/market/search?q=${query}`);
             console.log("Respuesta búsqueda activos:", respuesta.data);
-            
+
             const data = typeof respuesta.data === 'string' ? JSON.parse(respuesta.data) : respuesta.data;
-            
+
             if (data.quotes && data.quotes.length > 0) {
                 const filtrados = data.quotes.map(q => ({
                     symbol: q.symbol,
@@ -103,7 +103,7 @@ const Comunidad = () => {
         try {
             const respuesta = await api.get(`/market/price?symbol=${symbol}`);
             const data = typeof respuesta.data === 'string' ? JSON.parse(respuesta.data) : respuesta.data;
-            
+
             console.log(`Precio obtenido para ${symbol}:`, data);
 
             if (data.chart?.result?.length > 0) {
@@ -124,10 +124,10 @@ const Comunidad = () => {
             }
         } catch (err) {
             console.error("Error obteniendo precio:", err);
-            setPrecioActual({ 
-                error: true, 
+            setPrecioActual({
+                error: true,
                 message: "No se pudo obtener el precio en vivo",
-                loading: false 
+                loading: false
             });
         }
     };
@@ -138,7 +138,7 @@ const Comunidad = () => {
         if (activoSeleccionado) {
             setCuentaAtras(10);
             fetchPrecioActual(activoSeleccionado.symbol);
-            
+
             timerId = setInterval(() => {
                 setCuentaAtras(prev => {
                     if (prev === 1) {
@@ -182,7 +182,7 @@ const Comunidad = () => {
         try {
             const respuesta = await api.get('/analisis');
             console.log("Análisis recibidos:", respuesta.data);
-            
+
             // Ordenar por fecha de creación (más nuevos primero)
             const ordenados = respuesta.data.sort((a, b) => {
                 const dateA = a.fechaCreacion ? new Date(a.fechaCreacion).getTime() : 0;
@@ -220,7 +220,7 @@ const Comunidad = () => {
         const actualizarPreciosFeed = async () => {
             const simbolosRaw = listaAnalisis.map(a => a.activo?.nombre).filter(Boolean);
             const simbolosUnicos = [...new Set(simbolosRaw.map(s => s.trim().toUpperCase()))];
-            
+
             if (simbolosUnicos.length === 0) return;
 
             try {
@@ -228,9 +228,9 @@ const Comunidad = () => {
                 const url = `/market/prices?symbols=${simbolosUnicos.join(',')}`;
                 const res = await api.get(url);
                 const data = typeof res.data === 'string' ? JSON.parse(res.data) : res.data;
-                
+
                 const resultados = data.quoteResponse?.result || data.finance?.result || [];
-                
+
                 if (resultados.length > 0) {
                     const nuevosPrecios = {};
                     resultados.forEach(quote => {
@@ -250,7 +250,7 @@ const Comunidad = () => {
             }
         };
 
-        actualizarPreciosFeed(); 
+        actualizarPreciosFeed();
         const interval = setInterval(actualizarPreciosFeed, 10000);
         return () => clearInterval(interval);
     }, [listaAnalisis]);
@@ -270,7 +270,7 @@ const Comunidad = () => {
             setTimeout(() => setToast({ mostrar: false, mensaje: '', tipo: '' }), 3000);
             return;
         }
-        
+
         setSelectedFiles([...selectedFiles, ...files]);
         const newPreviews = files.map(file => URL.createObjectURL(file));
         setImagenes([...imagenes, ...newPreviews]);
@@ -284,9 +284,9 @@ const Comunidad = () => {
     const formatFecha = (fechaStr) => {
         if (!fechaStr) return '';
         const fecha = new Date(fechaStr);
-        return fecha.toLocaleDateString('es-ES', { 
-            day: '2-digit', 
-            month: 'short', 
+        return fecha.toLocaleDateString('es-ES', {
+            day: '2-digit',
+            month: 'short',
             year: 'numeric',
             hour: '2-digit',
             minute: '2-digit'
@@ -334,7 +334,6 @@ const Comunidad = () => {
                 <main className="comunidad-container">
                     <header className="comunidad-header">
                         <h1 className="text-neon-glow">Comunidad</h1>
-                        <p>Explora y comparte análisis de mercado con otros analistas.</p>
                     </header>
 
                     <div className="feed-analisis">
@@ -352,7 +351,7 @@ const Comunidad = () => {
                             listaAnalisis.map((analisis) => {
                                 const precioActual = preciosVivos[analisis.activo?.nombre?.toUpperCase()]?.price;
                                 let statusClass = "";
-                                
+
                                 if (precioActual && analisis.precioEntrada && analisis.precioObjetivo) {
                                     const isBullish = analisis.precioObjetivo > analisis.precioEntrada;
                                     if (isBullish) {
@@ -364,114 +363,114 @@ const Comunidad = () => {
 
                                 return (
                                     <article key={analisis.identificador} className={`analisis-card glass-card ${statusClass}`}>
-                                    <div className="card-header">
-                                        <div className="user-info-section clickable-profile" onClick={() => navigate(`/perfil/${analisis.usuario?.usuario}`)}>
-                                            <img 
-                                                src={analisis.usuario?.imagen || 'https://via.placeholder.com/150'} 
-                                                alt={analisis.usuario?.usuario} 
-                                                className="user-avatar-small"
-                                            />
-                                            <div className="user-meta">
-                                                <span className="username">{analisis.usuario?.usuario}</span>
-                                                <div className="user-stats-small">
-                                                    <span className="stat-item acierto">
-                                                        {analisis.usuario?.indiceAcierto?.toFixed(1) || 0}% acierto
+                                        <div className="card-header">
+                                            <div className="user-info-section clickable-profile" onClick={() => navigate(`/perfil/${analisis.usuario?.usuario}`)}>
+                                                <img
+                                                    src={analisis.usuario?.imagen || 'https://via.placeholder.com/150'}
+                                                    alt={analisis.usuario?.usuario}
+                                                    className="user-avatar-small"
+                                                />
+                                                <div className="user-meta">
+                                                    <span className="username">{analisis.usuario?.usuario}</span>
+                                                    <div className="user-stats-small">
+                                                        <span className="stat-item acierto">
+                                                            {analisis.usuario?.indiceAcierto?.toFixed(1) || 0}% acierto
+                                                        </span>
+                                                        <span className="stat-separator">•</span>
+                                                        <span className="stat-item preds">
+                                                            {analisis.usuario?.numeroPredicciones || 0} predicciones
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="card-badges">
+                                                <div className={`tipo-badge ${analisis.tipo?.toLowerCase()}`}>
+                                                    {analisis.tipo === 'TECNICO' ? 'Técnico' : 'Fundamental'}
+                                                </div>
+                                                <div className={`sentiment-badge ${analisis.precioObjetivo > analisis.precioEntrada ? 'bullish' : 'bearish'}`}>
+                                                    {analisis.precioObjetivo > analisis.precioEntrada ? (
+                                                        <><FiArrowUpRight /> Alcista</>
+                                                    ) : (
+                                                        <><FiArrowDownRight /> Bajista</>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="card-market-info-new">
+                                            <div className="market-row-top">
+                                                <div className="market-item">
+                                                    <label>Activo</label>
+                                                    <span className="market-value activo-name">{analisis.activo?.nombre}</span>
+                                                </div>
+                                                <div className="market-item">
+                                                    <label>Vencimiento</label>
+                                                    <span className="market-value date">{formatFecha(analisis.fechaVencimiento)}</span>
+                                                </div>
+                                            </div>
+
+                                            <div className="market-row-bottom">
+                                                <div className="market-item">
+                                                    <label>Entrada</label>
+                                                    <span className="market-value price-entry">${analisis.precioEntrada?.toLocaleString()}</span>
+                                                </div>
+                                                <div className="market-item">
+                                                    <label>Actual</label>
+                                                    <span className="market-value price-live">
+                                                        {preciosVivos[analisis.activo?.nombre?.toUpperCase()]
+                                                            ? `$${preciosVivos[analisis.activo?.nombre?.toUpperCase()].price.toLocaleString()}`
+                                                            : 'Cargando...'}
                                                     </span>
-                                                    <span className="stat-separator">•</span>
-                                                    <span className="stat-item preds">
-                                                        {analisis.usuario?.numeroPredicciones || 0} predicciones
+                                                </div>
+                                                <div className="market-item">
+                                                    <label>Objetivo</label>
+                                                    <span className="market-value price-target">${analisis.precioObjetivo?.toLocaleString()}</span>
+                                                </div>
+                                                <div className="market-item">
+                                                    <label>Rendimiento</label>
+                                                    <span className={`market-value price-performance ${statusClass}`}>
+                                                        {precioActual && analisis.precioEntrada && analisis.precioObjetivo
+                                                            ? (() => {
+                                                                const isBullish = analisis.precioObjetivo > analisis.precioEntrada;
+                                                                let perf;
+                                                                if (isBullish) {
+                                                                    perf = ((precioActual - analisis.precioEntrada) / analisis.precioEntrada * 100);
+                                                                } else {
+                                                                    perf = ((analisis.precioEntrada - precioActual) / analisis.precioEntrada * 100);
+                                                                }
+                                                                return `${perf >= 0 ? '+' : ''}${perf.toFixed(2)}%`;
+                                                            })()
+                                                            : '0.00%'}
                                                     </span>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="card-badges">
-                                            <div className={`tipo-badge ${analisis.tipo?.toLowerCase()}`}>
-                                                {analisis.tipo === 'TECNICO' ? 'Técnico' : 'Fundamental'}
-                                            </div>
-                                            <div className={`sentiment-badge ${analisis.precioObjetivo > analisis.precioEntrada ? 'bullish' : 'bearish'}`}>
-                                                {analisis.precioObjetivo > analisis.precioEntrada ? (
-                                                    <><FiArrowUpRight /> Alcista</>
-                                                ) : (
-                                                    <><FiArrowDownRight /> Bajista</>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
 
-                                    <div className="card-market-info-new">
-                                        <div className="market-row-top">
-                                            <div className="market-item">
-                                                <label>Activo</label>
-                                                <span className="market-value activo-name">{analisis.activo?.nombre}</span>
-                                            </div>
-                                            <div className="market-item">
-                                                <label>Vencimiento</label>
-                                                <span className="market-value date">{formatFecha(analisis.fechaVencimiento)}</span>
-                                            </div>
-                                        </div>
-                                        
-                                        <div className="market-row-bottom">
-                                            <div className="market-item">
-                                                <label>Entrada</label>
-                                                <span className="market-value price-entry">${analisis.precioEntrada?.toLocaleString()}</span>
-                                            </div>
-                                            <div className="market-item">
-                                                <label>Actual</label>
-                                                <span className="market-value price-live">
-                                                    {preciosVivos[analisis.activo?.nombre?.toUpperCase()] 
-                                                        ? `$${preciosVivos[analisis.activo?.nombre?.toUpperCase()].price.toLocaleString()}`
-                                                        : 'Cargando...'}
-                                                </span>
-                                            </div>
-                                            <div className="market-item">
-                                                <label>Objetivo</label>
-                                                <span className="market-value price-target">${analisis.precioObjetivo?.toLocaleString()}</span>
-                                            </div>
-                                            <div className="market-item">
-                                                <label>Rendimiento</label>
-                                                <span className={`market-value price-performance ${statusClass}`}>
-                                                    {precioActual && analisis.precioEntrada && analisis.precioObjetivo
-                                                        ? (() => {
-                                                            const isBullish = analisis.precioObjetivo > analisis.precioEntrada;
-                                                            let perf;
-                                                            if (isBullish) {
-                                                                perf = ((precioActual - analisis.precioEntrada) / analisis.precioEntrada * 100);
-                                                            } else {
-                                                                perf = ((analisis.precioEntrada - precioActual) / analisis.precioEntrada * 100);
-                                                            }
-                                                            return `${perf >= 0 ? '+' : ''}${perf.toFixed(2)}%`;
-                                                          })()
-                                                        : '0.00%'}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                        <div className="card-content">
+                                            <p className="analysis-text">{analisis.contenido}</p>
 
-                                    <div className="card-content">
-                                        <p className="analysis-text">{analisis.contenido}</p>
-                                        
-                                        {analisis.imagenes && analisis.imagenes.length > 0 && (
-                                            <div className={`analysis-gallery grid-${Math.min(analisis.imagenes.length, 4)}`}>
-                                                {analisis.imagenes.map((url, idx) => (
-                                                    <div key={idx} className="gallery-item">
-                                                        <img 
-                                                            src={url} 
-                                                            alt={`Análisis ${idx}`} 
-                                                            onClick={() => openLightbox(analisis.imagenes, idx)} 
-                                                        />
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
+                                            {analisis.imagenes && analisis.imagenes.length > 0 && (
+                                                <div className="analysis-gallery horizontal-scroll">
+                                                    {analisis.imagenes.map((url, idx) => (
+                                                        <div key={idx} className="gallery-item">
+                                                            <img 
+                                                                src={url} 
+                                                                alt={`Análisis ${idx}`} 
+                                                                onClick={() => openLightbox(analisis.imagenes, idx)} 
+                                                            />
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
 
-                                    <div className="card-footer">
-                                        <span className="post-date">Publicado el {formatFecha(analisis.fechaCreacion)}</span>
-                                    </div>
-                                </article>
-                            );
-                        })
-                    )}
+                                        <div className="card-footer">
+                                            <span className="post-date">Publicado el {formatFecha(analisis.fechaCreacion)}</span>
+                                        </div>
+                                    </article>
+                                );
+                            })
+                        )}
                     </div>
 
                     <div className="action-bar-comunidad">
@@ -531,14 +530,14 @@ const Comunidad = () => {
                                     precioObjetivo: parseFloat(precioObjetivo),
                                     precioEntrada: precioActual?.price || 0,
                                     fechaVencimiento: fechaVencimiento, // Enviamos el formato local del input (YYYY-MM-DDTHH:mm)
-                                    activo: { 
+                                    activo: {
                                         nombre: activoSeleccionado.symbol,
                                         tipo: activoSeleccionado.quoteType
                                     }
                                 };
 
                                 formData.append('analisis', new Blob([JSON.stringify(analisisData)], { type: 'application/json' }));
-                                
+
                                 selectedFiles.forEach(file => {
                                     formData.append('imagenes', file);
                                 });
@@ -547,7 +546,7 @@ const Comunidad = () => {
 
                                 setToast({ mostrar: true, mensaje: "Análisis publicado con éxito", tipo: "success" });
                                 setTimeout(() => setToast({ mostrar: false, mensaje: '', tipo: '' }), 5000);
-                                
+
                                 // Resetear form
                                 setContenido('');
                                 setActivo('');
@@ -559,7 +558,7 @@ const Comunidad = () => {
                                 setSelectedFiles([]);
                                 setShowModal(false);
                                 setIntentadoPublicar(false);
-                                
+
                                 // Recargar feed
                                 fetchAnalisis();
 
@@ -575,9 +574,9 @@ const Comunidad = () => {
                                 <label>Activo (Busca por símbolo o nombre)</label>
                                 <div className="input-with-icon">
                                     <FiActivity />
-                                    <input 
-                                        type="text" 
-                                        placeholder="Ej: BTC, Apple, Tesla..." 
+                                    <input
+                                        type="text"
+                                        placeholder="Ej: BTC, Apple, Tesla..."
                                         value={activo}
                                         onChange={(e) => {
                                             setActivo(e.target.value);
@@ -588,7 +587,7 @@ const Comunidad = () => {
                                     />
                                     {cargandoSugerencias && <div className="loader-input"></div>}
                                 </div>
-                                
+
                                 {mostrarSugerencias && activo.length >= 2 && !activoSeleccionado && (
                                     <ul className="autocomplete-dropdown glass-card">
                                         {busquedaActivos.length > 0 ? (
@@ -658,12 +657,12 @@ const Comunidad = () => {
                                 <div className="form-group">
                                     <label>Tipo de Análisis</label>
                                     <div className="tipo-analisis-pills">
-                                        <button 
+                                        <button
                                             type="button"
                                             className={`pill ${tipoAnalisis === 'TECNICO' ? 'active-tecnico' : ''}`}
                                             onClick={() => setTipoAnalisis('TECNICO')}
                                         >Técnico</button>
-                                        <button 
+                                        <button
                                             type="button"
                                             className={`pill ${tipoAnalisis === 'FUNDAMENTAL' ? 'active-fundamental' : ''}`}
                                             onClick={() => setTipoAnalisis('FUNDAMENTAL')}
@@ -674,10 +673,10 @@ const Comunidad = () => {
                                     <label>Precio Objetivo</label>
                                     <div className="input-with-icon">
                                         <FiDollarSign />
-                                        <input 
-                                            type="number" 
-                                            step="0.01" 
-                                            placeholder="0.00" 
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            placeholder="0.00"
                                             value={precioObjetivo}
                                             onChange={(e) => setPrecioObjetivo(e.target.value)}
                                             className={intentadoPublicar && !precioObjetivo ? 'input-error' : ''}
@@ -705,16 +704,16 @@ const Comunidad = () => {
 
                             <div className="form-group">
                                 <label>Fecha de Vencimiento Estimada</label>
-                                <div className={`input-with-icon clickable-date ${intentadoPublicar && !fechaVencimiento ? 'input-error' : ''}`} 
-                                     onClick={(e) => {
-                                         const input = e.currentTarget.querySelector('input');
-                                         if (input && input.showPicker) input.showPicker();
-                                     }}
-                                     style={{ cursor: 'pointer' }}
+                                <div className={`input-with-icon clickable-date ${intentadoPublicar && !fechaVencimiento ? 'input-error' : ''}`}
+                                    onClick={(e) => {
+                                        const input = e.currentTarget.querySelector('input');
+                                        if (input && input.showPicker) input.showPicker();
+                                    }}
+                                    style={{ cursor: 'pointer' }}
                                 >
                                     <FiCalendar />
-                                    <input 
-                                        type="datetime-local" 
+                                    <input
+                                        type="datetime-local"
                                         value={fechaVencimiento}
                                         onChange={(e) => setFechaVencimiento(e.target.value)}
                                     />
@@ -723,8 +722,8 @@ const Comunidad = () => {
 
                             <div className="form-group">
                                 <label>Contenido del Análisis</label>
-                                <textarea 
-                                    rows="4" 
+                                <textarea
+                                    rows="4"
                                     placeholder="Explica tu análisis..."
                                     value={contenido}
                                     onChange={(e) => setContenido(e.target.value)}
