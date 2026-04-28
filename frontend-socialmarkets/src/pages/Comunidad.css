@@ -629,6 +629,170 @@
     }
 }
 
+.card-market-info-new {
+    background: rgba(15, 23, 42, 0.5);
+    border-radius: 20px;
+    padding: 1.2rem;
+    margin-bottom: 1.2rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.market-header-compact {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.asset-tag {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(99, 102, 241, 0.15);
+    padding: 6px 14px;
+    border-radius: 100px;
+    color: #818cf8;
+    font-weight: 800;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.perf-badge {
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-weight: 900;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+}
+
+.perf-badge.status-winning {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.perf-badge.status-losing {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.prices-dashboard {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.price-card {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 0.8rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    transition: all 0.3s ease;
+}
+
+.price-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateY(-2px);
+}
+
+.p-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.entry .p-icon {
+    background: rgba(96, 165, 250, 0.15);
+    color: #60a5fa;
+}
+
+.live .p-icon {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+}
+
+.settled .p-icon {
+    background: rgba(248, 250, 252, 0.1);
+    color: #f8fafc;
+}
+
+.target .p-icon {
+    background: rgba(139, 92, 246, 0.15);
+    color: #a78bfa;
+}
+
+.p-data {
+    display: flex;
+    flex-direction: column;
+}
+
+.p-data label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    color: #64748b;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+
+.p-val {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: white;
+}
+
+.live {
+    position: relative;
+    border-color: rgba(16, 185, 129, 0.2);
+}
+
+.live .p-val {
+    color: #10b981;
+    text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+@keyframes pulse-live {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.live::after {
+    content: '';
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 6px;
+    height: 6px;
+    background: #10b981;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #10b981;
+    animation: pulse-live 2s infinite;
+}
 
 .loader-input {
     position: absolute;
@@ -1117,11 +1281,15 @@
 
 /* Card Content */
 .analysis-text {
-    color: #cbd5e1;
-    line-height: 1.6;
-    margin-bottom: 1.2rem;
+    color: #f1f5f9;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
     white-space: pre-wrap;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding-left: 1.2rem;
+    border-left: 3px solid rgba(99, 102, 241, 0.6);
+    position: relative;
 }
 
 .analysis-gallery {
@@ -1228,9 +1396,17 @@
 }
 
 @keyframes heartBeat {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.4); }
-    100% { transform: scale(1.2); }
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.4);
+    }
+
+    100% {
+        transform: scale(1.2);
+    }
 }
 
 .post-date {

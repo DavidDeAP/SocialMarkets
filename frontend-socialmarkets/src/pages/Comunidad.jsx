@@ -293,6 +293,12 @@ const Comunidad = () => {
         });
     };
 
+    const calculatePerformance = (entrada, actual) => {
+        if (!entrada || !actual) return '0.00';
+        const perf = ((actual - entrada) / entrada) * 100;
+        return perf.toFixed(2);
+    };
+
     const openLightbox = (images, index) => {
         setLightbox({
             isOpen: true,
@@ -431,52 +437,46 @@ const Comunidad = () => {
                                         </div>
 
                                         <div className="card-market-info-new">
-                                            <div className="market-row-top">
-                                                <div className="market-item">
-                                                    <label>Activo</label>
-                                                    <span className="market-value activo-name">{analisis.activo?.nombre}</span>
+                                            <div className="market-header-compact">
+                                                <div className="asset-tag">
+                                                    <FiActivity className="icon-pulse" />
+                                                    <span>{analisis.activo?.nombre}</span>
                                                 </div>
-                                                <div className="market-item">
-                                                    <label>Vencimiento</label>
-                                                    <span className="market-value date">{formatFecha(analisis.fechaVencimiento)}</span>
+                                                <div className={`perf-badge ${statusClass}`}>
+                                                    {calculatePerformance(analisis.precioEntrada, precioActual) >= 0 ? '+' : ''}
+                                                    {calculatePerformance(analisis.precioEntrada, precioActual)}%
                                                 </div>
                                             </div>
 
-                                            <div className="market-row-bottom">
-                                                <div className="market-item">
-                                                    <label>Entrada</label>
-                                                    <span className="market-value price-entry">${analisis.precioEntrada?.toLocaleString()}</span>
+                                            <div className="prices-dashboard">
+                                                <div className="price-card entry">
+                                                    <div className="p-icon"><FiArrowUpRight /></div>
+                                                    <div className="p-data">
+                                                        <label>Entrada</label>
+                                                        <span className="p-val">${analisis.precioEntrada?.toLocaleString()}</span>
+                                                    </div>
                                                 </div>
-                                                <div className="market-item">
-                                                    <label>{isSettled ? 'Cierre' : 'Actual'}</label>
-                                                    <span className={`market-value ${isSettled ? 'price-settled' : 'price-live'}`}>
-                                                        {isSettled 
-                                                            ? `$${analisis.precioCierre?.toLocaleString()}`
-                                                            : preciosVivos[analisis.activo?.nombre?.toUpperCase()]
-                                                                ? `$${preciosVivos[analisis.activo?.nombre?.toUpperCase()].price.toLocaleString()}`
-                                                                : 'Cargando...'}
-                                                    </span>
+
+                                                <div className={`price-card ${isSettled ? 'settled' : 'live'}`}>
+                                                    <div className="p-icon">{isSettled ? <FiXCircle /> : <FiActivity />}</div>
+                                                    <div className="p-data">
+                                                        <label>{isSettled ? 'Cierre' : 'Actual'}</label>
+                                                        <span className="p-val">
+                                                            {isSettled 
+                                                                ? `$${analisis.precioCierre?.toLocaleString()}`
+                                                                : preciosVivos[analisis.activo?.nombre?.toUpperCase()]
+                                                                    ? `$${preciosVivos[analisis.activo?.nombre?.toUpperCase()].price.toLocaleString()}`
+                                                                    : '...'}
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                                <div className="market-item">
-                                                    <label>Objetivo</label>
-                                                    <span className="market-value price-target">${analisis.precioObjetivo?.toLocaleString()}</span>
-                                                </div>
-                                                <div className="market-item">
-                                                    <label>Rendimiento</label>
-                                                    <span className={`market-value price-performance ${statusClass}`}>
-                                                        {precioActual && analisis.precioEntrada && analisis.precioObjetivo
-                                                            ? (() => {
-                                                                const isBullish = analisis.precioObjetivo > analisis.precioEntrada;
-                                                                let perf;
-                                                                if (isBullish) {
-                                                                    perf = ((precioActual - analisis.precioEntrada) / analisis.precioEntrada * 100);
-                                                                } else {
-                                                                    perf = ((analisis.precioEntrada - precioActual) / analisis.precioEntrada * 100);
-                                                                }
-                                                                return `${perf >= 0 ? '+' : ''}${perf.toFixed(2)}%`;
-                                                            })()
-                                                            : '0.00%'}
-                                                    </span>
+
+                                                <div className="price-card target">
+                                                    <div className="p-icon"><FiTarget /></div>
+                                                    <div className="p-data">
+                                                        <label>Objetivo</label>
+                                                        <span className="p-val">${analisis.precioObjetivo?.toLocaleString()}</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
