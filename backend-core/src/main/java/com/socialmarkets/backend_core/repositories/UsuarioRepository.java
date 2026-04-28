@@ -8,4 +8,5 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     // Para el Login y para ver perfiles
 	boolean existsByUsuario(String usuario);
 	Optional<Usuario> findByUsuario(String usuario);
+    java.util.List<Usuario> findByUsuarioContainingIgnoreCase(String query);
 }

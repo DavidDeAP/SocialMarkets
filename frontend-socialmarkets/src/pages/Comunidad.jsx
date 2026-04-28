@@ -34,6 +34,8 @@ const Comunidad = () => {
     const [filtrosSeleccionados, setFiltrosSeleccionados] = useState(['recientes']);
     const [searchQuery, setSearchQuery] = useState('');
     const [showFilters, setShowFilters] = useState(false);
+    const [sugerenciasUsuarios, setSugerenciasUsuarios] = useState([]);
+    const [buscandoUsuarios, setBuscandoUsuarios] = useState(false);
 
     // Estado para el Lightbox de imágenes
     const [lightbox, setLightbox] = useState({
@@ -73,6 +75,29 @@ const Comunidad = () => {
 
         return () => clearTimeout(timeoutId);
     }, [activo]);
+
+    // Búsqueda de analistas (usuarios)
+    useEffect(() => {
+        const fetchUsuarios = async () => {
+            if (searchQuery.length >= 2) {
+                setBuscandoUsuarios(true);
+                try {
+                    const res = await api.get(`/usuarios/buscar?q=${searchQuery}`);
+                    // Tomamos solo los primeros 5
+                    setSugerenciasUsuarios(res.data.slice(0, 5));
+                } catch (err) {
+                    console.error("Error buscando usuarios:", err);
+                } finally {
+                    setBuscandoUsuarios(false);
+                }
+            } else {
+                setSugerenciasUsuarios([]);
+            }
+        };
+
+        const timeoutId = setTimeout(fetchUsuarios, 300);
+        return () => clearTimeout(timeoutId);
+    }, [searchQuery]);
 
     const buscarActivos = async (query) => {
         if (query.length < 2) return;
@@ -449,6 +474,39 @@ const Comunidad = () => {
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                 />
                                 {searchQuery && <FiX className="clear-search" onClick={() => setSearchQuery('')} />}
+                                {buscandoUsuarios && <div className="loader-input-search"></div>}
+                                
+                                {/* Sugerencias de Usuarios */}
+                                {sugerenciasUsuarios.length > 0 && (
+                                    <div className="user-suggestions-dropdown">
+                                        {sugerenciasUsuarios.map(u => (
+                                            <div 
+                                                key={u.identificador} 
+                                                className="user-suggestion-item"
+                                                onClick={() => {
+                                                    setSearchQuery(u.usuario);
+                                                    setSugerenciasUsuarios([]);
+                                                }}
+                                            >
+                                                {u.imagen ? (
+                                                    <img src={u.imagen.startsWith('http') ? u.imagen : `http://localhost:8080${u.imagen}`} alt={u.usuario} />
+                                                ) : (
+                                                    <div className="avatar-placeholder-small">
+                                                        {u.usuario?.charAt(0).toUpperCase()}
+                                                    </div>
+                                                )}
+                                                <div className="sugg-info">
+                                                    <span className="sugg-name">{u.usuario}</span>
+                                                    <div className="sugg-stats">
+                                                        <span>{u.indiceAcierto?.toFixed(1) || 0}% acierto</span>
+                                                        <span className="sep">•</span>
+                                                        <span>{u.numeroPredicciones || 0} predicciones</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
 
                             <div className="filter-options">
@@ -774,12 +832,8 @@ const Comunidad = () => {
                                         type="text"
                                         placeholder="Ej: BTC, Apple, Tesla..."
                                         value={activo}
-                                        onChange={(e) => {
-                                            setActivo(e.target.value);
-                                            setActivoSeleccionado(null); // Reseteamos al escribir
-                                        }}
-                                        onFocus={() => busquedaActivos.length > 0 && setMostrarSugerencias(true)}
-                                        className={intentadoPublicar && !activoSeleccionado ? 'input-error' : ''}
+                                        onChange={(e) => setActivo(e.target.value)}
+                                        onFocus={() => { if (busquedaActivos.length > 0) setMostrarSugerencias(true); }}
                                     />
                                     {cargandoSugerencias && <div className="loader-input"></div>}
                                 </div>
@@ -801,9 +855,7 @@ const Comunidad = () => {
                                                     </div>
                                                 </li>
                                             ))
-                                        ) : !cargandoSugerencias && (
-                                            <li className="no-results">No se encontraron activos</li>
-                                        )}
+                                        ) : null}
                                     </ul>
                                 )}
                             </div>
@@ -1006,7 +1058,7 @@ const Comunidad = () => {
                         />
                         {lightbox.images.length > 1 && (
                             <div className="lightbox-counter">
-                                {lightbox.currentIndex + 1} / {lightbox.images.length}
+                                {`${lightbox.currentIndex + 1} / ${lightbox.images.length}`}
                             </div>
                         )}
                     </div>

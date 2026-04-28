@@ -154,4 +154,9 @@ public class UsuarioController {
             return ResponseEntity.status(404).body(e.getMessage());
         }
     }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<Usuario>> buscarUsuarios(@RequestParam("q") String query) {
+        return ResponseEntity.ok(usuarioService.buscarPorNombre(query));
+    }
 }

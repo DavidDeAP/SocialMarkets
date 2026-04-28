@@ -106,4 +106,11 @@ public class UsuarioService {
             return true;
         }
     }
+
+    public List<Usuario> buscarPorNombre(String query) {
+        List<Usuario> usuarios = usuarioRepository.findByUsuarioContainingIgnoreCase(query);
+        // Actualizamos estadísticas para que los datos mostrados sean reales
+        usuarios.forEach(u -> analisisService.actualizarEstadisticasUsuario(u));
+        return usuarios;
+    }
 }
