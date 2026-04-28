@@ -309,8 +309,21 @@ const Comunidad = () => {
                                 <p>Aún no hay análisis. ¡Sé el primero en publicar!</p>
                             </div>
                         ) : (
-                            listaAnalisis.map((analisis) => (
-                                <article key={analisis.identificador} className="analisis-card glass-card">
+                            listaAnalisis.map((analisis) => {
+                                const precioActual = preciosVivos[analisis.activo?.nombre?.toUpperCase()]?.price;
+                                let statusClass = "";
+                                
+                                if (precioActual && analisis.precioEntrada && analisis.precioObjetivo) {
+                                    const isBullish = analisis.precioObjetivo > analisis.precioEntrada;
+                                    if (isBullish) {
+                                        statusClass = precioActual >= analisis.precioEntrada ? "status-winning" : "status-losing";
+                                    } else {
+                                        statusClass = precioActual <= analisis.precioEntrada ? "status-winning" : "status-losing";
+                                    }
+                                }
+
+                                return (
+                                    <article key={analisis.identificador} className={`analisis-card glass-card ${statusClass}`}>
                                     <div className="card-header">
                                         <div className="user-info-section clickable-profile" onClick={() => navigate(`/perfil/${analisis.usuario?.usuario}`)}>
                                             <img 
@@ -365,6 +378,17 @@ const Comunidad = () => {
                                                 <label>Objetivo</label>
                                                 <span className="market-value price-target">${analisis.precioObjetivo?.toLocaleString()}</span>
                                             </div>
+                                            <div className="market-item">
+                                                <label>Rendimiento</label>
+                                                <span className={`market-value price-performance ${statusClass}`}>
+                                                    {precioActual && analisis.precioEntrada
+                                                        ? (() => {
+                                                            const perf = ((precioActual - analisis.precioEntrada) / analisis.precioEntrada * 100);
+                                                            return `${perf >= 0 ? '+' : ''}${perf.toFixed(2)}%`;
+                                                          })()
+                                                        : '0.00%'}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -386,8 +410,9 @@ const Comunidad = () => {
                                         <span className="post-date">Publicado el {formatFecha(analisis.fechaCreacion)}</span>
                                     </div>
                                 </article>
-                            ))
-                        )}
+                            );
+                        })
+                    )}
                     </div>
 
                     <div className="action-bar-comunidad">
