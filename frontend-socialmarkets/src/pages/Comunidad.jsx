@@ -3,7 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import {
     FiPlus, FiMessageSquare, FiImage, FiTarget,
     FiCalendar, FiBarChart2, FiX, FiActivity, FiDollarSign,
-    FiXCircle, FiCheckCircle, FiArrowUpRight, FiArrowDownRight
+    FiXCircle, FiCheckCircle, FiArrowUpRight, FiArrowDownRight,
+    FiChevronLeft, FiChevronRight
 } from 'react-icons/fi';
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
@@ -28,6 +29,13 @@ const Comunidad = () => {
     const [publicando, setPublicando] = useState(false);
     const [cargandoFeed, setCargandoFeed] = useState(true);
     const [selectedFiles, setSelectedFiles] = useState([]);
+    
+    // Estado para el Lightbox de imágenes
+    const [lightbox, setLightbox] = useState({
+        isOpen: false,
+        images: [],
+        currentIndex: 0
+    });
     
     // Autocompletado de Activos
     const [busquedaActivos, setBusquedaActivos] = useState([]);
@@ -285,6 +293,38 @@ const Comunidad = () => {
         });
     };
 
+    const openLightbox = (images, index) => {
+        setLightbox({
+            isOpen: true,
+            images: images,
+            currentIndex: index
+        });
+        // Bloquear scroll del body
+        document.body.style.overflow = 'hidden';
+    };
+
+    const closeLightbox = () => {
+        setLightbox(prev => ({ ...prev, isOpen: false }));
+        // Restaurar scroll
+        document.body.style.overflow = 'auto';
+    };
+
+    const nextImage = (e) => {
+        e.stopPropagation();
+        setLightbox(prev => ({
+            ...prev,
+            currentIndex: (prev.currentIndex + 1) % prev.images.length
+        }));
+    };
+
+    const prevImage = (e) => {
+        e.stopPropagation();
+        setLightbox(prev => ({
+            ...prev,
+            currentIndex: (prev.currentIndex - 1 + prev.images.length) % prev.images.length
+        }));
+    };
+
     return (
         <div className="dashboard-layout">
             <Sidebar />
@@ -414,7 +454,11 @@ const Comunidad = () => {
                                             <div className={`analysis-gallery grid-${Math.min(analisis.imagenes.length, 4)}`}>
                                                 {analisis.imagenes.map((url, idx) => (
                                                     <div key={idx} className="gallery-item">
-                                                        <img src={url} alt={`Análisis ${idx}`} onClick={() => window.open(url, '_blank')} />
+                                                        <img 
+                                                            src={url} 
+                                                            alt={`Análisis ${idx}`} 
+                                                            onClick={() => openLightbox(analisis.imagenes, idx)} 
+                                                        />
                                                     </div>
                                                 ))}
                                             </div>
@@ -743,6 +787,40 @@ const Comunidad = () => {
                 <div className={`toast-comunidad-alert ${toast.tipo}`}>
                     {toast.tipo === 'error' ? <FiXCircle /> : <FiCheckCircle />}
                     {toast.mensaje}
+                </div>
+            )}
+
+            {/* Lightbox para imágenes */}
+            {lightbox.isOpen && (
+                <div className="lightbox-overlay" onClick={closeLightbox}>
+                    <button className="lightbox-close" onClick={closeLightbox}>
+                        <FiX />
+                    </button>
+                    
+                    {lightbox.images.length > 1 && (
+                        <button className="lightbox-nav prev" onClick={prevImage}>
+                            <FiChevronLeft />
+                        </button>
+                    )}
+
+                    <div className="lightbox-content" onClick={e => e.stopPropagation()}>
+                        <img 
+                            src={lightbox.images[lightbox.currentIndex]} 
+                            alt={`Imagen ${lightbox.currentIndex + 1}`} 
+                            className="lightbox-image"
+                        />
+                        {lightbox.images.length > 1 && (
+                            <div className="lightbox-counter">
+                                {lightbox.currentIndex + 1} / {lightbox.images.length}
+                            </div>
+                        )}
+                    </div>
+
+                    {lightbox.images.length > 1 && (
+                        <button className="lightbox-nav next" onClick={nextImage}>
+                            <FiChevronRight />
+                        </button>
+                    )}
                 </div>
             )}
         </div>
