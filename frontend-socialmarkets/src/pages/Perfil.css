@@ -241,11 +241,10 @@
   background: rgba(15, 23, 42, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 20px;
-  padding: 1.8rem 2rem;
+  padding: 1.5rem 2rem;
   display: flex;
   align-items: center;
-  flex-direction: row-reverse;
-  justify-content: space-between;
+  gap: 1.5rem;
   transition: transform 0.3s;
   width: 320px;
 }
@@ -288,10 +287,11 @@
 }
 
 .stat-label {
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   color: #94a3b8;
   text-transform: uppercase;
   letter-spacing: 1px;
+  font-weight: 600;
 }
 
 /* Especial para el índice de acierto */
@@ -302,8 +302,8 @@
 
 .success-header {
   display: flex;
-  align-items: baseline;
-  gap: 10px;
+  flex-direction: column;
+  gap: 2px;
   margin-bottom: 8px;
 }
 

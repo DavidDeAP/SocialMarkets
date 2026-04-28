@@ -11,12 +11,17 @@ import org.springframework.transaction.annotation.Transactional;
 import com.socialmarkets.backend_core.entities.Usuario;
 import com.socialmarkets.backend_core.repositories.UsuarioRepository;
 import com.socialmarkets.backend_core.security.JwtUtils;
+import org.springframework.context.annotation.Lazy;
 
 @Service
 public class UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    @Lazy
+    private AnalisisService analisisService;
 
     public String autenticar(String nombreUsuario, String password, JwtUtils jwtUtils) {
         Usuario usuario = usuarioRepository.findByUsuario(nombreUsuario)
@@ -69,8 +74,11 @@ public class UsuarioService {
     }
     
     public Usuario obtenerPorNombre(String nombre) {
-        return usuarioRepository.findByUsuario(nombre)
+        Usuario usuario = usuarioRepository.findByUsuario(nombre)
                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        
+        analisisService.actualizarEstadisticasUsuario(usuario);
+        return usuario;
     }
     
     public boolean esSeguidor(String nombreSeguidor, String nombreObjetivo) {

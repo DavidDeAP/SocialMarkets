@@ -438,9 +438,15 @@ const Comunidad = () => {
 
                                         <div className="card-market-info-new">
                                             <div className="market-header-compact">
-                                                <div className="asset-tag">
-                                                    <FiActivity className="icon-pulse" />
-                                                    <span>{analisis.activo?.nombre}</span>
+                                                <div className="header-left-tags">
+                                                    <div className="asset-tag">
+                                                        <FiActivity className="icon-pulse" />
+                                                        <span>{analisis.activo?.nombre}</span>
+                                                    </div>
+                                                    <div className="expiry-tag">
+                                                        <FiCalendar />
+                                                        <span>Vence: {formatFecha(analisis.fechaVencimiento)}</span>
+                                                    </div>
                                                 </div>
                                                 <div className={`perf-badge ${statusClass}`}>
                                                     {calculatePerformance(analisis.precioEntrada, precioActual) >= 0 ? '+' : ''}

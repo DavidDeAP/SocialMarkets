@@ -648,6 +648,12 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.header-left-tags {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
 .asset-tag {
     display: flex;
     align-items: center;
@@ -660,6 +666,23 @@
     font-size: 0.85rem;
     letter-spacing: 0.5px;
     border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.expiry-tag {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 6px 12px;
+    border-radius: 100px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.expiry-tag svg {
+    color: #6366f1;
 }
 
 .perf-badge {

@@ -124,15 +124,17 @@ public class AnalisisService {
         }
     }
 
-    private void actualizarEstadisticasUsuario(com.socialmarkets.backend_core.entities.Usuario usuario) {
+    @Transactional
+    public void actualizarEstadisticasUsuario(com.socialmarkets.backend_core.entities.Usuario usuario) {
         List<Analisis> todos = analisisRepository.findByUsuario(usuario);
-        long cerrados = todos.stream().filter(a -> a.getEstado() != EstadoAnalisis.PENDIENTE).count();
-        if (cerrados == 0) return;
-
-        long acertados = todos.stream().filter(a -> a.getEstado() == EstadoAnalisis.ACERTADO).count();
-        double indice = (double) acertados / cerrados * 100.0;
-        
-        usuario.setIndiceAcierto(indice);
+        long cerrados = todos.stream().filter(a -> a.getEstado() != com.socialmarkets.backend_core.enums.EstadoAnalisis.PENDIENTE).count();
+        if (cerrados == 0) {
+            usuario.setIndiceAcierto(0.0);
+        } else {
+            long acertados = todos.stream().filter(a -> a.getEstado() == com.socialmarkets.backend_core.enums.EstadoAnalisis.ACERTADO).count();
+            double indice = (double) acertados / cerrados * 100.0;
+            usuario.setIndiceAcierto(indice);
+        }
         usuarioRepository.save(usuario);
     }
 
