@@ -1,18 +1,26 @@
 package com.socialmarkets.backend_core.services;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.socialmarkets.backend_core.entities.Analisis;
-import com.socialmarkets.backend_core.enums.EstadoAnalisis;
 import com.socialmarkets.backend_core.entities.Usuario;
 import com.socialmarkets.backend_core.entities.Voto;
+import com.socialmarkets.backend_core.entities.Activo;
+import com.socialmarkets.backend_core.enums.EstadoAnalisis;
 import com.socialmarkets.backend_core.repositories.AnalisisRepository;
 import com.socialmarkets.backend_core.repositories.UsuarioRepository;
 import com.socialmarkets.backend_core.repositories.VotoRepository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AnalisisService {
@@ -21,6 +29,7 @@ public class AnalisisService {
     private AnalisisRepository analisisRepository;
 
     @Autowired
+    @org.springframework.context.annotation.Lazy
     private UsuarioService usuarioService;
 
     @Autowired
@@ -39,29 +48,25 @@ public class AnalisisService {
     private VotoRepository votoRepository;
 
     @Transactional
-    public Analisis crearAnalisis(Analisis analisis, String username, org.springframework.web.multipart.MultipartFile[] imagenes) throws Exception {
-        // 1. Asignar Usuario
-        com.socialmarkets.backend_core.entities.Usuario usuario = usuarioService.obtenerPorNombre(username);
+    public Analisis crearAnalisis(Analisis analisis, String username, MultipartFile[] imagenes) throws Exception {
+        Usuario usuario = usuarioService.obtenerPorNombre(username);
         analisis.setUsuario(usuario);
 
-        // 2. Gestionar Activo
         if (analisis.getActivo() != null && analisis.getActivo().getNombre() != null) {
             String nombreActivo = analisis.getActivo().getNombre().toUpperCase();
             try {
                 analisis.setActivo(activoService.obtenerPorNombre(nombreActivo));
             } catch (Exception e) {
-                // Si no existe, creamos uno básico
-                com.socialmarkets.backend_core.entities.Activo nuevoActivo = new com.socialmarkets.backend_core.entities.Activo();
+                Activo nuevoActivo = new Activo();
                 nuevoActivo.setNombre(nombreActivo);
-                nuevoActivo.setTipo("CRIPTO"); // Por defecto
+                nuevoActivo.setTipo("CRIPTO");
                 analisis.setActivo(activoService.guardarOActualizar(nuevoActivo));
             }
         }
 
-        // 3. Subir Imágenes a S3
         if (imagenes != null && imagenes.length > 0) {
-            java.util.List<String> urls = new java.util.ArrayList<>();
-            for (org.springframework.web.multipart.MultipartFile img : imagenes) {
+            List<String> urls = new ArrayList<>();
+            for (MultipartFile img : imagenes) {
                 if (img != null && !img.isEmpty()) {
                     urls.add(s3Service.subirArchivo(img));
                 }
@@ -69,9 +74,8 @@ public class AnalisisService {
             analisis.setImagenes(urls);
         }
 
-        // 4. Configurar Metadatos
         analisis.setEstado(EstadoAnalisis.PENDIENTE);
-        analisis.setFechaCreacion(java.time.LocalDateTime.now());
+        analisis.setFechaCreacion(LocalDateTime.now());
         
         return analisisRepository.save(analisis);
     }
@@ -85,7 +89,7 @@ public class AnalisisService {
     public void verificarAnalisisPendientes() {
         try {
             List<Analisis> pendientes = analisisRepository.findByEstado(EstadoAnalisis.PENDIENTE);
-            java.time.LocalDateTime ahora = java.time.LocalDateTime.now();
+            LocalDateTime ahora = LocalDateTime.now();
 
             for (Analisis a : pendientes) {
                 try {
@@ -125,13 +129,13 @@ public class AnalisisService {
     }
 
     @Transactional
-    public void actualizarEstadisticasUsuario(com.socialmarkets.backend_core.entities.Usuario usuario) {
+    public void actualizarEstadisticasUsuario(Usuario usuario) {
         List<Analisis> todos = analisisRepository.findByUsuario(usuario);
-        long cerrados = todos.stream().filter(a -> a.getEstado() != com.socialmarkets.backend_core.enums.EstadoAnalisis.PENDIENTE).count();
+        long cerrados = todos.stream().filter(a -> a.getEstado() != EstadoAnalisis.PENDIENTE).count();
         if (cerrados == 0) {
             usuario.setIndiceAcierto(0.0);
         } else {
-            long acertados = todos.stream().filter(a -> a.getEstado() == com.socialmarkets.backend_core.enums.EstadoAnalisis.ACERTADO).count();
+            long acertados = todos.stream().filter(a -> a.getEstado() == EstadoAnalisis.ACERTADO).count();
             double indice = (double) acertados / cerrados * 100.0;
             usuario.setIndiceAcierto(indice);
         }
@@ -142,8 +146,33 @@ public class AnalisisService {
         try {
             return analisisRepository.findByEstado(EstadoAnalisis.valueOf(estado.toUpperCase()));
         } catch (Exception e) {
-            return new java.util.ArrayList<>();
+            return new ArrayList<>();
         }
+    }
+
+    public java.util.Map<String, Object> obtenerResumenDashboard(String username) {
+        Usuario usuario = usuarioRepository.findByUsuario(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        
+        List<Analisis> todos = analisisRepository.findByUsuario(usuario);
+        List<Analisis> activos = todos.stream()
+                .filter(a -> a.getEstado() == EstadoAnalisis.PENDIENTE)
+                .collect(Collectors.toList());
+
+        java.util.Map<String, Object> resumen = new java.util.HashMap<>();
+        resumen.put("total", todos.size());
+        resumen.put("indiceAcierto", usuario.getIndiceAcierto());
+        resumen.put("activos", activos);
+        
+        LocalDateTime inicioMes = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0);
+        long acertadosMes = todos.stream()
+                .filter(a -> a.getEstado() == EstadoAnalisis.ACERTADO && a.getFechaCreacion().isAfter(inicioMes))
+                .count();
+        
+        double aumento = acertadosMes > 0 ? (double)acertadosMes * 1.5 : 0.0;
+        resumen.put("aumentoMes", aumento);
+
+        return resumen;
     }
 
     public Analisis obtenerPorId(Long id) {
@@ -151,12 +180,16 @@ public class AnalisisService {
                 .orElseThrow(() -> new RuntimeException("Análisis no encontrado"));
     }
 
+    public List<Analisis> obtenerPorIdEn(List<Long> ids) {
+        return analisisRepository.findAllById(ids);
+    }
+
     @Transactional
     public void alternarVoto(Long analisisId, String username) {
         Analisis analisis = obtenerPorId(analisisId);
         Usuario usuario = usuarioService.obtenerPorNombre(username);
 
-        java.util.Optional<Voto> votoExistente = votoRepository.findByUsuarioAndAnalisis(usuario, analisis);
+        Optional<Voto> votoExistente = votoRepository.findByUsuarioAndAnalisis(usuario, analisis);
 
         if (votoExistente.isPresent()) {
             votoRepository.delete(votoExistente.get());

@@ -1,6 +1,7 @@
 package com.socialmarkets.backend_core.controllers;
 
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
@@ -45,6 +46,11 @@ public class AnalisisController {
     @GetMapping("/estado/{estado}")
     public ResponseEntity<List<Analisis>> obtenerAnalisisPorEstado(@PathVariable String estado) {
         return ResponseEntity.ok(analisisService.obtenerPorEstado(estado));
+    }
+
+    @GetMapping("/resumen")
+    public ResponseEntity<java.util.Map<String, Object>> obtenerResumen(java.security.Principal principal) {
+        return ResponseEntity.ok(analisisService.obtenerResumenDashboard(principal.getName()));
     }
 
     // GET: http://localhost:8080/api/analisis/{id}
