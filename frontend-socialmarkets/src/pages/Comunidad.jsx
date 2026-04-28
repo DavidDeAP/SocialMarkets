@@ -344,8 +344,17 @@ const Comunidad = () => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className={`tipo-badge ${analisis.tipo?.toLowerCase()}`}>
-                                            {analisis.tipo === 'TECNICO' ? 'Técnico' : 'Fundamental'}
+                                        <div className="card-badges">
+                                            <div className={`tipo-badge ${analisis.tipo?.toLowerCase()}`}>
+                                                {analisis.tipo === 'TECNICO' ? 'Técnico' : 'Fundamental'}
+                                            </div>
+                                            <div className={`sentiment-badge ${analisis.precioObjetivo > analisis.precioEntrada ? 'bullish' : 'bearish'}`}>
+                                                {analisis.precioObjetivo > analisis.precioEntrada ? (
+                                                    <><FiArrowUpRight /> Alcista</>
+                                                ) : (
+                                                    <><FiArrowDownRight /> Bajista</>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
 

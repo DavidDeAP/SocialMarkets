@@ -908,10 +908,16 @@
     color: rgba(255, 255, 255, 0.1);
 }
 
+.card-badges {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
 .tipo-badge {
     padding: 4px 12px;
     border-radius: 100px;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -927,6 +933,30 @@
     background: rgba(168, 85, 247, 0.1);
     color: #c084fc;
     border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.sentiment-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sentiment-badge.bullish {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.sentiment-badge.bearish {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 /* Market Info Row */
