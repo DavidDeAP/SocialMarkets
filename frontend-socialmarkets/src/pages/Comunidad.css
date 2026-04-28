@@ -1146,10 +1146,64 @@
     border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+.footer-left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.btn-like {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #cbd5e1;
+    padding: 8px 18px;
+    border-radius: 100px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 800;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.btn-like:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.5);
+    color: #ef4444;
+    transform: scale(1.08);
+}
+
+.btn-like.active {
+    background: rgba(239, 68, 68, 0.35);
+    border-color: rgba(239, 68, 68, 0.6);
+    color: #ef4444;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+}
+
+.btn-like svg {
+    font-size: 1.3rem;
+    transition: transform 0.3s ease;
+}
+
+.btn-like.active svg {
+    fill: #ef4444;
+    transform: scale(1.2);
+    animation: heartBeat 0.4s ease-out;
+}
+
+@keyframes heartBeat {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.4); }
+    100% { transform: scale(1.2); }
+}
+
 .post-date {
     font-size: 0.75rem;
     color: #64748b;
     font-weight: 600;
+    margin-left: auto;
 }
 
 @keyframes slideUp {

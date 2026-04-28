@@ -57,4 +57,16 @@ public class AnalisisController {
             return ResponseEntity.status(404).body(e.getMessage());
         }
     }
+
+    // POST: http://localhost:8080/api/analisis/{id}/votar
+    @PostMapping("/{id}/votar")
+    public ResponseEntity<?> votarAnalisis(@PathVariable Long id, Principal principal) {
+        try {
+            if (principal == null) return ResponseEntity.status(401).body("No autorizado");
+            analisisService.alternarVoto(id, principal.getName());
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

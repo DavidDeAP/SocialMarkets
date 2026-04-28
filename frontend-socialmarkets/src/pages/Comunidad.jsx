@@ -4,7 +4,7 @@ import {
     FiPlus, FiMessageSquare, FiImage, FiTarget,
     FiCalendar, FiBarChart2, FiX, FiActivity, FiDollarSign,
     FiXCircle, FiCheckCircle, FiArrowUpRight, FiArrowDownRight,
-    FiChevronLeft, FiChevronRight
+    FiChevronLeft, FiChevronRight, FiHeart
 } from 'react-icons/fi';
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
@@ -325,6 +325,27 @@ const Comunidad = () => {
         }));
     };
 
+    const handleVotar = async (analisisId) => {
+        try {
+            await api.post(`/analisis/${analisisId}/votar`);
+            // Actualización optimista o recarga silenciosa
+            setListaAnalisis(prev => prev.map(a => {
+                if (a.identificador === analisisId) {
+                    const yaVotado = a.votos?.some(v => v.usuario?.usuario === user?.usuario);
+                    const nuevosVotos = yaVotado 
+                        ? a.votos.filter(v => v.usuario?.usuario !== user?.usuario)
+                        : [...(a.votos || []), { usuario: { usuario: user?.usuario } }];
+                    return { ...a, votos: nuevosVotos };
+                }
+                return a;
+            }));
+        } catch (err) {
+            console.error("Error al votar:", err);
+            setToast({ mostrar: true, mensaje: "Error al registrar voto", tipo: "error" });
+            setTimeout(() => setToast({ mostrar: false, mensaje: '', tipo: '' }), 3000);
+        }
+    };
+
     return (
         <div className="dashboard-layout">
             <Sidebar />
@@ -465,7 +486,16 @@ const Comunidad = () => {
                                         </div>
 
                                         <div className="card-footer">
-                                            <span className="post-date">Publicado el {formatFecha(analisis.fechaCreacion)}</span>
+                                            <div className="footer-left">
+                                                <button 
+                                                    className={`btn-like ${analisis.votos?.some(v => v.usuario?.usuario === user?.usuario) ? 'active' : ''}`}
+                                                    onClick={() => handleVotar(analisis.identificador)}
+                                                >
+                                                    <FiHeart />
+                                                    <span>{analisis.votos?.length || 0}</span>
+                                                </button>
+                                                <span className="post-date">Publicado el {formatFecha(analisis.fechaCreacion)}</span>
+                                            </div>
                                         </div>
                                     </article>
                                 );

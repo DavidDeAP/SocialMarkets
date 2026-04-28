@@ -7,8 +7,11 @@ import org.springframework.stereotype.Service;
 
 import com.socialmarkets.backend_core.entities.Analisis;
 import com.socialmarkets.backend_core.enums.EstadoAnalisis;
+import com.socialmarkets.backend_core.entities.Usuario;
+import com.socialmarkets.backend_core.entities.Voto;
 import com.socialmarkets.backend_core.repositories.AnalisisRepository;
 import com.socialmarkets.backend_core.repositories.UsuarioRepository;
+import com.socialmarkets.backend_core.repositories.VotoRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -28,6 +31,9 @@ public class AnalisisService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private VotoRepository votoRepository;
 
     @Transactional
     public Analisis crearAnalisis(Analisis analisis, String username, org.springframework.web.multipart.MultipartFile[] imagenes) throws Exception {
@@ -78,5 +84,22 @@ public class AnalisisService {
     public Analisis obtenerPorId(Long id) {
         return analisisRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Análisis no encontrado"));
+    }
+
+    @Transactional
+    public void alternarVoto(Long analisisId, String username) {
+        Analisis analisis = obtenerPorId(analisisId);
+        Usuario usuario = usuarioService.obtenerPorNombre(username);
+
+        java.util.Optional<Voto> votoExistente = votoRepository.findByUsuarioAndAnalisis(usuario, analisis);
+
+        if (votoExistente.isPresent()) {
+            votoRepository.delete(votoExistente.get());
+        } else {
+            Voto nuevoVoto = new Voto();
+            nuevoVoto.setUsuario(usuario);
+            nuevoVoto.setAnalisis(analisis);
+            votoRepository.save(nuevoVoto);
+        }
     }
 }
