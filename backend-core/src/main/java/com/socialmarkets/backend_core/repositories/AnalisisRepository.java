@@ -10,5 +10,5 @@ public interface AnalisisRepository extends JpaRepository<Analisis, Long> {
     List<Analisis> findByUsuario(Usuario usuario);
     
     // Para filtrar por estado (Pendiente, Acertado o Fallido)
-    List<Analisis> findByEstado(String estado);
+    List<Analisis> findByEstado(com.socialmarkets.backend_core.enums.EstadoAnalisis estado);
 }

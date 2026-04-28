@@ -1043,6 +1043,40 @@
     box-shadow: 0 0 15px rgba(239, 68, 68, 0.1);
 }
 
+/* Estilos para análisis completados */
+.analisis-card.settled {
+    opacity: 0.9;
+    background: rgba(15, 23, 42, 0.8);
+}
+
+.status-badge-settled {
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+.status-badge-settled.acertado {
+    background: #10b981;
+    color: #064e3b;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.status-badge-settled.fallido {
+    background: #ef4444;
+    color: #450a0a;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.market-value.price-settled {
+    color: #f8fafc;
+    font-weight: 900;
+    text-decoration: underline dotted rgba(255, 255, 255, 0.3);
+}
+
 .market-item {
     display: flex;
     flex-direction: column;

@@ -30,6 +30,9 @@ public class AnalisisService {
     private S3Service s3Service;
 
     @Autowired
+    private MarketDataService marketDataService;
+
+    @Autowired
     private UsuarioRepository usuarioRepository;
 
     @Autowired
@@ -74,11 +77,71 @@ public class AnalisisService {
     }
 
     public List<Analisis> obtenerTodos() {
+        verificarAnalisisPendientes();
         return analisisRepository.findAll();
     }
 
+    @Transactional
+    public void verificarAnalisisPendientes() {
+        try {
+            List<Analisis> pendientes = analisisRepository.findByEstado(EstadoAnalisis.PENDIENTE);
+            java.time.LocalDateTime ahora = java.time.LocalDateTime.now();
+
+            for (Analisis a : pendientes) {
+                try {
+                    if (a.getActivo() == null || a.getFechaVencimiento() == null) continue;
+
+                    boolean cerrado = false;
+                    Double precioActual = marketDataService.obtenerPrecioActual(a.getActivo().getNombre());
+
+                    if (precioActual != null) {
+                        boolean isBullish = a.getPrecioObjetivo() > a.getPrecioEntrada();
+                        
+                        if ((isBullish && precioActual >= a.getPrecioObjetivo()) || 
+                            (!isBullish && precioActual <= a.getPrecioObjetivo())) {
+                            a.setEstado(EstadoAnalisis.ACERTADO);
+                            a.setPrecioCierre(precioActual);
+                            cerrado = true;
+                        }
+                    }
+
+                    if (!cerrado && a.getFechaVencimiento().isBefore(ahora)) {
+                        a.setEstado(EstadoAnalisis.FALLIDO);
+                        a.setPrecioCierre(precioActual != null ? precioActual : a.getPrecioEntrada());
+                        cerrado = true;
+                    }
+
+                    if (cerrado) {
+                        analisisRepository.save(a);
+                        actualizarEstadisticasUsuario(a.getUsuario());
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error procesando análisis " + a.getIdentificador() + ": " + e.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error general en verificación de análisis: " + e.getMessage());
+        }
+    }
+
+    private void actualizarEstadisticasUsuario(com.socialmarkets.backend_core.entities.Usuario usuario) {
+        List<Analisis> todos = analisisRepository.findByUsuario(usuario);
+        long cerrados = todos.stream().filter(a -> a.getEstado() != EstadoAnalisis.PENDIENTE).count();
+        if (cerrados == 0) return;
+
+        long acertados = todos.stream().filter(a -> a.getEstado() == EstadoAnalisis.ACERTADO).count();
+        double indice = (double) acertados / cerrados * 100.0;
+        
+        usuario.setIndiceAcierto(indice);
+        usuarioRepository.save(usuario);
+    }
+
     public List<Analisis> obtenerPorEstado(String estado) {
-        return analisisRepository.findByEstado(estado);
+        try {
+            return analisisRepository.findByEstado(EstadoAnalisis.valueOf(estado.toUpperCase()));
+        } catch (Exception e) {
+            return new java.util.ArrayList<>();
+        }
     }
 
     public Analisis obtenerPorId(Long id) {

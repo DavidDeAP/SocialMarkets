@@ -370,10 +370,15 @@ const Comunidad = () => {
                             </div>
                         ) : (
                             listaAnalisis.map((analisis) => {
-                                const precioActual = preciosVivos[analisis.activo?.nombre?.toUpperCase()]?.price;
+                                const precioActual = analisis.estado === 'PENDIENTE' 
+                                    ? preciosVivos[analisis.activo?.nombre?.toUpperCase()]?.price 
+                                    : analisis.precioCierre;
+                                    
                                 let statusClass = "";
 
-                                if (precioActual && analisis.precioEntrada && analisis.precioObjetivo) {
+                                if (analisis.estado === 'ACERTADO') statusClass = "status-winning settled";
+                                else if (analisis.estado === 'FALLIDO') statusClass = "status-losing settled";
+                                else if (precioActual && analisis.precioEntrada && analisis.precioObjetivo) {
                                     const isBullish = analisis.precioObjetivo > analisis.precioEntrada;
                                     if (isBullish) {
                                         statusClass = precioActual >= analisis.precioEntrada ? "status-winning" : "status-losing";
@@ -381,6 +386,8 @@ const Comunidad = () => {
                                         statusClass = precioActual <= analisis.precioEntrada ? "status-winning" : "status-losing";
                                     }
                                 }
+
+                                const isSettled = analisis.estado !== 'PENDIENTE';
 
                                 return (
                                     <article key={analisis.identificador} className={`analisis-card glass-card ${statusClass}`}>
@@ -415,6 +422,11 @@ const Comunidad = () => {
                                                         <><FiArrowDownRight /> Bajista</>
                                                     )}
                                                 </div>
+                                                {isSettled && (
+                                                    <div className={`status-badge-settled ${analisis.estado.toLowerCase()}`}>
+                                                        {analisis.estado === 'ACERTADO' ? 'ACERTADO' : 'FALLIDO'}
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
 
@@ -436,11 +448,13 @@ const Comunidad = () => {
                                                     <span className="market-value price-entry">${analisis.precioEntrada?.toLocaleString()}</span>
                                                 </div>
                                                 <div className="market-item">
-                                                    <label>Actual</label>
-                                                    <span className="market-value price-live">
-                                                        {preciosVivos[analisis.activo?.nombre?.toUpperCase()]
-                                                            ? `$${preciosVivos[analisis.activo?.nombre?.toUpperCase()].price.toLocaleString()}`
-                                                            : 'Cargando...'}
+                                                    <label>{isSettled ? 'Cierre' : 'Actual'}</label>
+                                                    <span className={`market-value ${isSettled ? 'price-settled' : 'price-live'}`}>
+                                                        {isSettled 
+                                                            ? `$${analisis.precioCierre?.toLocaleString()}`
+                                                            : preciosVivos[analisis.activo?.nombre?.toUpperCase()]
+                                                                ? `$${preciosVivos[analisis.activo?.nombre?.toUpperCase()].price.toLocaleString()}`
+                                                                : 'Cargando...'}
                                                     </span>
                                                 </div>
                                                 <div className="market-item">
