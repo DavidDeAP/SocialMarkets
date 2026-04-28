@@ -29,9 +29,9 @@ const Comunidad = () => {
     const [publicando, setPublicando] = useState(false);
     const [cargandoFeed, setCargandoFeed] = useState(true);
     const [selectedFiles, setSelectedFiles] = useState([]);
-    
-    // Estados de filtrado
-    const [filtroActivo, setFiltroActivo] = useState('recientes');
+
+    // Estados de filtrado avanzado
+    const [filtrosSeleccionados, setFiltrosSeleccionados] = useState(['recientes']);
     const [searchQuery, setSearchQuery] = useState('');
     const [showFilters, setShowFilters] = useState(false);
 
@@ -343,7 +343,7 @@ const Comunidad = () => {
             setListaAnalisis(prev => prev.map(a => {
                 if (a.identificador === analisisId) {
                     const yaVotado = a.votos?.some(v => v.usuario?.usuario === user?.usuario);
-                    const nuevosVotos = yaVotado 
+                    const nuevosVotos = yaVotado
                         ? a.votos.filter(v => v.usuario?.usuario !== user?.usuario)
                         : [...(a.votos || []), { usuario: { usuario: user?.usuario } }];
                     return { ...a, votos: nuevosVotos };
@@ -357,24 +357,61 @@ const Comunidad = () => {
         }
     };
 
+    const toggleFiltro = (id) => {
+        setFiltrosSeleccionados(prev => {
+            // Lógica de exclusión mutua: 'activos' vs ('acertados' o 'fallados')
+            if (id === 'activos') {
+                const filtrados = prev.filter(f => f !== 'acertados' && f !== 'fallados');
+                return filtrados.includes('activos') ? filtrados.filter(f => f !== 'activos') : [...filtrados, 'activos'];
+            }
+            if (id === 'acertados' || id === 'fallados') {
+                const filtrados = prev.filter(f => f !== 'activos');
+                if (prev.includes(id)) {
+                    return filtrados.filter(f => f !== id);
+                } else {
+                    return [...filtrados, id];
+                }
+            }
+
+            if (prev.includes(id)) {
+                if (prev.length === 1) return prev; // No dejar vacío si es el único
+                return prev.filter(f => f !== id);
+            } else {
+                return [...prev, id];
+            }
+        });
+    };
+
     const obtenerAnalisisFiltrados = () => {
         let filtrados = [...listaAnalisis];
 
+        // 1. Búsqueda por texto
         if (searchQuery.trim()) {
             const q = searchQuery.toLowerCase();
-            filtrados = filtrados.filter(a => 
-                a.contenido?.toLowerCase().includes(q) || 
+            filtrados = filtrados.filter(a =>
+                a.contenido?.toLowerCase().includes(q) ||
                 a.activo?.nombre?.toLowerCase().includes(q) ||
                 a.usuario?.usuario?.toLowerCase().includes(q)
             );
         }
 
-        switch (filtroActivo) {
+        // 2. Filtros de Estado (Activos / Acertados / Fallados)
+        if (filtrosSeleccionados.includes('activos') || filtrosSeleccionados.includes('acertados') || filtrosSeleccionados.includes('fallados')) {
+            filtrados = filtrados.filter(a => {
+                if (filtrosSeleccionados.includes('activos') && a.estado === 'PENDIENTE') return true;
+                if (filtrosSeleccionados.includes('acertados') && a.estado === 'ACERTADO') return true;
+                if (filtrosSeleccionados.includes('fallados') && a.estado === 'FALLIDO') return true;
+                return false;
+            });
+        }
+
+        // 3. Ordenación
+        const filtrosOrden = filtrosSeleccionados.filter(f => ['recientes', 'likes', 'acierto'].includes(f));
+        const ordenPrincipal = filtrosOrden[filtrosOrden.length - 1] || 'recientes';
+
+        switch (ordenPrincipal) {
             case 'likes':
                 filtrados.sort((a, b) => (b.votos?.length || 0) - (a.votos?.length || 0));
-                break;
-            case 'preds':
-                filtrados.sort((a, b) => (b.usuario?.numeroPredicciones || 0) - (a.usuario?.numeroPredicciones || 0));
                 break;
             case 'acierto':
                 filtrados.sort((a, b) => (b.usuario?.indiceAcierto || 0) - (a.usuario?.indiceAcierto || 0));
@@ -405,9 +442,9 @@ const Comunidad = () => {
                         <div className={`filters-panel ${showFilters ? 'show' : ''}`}>
                             <div className="search-bar-modern">
                                 <FiMessageSquare />
-                                <input 
-                                    type="text" 
-                                    placeholder="Buscar por activo, analista o palabra clave..." 
+                                <input
+                                    type="text"
+                                    placeholder="Buscar por activo, analista o palabra clave..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                 />
@@ -417,29 +454,44 @@ const Comunidad = () => {
                             <div className="filter-options">
                                 <span className="filter-label">Ordenar por:</span>
                                 <div className="filter-chips">
-                                    <button 
-                                        className={filtroActivo === 'recientes' ? 'active' : ''} 
-                                        onClick={() => setFiltroActivo('recientes')}
+                                    <button
+                                        className={filtrosSeleccionados.includes('recientes') ? 'active' : ''}
+                                        onClick={() => toggleFiltro('recientes')}
                                     >
                                         Más Recientes
                                     </button>
-                                    <button 
-                                        className={filtroActivo === 'likes' ? 'active' : ''} 
-                                        onClick={() => setFiltroActivo('likes')}
+                                    <button
+                                        className={filtrosSeleccionados.includes('likes') ? 'active' : ''}
+                                        onClick={() => toggleFiltro('likes')}
                                     >
                                         Más Votados
                                     </button>
-                                    <button 
-                                        className={filtroActivo === 'acierto' ? 'active' : ''} 
-                                        onClick={() => setFiltroActivo('acierto')}
+                                    <button
+                                        className={filtrosSeleccionados.includes('acierto') ? 'active' : ''}
+                                        onClick={() => toggleFiltro('acierto')}
                                     >
-                                        Mayor % Acierto
+                                        Índice Acierto
                                     </button>
-                                    <button 
-                                        className={filtroActivo === 'preds' ? 'active' : ''} 
-                                        onClick={() => setFiltroActivo('preds')}
+                                    
+                                    <div className="filter-separator-v"></div>
+
+                                    <button
+                                        className={`chip-status info ${filtrosSeleccionados.includes('activos') ? 'active' : ''}`}
+                                        onClick={() => toggleFiltro('activos')}
                                     >
-                                        Más Activos
+                                        <FiActivity /> En curso
+                                    </button>
+                                    <button
+                                        className={`chip-status success ${filtrosSeleccionados.includes('acertados') ? 'active' : ''}`}
+                                        onClick={() => toggleFiltro('acertados')}
+                                    >
+                                        <FiCheckCircle /> Acertados
+                                    </button>
+                                    <button
+                                        className={`chip-status danger ${filtrosSeleccionados.includes('fallados') ? 'active' : ''}`}
+                                        onClick={() => toggleFiltro('fallados')}
+                                    >
+                                        <FiXCircle /> Fallados
                                     </button>
                                 </div>
                             </div>
@@ -459,10 +511,10 @@ const Comunidad = () => {
                             </div>
                         ) : (
                             analisisFiltrados.map((analisis) => {
-                                const precioActual = analisis.estado === 'PENDIENTE' 
-                                    ? preciosVivos[analisis.activo?.nombre?.toUpperCase()]?.price 
+                                const precioActual = analisis.estado === 'PENDIENTE'
+                                    ? preciosVivos[analisis.activo?.nombre?.toUpperCase()]?.price
                                     : analisis.precioCierre;
-                                    
+
                                 let statusClass = "";
 
                                 if (analisis.estado === 'ACERTADO') statusClass = "status-winning settled";
@@ -551,7 +603,7 @@ const Comunidad = () => {
                                                     <div className="p-data">
                                                         <label>{isSettled ? 'Cierre' : 'Actual'}</label>
                                                         <span className="p-val">
-                                                            {isSettled 
+                                                            {isSettled
                                                                 ? `$${analisis.precioCierre?.toLocaleString()}`
                                                                 : preciosVivos[analisis.activo?.nombre?.toUpperCase()]
                                                                     ? `$${preciosVivos[analisis.activo?.nombre?.toUpperCase()].price.toLocaleString()}`
@@ -577,10 +629,10 @@ const Comunidad = () => {
                                                 <div className="analysis-gallery horizontal-scroll">
                                                     {analisis.imagenes.map((url, idx) => (
                                                         <div key={idx} className="gallery-item">
-                                                            <img 
-                                                                src={url} 
-                                                                alt={`Análisis ${idx}`} 
-                                                                onClick={() => openLightbox(analisis.imagenes, idx)} 
+                                                            <img
+                                                                src={url}
+                                                                alt={`Análisis ${idx}`}
+                                                                onClick={() => openLightbox(analisis.imagenes, idx)}
                                                             />
                                                         </div>
                                                     ))}
@@ -590,7 +642,7 @@ const Comunidad = () => {
 
                                         <div className="card-footer">
                                             <div className="footer-left">
-                                                <button 
+                                                <button
                                                     className={`btn-like ${analisis.votos?.some(v => v.usuario?.usuario === user?.usuario) ? 'active' : ''}`}
                                                     onClick={() => handleVotar(analisis.identificador)}
                                                 >
@@ -607,15 +659,15 @@ const Comunidad = () => {
                     </div>
 
                     <div className="action-bar-comunidad-fab">
-                        <button 
+                        <button
                             className={`btn-fab-round filter ${showFilters ? 'active' : ''}`}
                             onClick={() => setShowFilters(!showFilters)}
                             title="Filtrar análisis"
                         >
                             <FiFilter />
                         </button>
-                        <button 
-                            className="btn-fab-round publish" 
+                        <button
+                            className="btn-fab-round publish"
                             onClick={() => setShowModal(true)}
                             title="Publicar Nuevo Análisis"
                         >
@@ -939,7 +991,7 @@ const Comunidad = () => {
                     <button className="lightbox-close" onClick={closeLightbox}>
                         <FiX />
                     </button>
-                    
+
                     {lightbox.images.length > 1 && (
                         <button className="lightbox-nav prev" onClick={prevImage}>
                             <FiChevronLeft />
@@ -947,9 +999,9 @@ const Comunidad = () => {
                     )}
 
                     <div className="lightbox-content" onClick={e => e.stopPropagation()}>
-                        <img 
-                            src={lightbox.images[lightbox.currentIndex]} 
-                            alt={`Imagen ${lightbox.currentIndex + 1}`} 
+                        <img
+                            src={lightbox.images[lightbox.currentIndex]}
+                            alt={`Imagen ${lightbox.currentIndex + 1}`}
                             className="lightbox-image"
                         />
                         {lightbox.images.length > 1 && (
