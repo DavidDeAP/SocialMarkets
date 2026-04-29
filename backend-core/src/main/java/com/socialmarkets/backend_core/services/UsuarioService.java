@@ -87,6 +87,9 @@ public class UsuarioService {
         return objetivo.getSeguidores().contains(seguidor);
     }
     
+    @Autowired
+    private NotificacionService notificacionService;
+
     @Transactional
     public boolean toggleSeguimiento(String nombreSeguidor, String nombreObjetivo) {
         if (nombreSeguidor.equals(nombreObjetivo)) {
@@ -103,6 +106,14 @@ public class UsuarioService {
         } else {
             objetivo.getSeguidores().add(seguidor);
             usuarioRepository.save(objetivo);
+            
+            // Notificar al usuario objetivo
+            notificacionService.crearNotificacion(
+                objetivo, 
+                "@" + nombreSeguidor + " te ha comenzado a seguir", 
+                "/perfil/" + nombreSeguidor
+            );
+            
             return true;
         }
     }

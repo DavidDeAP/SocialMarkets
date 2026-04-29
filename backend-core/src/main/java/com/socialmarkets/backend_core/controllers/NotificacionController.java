@@ -23,13 +23,25 @@ public class NotificacionController {
 
     // POST: http://localhost:8080/api/notificaciones/crear
     @PostMapping("/crear")
-    public ResponseEntity<?> crearNotificacion(@RequestParam Long usuarioId, @RequestParam String texto) {
+    public ResponseEntity<?> crearNotificacion(@RequestParam Long usuarioId, @RequestParam String texto, @RequestParam(required = false) String enlace) {
         try {
             Usuario usuario = usuarioService.obtenerPorId(usuarioId);
-            Notificacion nuevaNotificacion = notificacionService.crearNotificacion(usuario, texto);
+            Notificacion nuevaNotificacion = notificacionService.crearNotificacion(usuario, texto, enlace);
             return ResponseEntity.ok(nuevaNotificacion);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // GET: http://localhost:8080/api/notificaciones/ultimas10/{usuarioId}
+    @GetMapping("/ultimas10/{usuarioId}")
+    public ResponseEntity<?> obtenerUltimas10(@PathVariable Long usuarioId) {
+        try {
+            Usuario usuario = usuarioService.obtenerPorId(usuarioId);
+            List<Notificacion> ultimas = notificacionService.obtenerUltimas10(usuario);
+            return ResponseEntity.ok(ultimas);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
         }
     }
 
@@ -51,6 +63,18 @@ public class NotificacionController {
         try {
             notificacionService.marcarComoLeida(id);
             return ResponseEntity.ok("Notificación marcada como leída");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // PUT: http://localhost:8080/api/notificaciones/leertodas/{usuarioId}
+    @PutMapping("/leertodas/{usuarioId}")
+    public ResponseEntity<?> marcarTodasComoLeidas(@PathVariable Long usuarioId) {
+        try {
+            Usuario usuario = usuarioService.obtenerPorId(usuarioId);
+            notificacionService.marcarTodasComoLeidas(usuario);
+            return ResponseEntity.ok("Todas las notificaciones marcadas como leídas");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

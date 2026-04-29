@@ -47,6 +47,9 @@ public class AnalisisService {
     @Autowired
     private VotoRepository votoRepository;
 
+    @Autowired
+    private NotificacionService notificacionService;
+
     @Transactional
     public Analisis crearAnalisis(Analisis analisis, String username, MultipartFile[] imagenes) throws Exception {
         Usuario usuario = usuarioService.obtenerPorNombre(username);
@@ -77,7 +80,18 @@ public class AnalisisService {
         analisis.setEstado(EstadoAnalisis.PENDIENTE);
         analisis.setFechaCreacion(LocalDateTime.now());
         
-        return analisisRepository.save(analisis);
+        Analisis guardado = analisisRepository.save(analisis);
+
+        if (usuario.getSeguidores() != null) {
+            String textoNoti = "@" + usuario.getUsuario() + " ha publicado un nuevo análisis sobre " + guardado.getActivo().getNombre();
+            String enlaceNoti = "/comunidad?analisis=" + guardado.getIdentificador();
+            
+            for (Usuario seguidor : usuario.getSeguidores()) {
+                notificacionService.crearNotificacion(seguidor, textoNoti, enlaceNoti);
+            }
+        }
+
+        return guardado;
     }
 
     public List<Analisis> obtenerTodos() {

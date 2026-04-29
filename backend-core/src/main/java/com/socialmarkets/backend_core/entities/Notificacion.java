@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "notificaciones")
 public class Notificacion {
@@ -19,6 +20,9 @@ public class Notificacion {
     @Column(name = "texto", nullable = false, length = 255)
     private String texto;
 
+    @Column(name = "enlace")
+    private String enlace;
+
     @Column(name = "fecha", nullable = false)
     private LocalDateTime fecha;
 
@@ -27,10 +31,16 @@ public class Notificacion {
 
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
+    @ToString.Exclude
     private Usuario usuario;
 
     @PrePersist
     protected void onCreate() {
-        this.fecha = LocalDateTime.now();
+        if (this.fecha == null) {
+            this.fecha = LocalDateTime.now();
+        }
+        if (this.leida == null) {
+            this.leida = false;
+        }
     }
 }

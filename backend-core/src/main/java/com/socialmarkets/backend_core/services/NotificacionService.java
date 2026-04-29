@@ -15,12 +15,14 @@ public class NotificacionService {
     @Autowired
     private NotificacionRepository notificacionRepository;
 
-    public Notificacion crearNotificacion(Usuario usuario, String texto) {
-        Notificacion noti = new Notificacion();
-        noti.setUsuario(usuario);
-        noti.setTexto(texto);
-        noti.setFecha(LocalDateTime.now());
-        noti.setLeida(false);
+    public Notificacion crearNotificacion(Usuario usuario, String texto, String enlace) {
+        Notificacion noti = Notificacion.builder()
+                .usuario(usuario)
+                .texto(texto)
+                .enlace(enlace)
+                .fecha(LocalDateTime.now())
+                .leida(false)
+                .build();
         return notificacionRepository.save(noti);
     }
 
@@ -28,10 +30,20 @@ public class NotificacionService {
         return notificacionRepository.findByUsuarioAndLeidaFalse(usuario);
     }
 
+    public List<Notificacion> obtenerUltimas10(Usuario usuario) {
+        return notificacionRepository.findTop10ByUsuarioOrderByFechaDesc(usuario);
+    }
+
     public void marcarComoLeida(Long id) {
         Notificacion n = notificacionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Notificación no encontrada"));
         n.setLeida(true);
         notificacionRepository.save(n);
+    }
+
+    public void marcarTodasComoLeidas(Usuario usuario) {
+        List<Notificacion> noLeidas = notificacionRepository.findByUsuarioAndLeidaFalse(usuario);
+        noLeidas.forEach(n -> n.setLeida(true));
+        notificacionRepository.saveAll(noLeidas);
     }
 }

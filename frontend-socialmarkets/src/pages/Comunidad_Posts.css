@@ -41,6 +41,19 @@
                 0 0 20px rgba(99, 102, 241, 0.1);
 }
 
+/* Highlight for when clicking a notification */
+.analisis-card.highlight-analysis {
+    border-color: #6366f1;
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.4);
+    animation: highlightPulse 1.5s infinite ease-in-out;
+}
+
+@keyframes highlightPulse {
+    0% { transform: scale(1); box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); }
+    50% { transform: scale(1.02); box-shadow: 0 0 40px rgba(99, 102, 241, 0.6); }
+    100% { transform: scale(1); box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); }
+}
+
 /* Status variants: Winning/Losing */
 .analisis-card.status-winning {
     border-left: 6px solid #10b981;

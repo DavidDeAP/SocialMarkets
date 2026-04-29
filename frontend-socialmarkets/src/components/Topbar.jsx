@@ -8,6 +8,9 @@ const API_BASE_URL = 'http://localhost:8080';
 
 const Topbar = ({ user }) => {
     const [menuAbierto, setMenuAbierto] = useState(false);
+    const [panelNotisAbierto, setPanelNotisAbierto] = useState(false);
+    const [notificaciones, setNotificaciones] = useState([]);
+    const [hayNuevas, setHayNuevas] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [sugerencias, setSugerencias] = useState([]);
     const [buscando, setBuscando] = useState(false);
@@ -26,6 +29,50 @@ const Topbar = ({ user }) => {
         if (!user?.imagen) return null;
         if (user.imagen.startsWith('http')) return user.imagen;
         return `${API_BASE_URL}${user.imagen}`;
+    };
+
+    // Polling de notificaciones no leídas
+    useEffect(() => {
+        if (!user?.identificador) return;
+
+        const checkNuevas = async () => {
+            try {
+                const res = await api.get(`/notificaciones/noleidas/${user.identificador}`);
+                setHayNuevas(res.data.length > 0);
+            } catch (err) {
+                console.error("Error check notis:", err);
+            }
+        };
+
+        checkNuevas();
+        const interval = setInterval(checkNuevas, 30000);
+        return () => clearInterval(interval);
+    }, [user?.identificador]);
+
+    // Cargar las últimas 10 al abrir el panel
+    const togglePanelNotis = async () => {
+        if (!panelNotisAbierto && user?.identificador) {
+            try {
+                const res = await api.get(`/notificaciones/ultimas10/${user.identificador}`);
+                setNotificaciones(res.data);
+                // Si había nuevas, las marcamos todas como leídas al abrir
+                if (hayNuevas) {
+                    await api.put(`/notificaciones/leertodas/${user.identificador}`);
+                    setHayNuevas(false);
+                }
+            } catch (err) {
+                console.error("Error cargando notis:", err);
+            }
+        }
+        setPanelNotisAbierto(!panelNotisAbierto);
+        setMenuAbierto(false);
+    };
+
+    const manejarClickNotificacion = (noti) => {
+        setPanelNotisAbierto(false);
+        if (noti.enlace) {
+            navigate(noti.enlace);
+        }
     };
 
     useEffect(() => {
@@ -53,6 +100,18 @@ const Topbar = ({ user }) => {
         setSearchQuery('');
         setSugerencias([]);
         navigate(`/perfil/${username}`);
+    };
+
+    const formatearFecha = (fechaStr) => {
+        const fecha = new Date(fechaStr);
+        const ahora = new Date();
+        const diffMs = ahora - fecha;
+        const diffMin = Math.floor(diffMs / 60000);
+        const diffHoras = Math.floor(diffMin / 60);
+
+        if (diffMin < 60) return `hace ${diffMin} min`;
+        if (diffHoras < 24) return `hace ${diffHoras} h`;
+        return fecha.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
     };
 
     return (
@@ -112,12 +171,45 @@ const Topbar = ({ user }) => {
                     )}
                 </div>
 
-                <FiBell className="menu-icon notification-bell" />
+                <div className="notification-wrapper">
+                    <FiBell 
+                        className={`menu-icon notification-bell ${hayNuevas ? 'has-new' : ''}`} 
+                        onClick={togglePanelNotis}
+                    />
+                    {hayNuevas && <span className="notification-dot"></span>}
+                    
+                    {panelNotisAbierto && (
+                        <div className="notification-panel">
+                            <div className="noti-header">
+                                <h3>Notificaciones</h3>
+                            </div>
+                            <div className="noti-list">
+                                {notificaciones.length > 0 ? (
+                                    notificaciones.map(noti => (
+                                        <div 
+                                            key={noti.identificador} 
+                                            className={`noti-item ${!noti.leida ? 'unread' : ''}`}
+                                            onClick={() => manejarClickNotificacion(noti)}
+                                        >
+                                            <p className="noti-text">{noti.texto}</p>
+                                            <span className="noti-date">{formatearFecha(noti.fecha)}</span>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="noti-empty">No tienes notificaciones</div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </div>
                 
                 <div className="dropdown-container">
                     <FiMenu 
                         className="menu-icon" 
-                        onClick={() => setMenuAbierto(!menuAbierto)} 
+                        onClick={() => {
+                            setMenuAbierto(!menuAbierto);
+                            setPanelNotisAbierto(false);
+                        }} 
                     />
                     
                     {menuAbierto && (

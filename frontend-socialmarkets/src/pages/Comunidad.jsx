@@ -227,21 +227,44 @@ const Comunidad = () => {
         }
     };
 
+    const fetchPerfil = async () => {
+        try {
+            const respuesta = await api.get('/usuarios/perfil');
+            setUser(respuesta.data);
+        } catch (err) {
+            console.error("Error al obtener perfil:", err);
+            navigate('/login');
+        } finally {
+            setCargando(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchPerfil = async () => {
-            try {
-                const respuesta = await api.get('/usuarios/perfil');
-                setUser(respuesta.data);
-            } catch (err) {
-                console.error("Error al obtener perfil:", err);
-                navigate('/login');
-            } finally {
-                setCargando(false);
-            }
-        };
         fetchPerfil();
         fetchAnalisis();
     }, [navigate]);
+
+    // Lógica para scroll automático cuando venimos de una notificación
+    useEffect(() => {
+        const queryParams = new URLSearchParams(location.search);
+        const targetId = queryParams.get('analisis');
+        
+        if (targetId && listaAnalisis.length > 0) {
+            // Esperamos a que el feed cargue y se renderice
+            const timer = setTimeout(() => {
+                const element = document.getElementById(`analisis-${targetId}`);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    element.classList.add('highlight-analysis');
+                    // Quitar el resaltado después de unos segundos
+                    setTimeout(() => {
+                        element.classList.remove('highlight-analysis');
+                    }, 3000);
+                }
+            }, 600);
+            return () => clearTimeout(timer);
+        }
+    }, [listaAnalisis, location.search]);
 
     // Polling de precios para el feed (Cada 10 segundos)
     useEffect(() => {
@@ -593,7 +616,11 @@ const Comunidad = () => {
                                 const isSettled = analisis.estado !== 'PENDIENTE';
 
                                 return (
-                                    <article key={analisis.identificador} className={`analisis-card glass-card ${statusClass}`}>
+                                    <article 
+                                        key={analisis.identificador} 
+                                        id={`analisis-${analisis.identificador}`}
+                                        className={`analisis-card glass-card ${statusClass}`}
+                                    >
                                         <div className="card-header">
                                             <div className="user-info-section clickable-profile" onClick={() => navigate(`/perfil/${analisis.usuario?.usuario}`)}>
                                                 <img
