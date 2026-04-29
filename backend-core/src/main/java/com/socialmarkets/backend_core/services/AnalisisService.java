@@ -166,6 +166,15 @@ public class AnalisisService {
         usuarioRepository.save(usuario);
     }
 
+    public List<Analisis> obtenerPorUsuario(String username) {
+        Usuario usuario = usuarioRepository.findByUsuario(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        
+        return analisisRepository.findByUsuario(usuario).stream()
+                .sorted((a, b) -> b.getFechaCreacion().compareTo(a.getFechaCreacion()))
+                .collect(Collectors.toList());
+    }
+
     public List<Analisis> obtenerPorEstado(String estado) {
         try {
             return analisisRepository.findByEstado(EstadoAnalisis.valueOf(estado.toUpperCase()));

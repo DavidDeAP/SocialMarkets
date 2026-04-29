@@ -48,6 +48,11 @@ public class AnalisisController {
         return ResponseEntity.ok(analisisService.obtenerPorEstado(estado));
     }
 
+    @GetMapping("/usuario/{username}")
+    public ResponseEntity<List<Analisis>> obtenerAnalisisPorUsuario(@PathVariable String username) {
+        return ResponseEntity.ok(analisisService.obtenerPorUsuario(username));
+    }
+
     @GetMapping("/resumen")
     public ResponseEntity<java.util.Map<String, Object>> obtenerResumen(java.security.Principal principal) {
         return ResponseEntity.ok(analisisService.obtenerResumenDashboard(principal.getName()));

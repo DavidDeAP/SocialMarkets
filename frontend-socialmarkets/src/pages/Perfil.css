@@ -517,3 +517,37 @@
     transform: translateX(0);
   }
 }
+
+/* --- SECCIÓN DEL FEED EN EL PERFIL --- */
+.profile-feed-section {
+  margin-top: 3rem;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.section-title-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 2rem;
+  padding-left: 1rem;
+  border-left: 4px solid var(--accent);
+}
+
+.section-title-row h2 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: white;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.section-title-row svg {
+  font-size: 1.8rem;
+  color: var(--accent);
+}
+
+/* Ajuste del feed para que no tenga scroll interno en el perfil si no es necesario */
+.feed-analisis.profile-mode {
+  overflow-y: visible;
+  padding-bottom: 4rem;
+}

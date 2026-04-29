@@ -4,13 +4,16 @@ import defaultUser from '../assets/defaultuser.png';
 import { 
     FiEdit2, FiBarChart2, FiCheckCircle, FiXCircle, 
     FiCalendar, FiUsers, FiTrendingUp, FiTarget, 
-    FiTrash2, FiUserPlus, FiUserMinus
+    FiTrash2, FiUserPlus, FiUserMinus, FiHeart,
+    FiArrowUpRight, FiArrowDownRight, FiActivity,
+    FiChevronLeft, FiChevronRight, FiMessageSquare
 } from 'react-icons/fi';
 
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
 import api from '../services/api';
 import './Perfil.css';
+import './Comunidad.css'; // Reutilizamos estilos de la comunidad para los posts
 
 const Perfil = () => {
     const { username } = useParams(); 
@@ -25,6 +28,16 @@ const Perfil = () => {
     const [borrarFoto, setBorrarFoto] = useState(false);
     const [previewUrl, setPreviewUrl] = useState(null);
     const [editando, setEditando] = useState(false);
+    
+    // Estados para el feed de análisis del usuario
+    const [listaAnalisis, setListaAnalisis] = useState([]);
+    const [cargandoFeed, setCargandoFeed] = useState(true);
+    const [preciosVivos, setPreciosVivos] = useState({});
+    const [lightbox, setLightbox] = useState({
+        isOpen: false,
+        images: [],
+        currentIndex: 0
+    });
     
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
@@ -68,8 +81,114 @@ const Perfil = () => {
         
         if (username) {
             cargarTodo();
+            fetchAnalisisUsuario();
         }
     }, [username, navigate]);
+
+    const fetchAnalisisUsuario = async () => {
+        setCargandoFeed(true);
+        try {
+            const res = await api.get(`/analisis/usuario/${username}`);
+            setListaAnalisis(res.data);
+        } catch (err) {
+            console.error("Error al obtener análisis del usuario:", err);
+        } finally {
+            setCargandoFeed(false);
+        }
+    };
+
+    // Polling de precios para los análisis del perfil
+    useEffect(() => {
+        if (listaAnalisis.length === 0) return;
+
+        const actualizarPreciosFeed = async () => {
+            const simbolosRaw = listaAnalisis.map(a => a.activo?.nombre).filter(Boolean);
+            const simbolosUnicos = [...new Set(simbolosRaw.map(s => s.trim().toUpperCase()))];
+
+            if (simbolosUnicos.length === 0) return;
+
+            try {
+                const url = `/market/prices?symbols=${simbolosUnicos.join(',')}`;
+                const res = await api.get(url);
+                const data = typeof res.data === 'string' ? JSON.parse(res.data) : res.data;
+                const resultados = data.quoteResponse?.result || data.finance?.result || [];
+
+                if (resultados.length > 0) {
+                    const nuevosPrecios = {};
+                    resultados.forEach(quote => {
+                        const simbolo = quote.symbol?.toUpperCase();
+                        if (simbolo) {
+                            nuevosPrecios[simbolo] = {
+                                price: quote.regularMarketPrice || quote.price || quote.ask || 0,
+                                currency: quote.currency,
+                                lastUpdate: new Date().getTime()
+                            };
+                        }
+                    });
+                    setPreciosVivos(prev => ({ ...prev, ...nuevosPrecios }));
+                }
+            } catch (err) {
+                console.error("Error en polling de precios:", err);
+            }
+        };
+
+        actualizarPreciosFeed();
+        const interval = setInterval(actualizarPreciosFeed, 10000);
+        return () => clearInterval(interval);
+    }, [listaAnalisis]);
+
+    const handleVotar = async (analisisId) => {
+        try {
+            await api.post(`/analisis/${analisisId}/votar`);
+            setListaAnalisis(prev => prev.map(a => {
+                if (a.identificador === analisisId) {
+                    const yaVotado = a.votos?.some(v => v.usuario?.usuario === user?.usuario);
+                    const nuevosVotos = yaVotado
+                        ? a.votos.filter(v => v.usuario?.usuario !== user?.usuario)
+                        : [...(a.votos || []), { usuario: { usuario: user?.usuario } }];
+                    return { ...a, votos: nuevosVotos };
+                }
+                return a;
+            }));
+        } catch (err) {
+            console.error("Error al votar:", err);
+        }
+    };
+
+    const formatFecha = (fechaStr) => {
+        if (!fechaStr) return '';
+        const fecha = new Date(fechaStr);
+        return fecha.toLocaleDateString('es-ES', {
+            day: '2-digit', month: 'short', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+        });
+    };
+
+    const calculatePerformance = (entrada, actual) => {
+        if (!entrada || !actual) return '0.00';
+        return (((actual - entrada) / entrada) * 100).toFixed(2);
+    };
+
+    // Funciones del Lightbox
+    const openLightbox = (images, index) => {
+        setLightbox({ isOpen: true, images, currentIndex: index });
+        document.body.style.overflow = 'hidden';
+    };
+
+    const closeLightbox = () => {
+        setLightbox(prev => ({ ...prev, isOpen: false }));
+        document.body.style.overflow = 'auto';
+    };
+
+    const nextImage = (e) => {
+        e.stopPropagation();
+        setLightbox(prev => ({ ...prev, currentIndex: (prev.currentIndex + 1) % prev.images.length }));
+    };
+
+    const prevImage = (e) => {
+        e.stopPropagation();
+        setLightbox(prev => ({ ...prev, currentIndex: (prev.currentIndex - 1 + prev.images.length) % prev.images.length }));
+    };
 
     const handleFollow = async () => {
         try {
@@ -288,8 +407,191 @@ const Perfil = () => {
                             </div>
                         )}
                     </div>
+
+                    {/* FEED DE ANÁLISIS DEL USUARIO */}
+                    <div className="profile-feed-section">
+                        <div className="section-title-row">
+                            <FiBarChart2 />
+                            <h2>Historial de Análisis</h2>
+                        </div>
+
+                        <div className="feed-analisis profile-mode">
+                            {cargandoFeed ? (
+                                <div className="loader-container-feed">
+                                    <div className="loader-small"></div>
+                                    <p>Cargando análisis...</p>
+                                </div>
+                            ) : listaAnalisis.length === 0 ? (
+                                <div className="placeholder-feed glass-card">
+                                    <FiMessageSquare size={40} />
+                                    <p>Este analista aún no ha publicado ninguna predicción.</p>
+                                </div>
+                            ) : (
+                                listaAnalisis.map((analisis) => {
+                                    const precioActual = analisis.estado === 'PENDIENTE'
+                                        ? preciosVivos[analisis.activo?.nombre?.toUpperCase()]?.price
+                                        : analisis.precioCierre;
+
+                                    let statusClass = "";
+                                    if (analisis.estado === 'ACERTADO') statusClass = "status-winning settled";
+                                    else if (analisis.estado === 'FALLIDO') statusClass = "status-losing settled";
+                                    else if (precioActual && analisis.precioEntrada && analisis.precioObjetivo) {
+                                        const isBullish = analisis.precioObjetivo > analisis.precioEntrada;
+                                        if (isBullish) {
+                                            statusClass = precioActual >= analisis.precioEntrada ? "status-winning" : "status-losing";
+                                        } else {
+                                            statusClass = precioActual <= analisis.precioEntrada ? "status-winning" : "status-losing";
+                                        }
+                                    }
+
+                                    const isSettled = analisis.estado !== 'PENDIENTE';
+
+                                    return (
+                                        <article key={analisis.identificador} className={`analisis-card glass-card ${statusClass}`}>
+                                            <div className="card-header">
+                                                <div className="user-info-section">
+                                                    <img
+                                                        src={userProfile.imagen || defaultUser}
+                                                        alt={userProfile.usuario}
+                                                        className="user-avatar-small"
+                                                    />
+                                                    <div className="user-meta">
+                                                        <span className="username">{userProfile.usuario}</span>
+                                                        <div className="user-stats-small">
+                                                            <span className="stat-item acierto">
+                                                                {userProfile.indiceAcierto?.toFixed(1) || 0}% acierto
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="card-badges">
+                                                    <div className={`tipo-badge ${analisis.tipo?.toLowerCase()}`}>
+                                                        {analisis.tipo === 'TECNICO' ? 'Técnico' : 'Fundamental'}
+                                                    </div>
+                                                    <div className={`sentiment-badge ${analisis.precioObjetivo > analisis.precioEntrada ? 'bullish' : 'bearish'}`}>
+                                                        {analisis.precioObjetivo > analisis.precioEntrada ? (
+                                                            <><FiArrowUpRight /> Alcista</>
+                                                        ) : (
+                                                            <><FiArrowDownRight /> Bajista</>
+                                                        )}
+                                                    </div>
+                                                    {isSettled && (
+                                                        <div className={`status-badge-settled ${analisis.estado.toLowerCase()}`}>
+                                                            {analisis.estado === 'ACERTADO' ? 'ACERTADO' : 'FALLIDO'}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            <div className="card-market-info-new">
+                                                <div className="market-header-compact">
+                                                    <div className="header-left-tags">
+                                                        <div className="asset-tag">
+                                                            <FiActivity className="icon-pulse" />
+                                                            <span>{analisis.activo?.nombre}</span>
+                                                        </div>
+                                                        <div className="expiry-tag">
+                                                            <FiCalendar />
+                                                            <span>Vence: {formatFecha(analisis.fechaVencimiento)}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div className={`perf-badge ${statusClass}`}>
+                                                        {calculatePerformance(analisis.precioEntrada, precioActual) >= 0 ? '+' : ''}
+                                                        {calculatePerformance(analisis.precioEntrada, precioActual)}%
+                                                    </div>
+                                                </div>
+
+                                                <div className="prices-dashboard">
+                                                    <div className="price-card entry">
+                                                        <div className="p-icon"><FiArrowUpRight /></div>
+                                                        <div className="p-data">
+                                                            <label>Entrada</label>
+                                                            <span className="p-val">${analisis.precioEntrada?.toLocaleString()}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className={`price-card ${isSettled ? 'settled' : 'live'}`}>
+                                                        <div className="p-icon">{isSettled ? <FiXCircle /> : <FiActivity />}</div>
+                                                        <div className="p-data">
+                                                            <label>{isSettled ? 'Cierre' : 'Actual'}</label>
+                                                            <span className="p-val">
+                                                                {isSettled
+                                                                    ? `$${analisis.precioCierre?.toLocaleString()}`
+                                                                    : preciosVivos[analisis.activo?.nombre?.toUpperCase()]
+                                                                        ? `$${preciosVivos[analisis.activo?.nombre?.toUpperCase()].price.toLocaleString()}`
+                                                                        : '...'}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="price-card target">
+                                                        <div className="p-icon"><FiTarget /></div>
+                                                        <div className="p-data">
+                                                            <label>Objetivo</label>
+                                                            <span className="p-val">${analisis.precioObjetivo?.toLocaleString()}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="card-content">
+                                                <p className="analysis-text">{analisis.contenido}</p>
+                                                {analisis.imagenes && analisis.imagenes.length > 0 && (
+                                                    <div className="analysis-gallery horizontal-scroll">
+                                                        {analisis.imagenes.map((url, idx) => (
+                                                            <div key={idx} className="gallery-item">
+                                                                <img
+                                                                    src={url}
+                                                                    alt={`Análisis ${idx}`}
+                                                                    onClick={() => openLightbox(analisis.imagenes, idx)}
+                                                                />
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className="card-footer">
+                                                <div className="footer-left">
+                                                    <button
+                                                        className={`btn-like ${analisis.votos?.some(v => v.usuario?.usuario === user?.usuario) ? 'active' : ''}`}
+                                                        onClick={() => handleVotar(analisis.identificador)}
+                                                    >
+                                                        <FiHeart />
+                                                        <span>{analisis.votos?.length || 0}</span>
+                                                    </button>
+                                                    <span className="post-date">Publicado el {formatFecha(analisis.fechaCreacion)}</span>
+                                                </div>
+                                            </div>
+                                        </article>
+                                    );
+                                })
+                            )}
+                        </div>
+                    </div>
                 </main>
             </div>
+
+            {/* LIGHTBOX COMPONENT */}
+            {lightbox.isOpen && (
+                <div className="lightbox-overlay" onClick={closeLightbox}>
+                    <button className="lightbox-close" onClick={closeLightbox}><FiXCircle /></button>
+                    
+                    {lightbox.images.length > 1 && (
+                        <>
+                            <button className="lightbox-nav prev" onClick={prevImage}><FiChevronLeft /></button>
+                            <button className="lightbox-nav next" onClick={nextImage}><FiChevronRight /></button>
+                        </>
+                    )}
+
+                    <div className="lightbox-content" onClick={e => e.stopPropagation()}>
+                        <img src={lightbox.images[lightbox.currentIndex]} alt="Fullscreen" />
+                        <div className="lightbox-counter">
+                            {lightbox.currentIndex + 1} / {lightbox.images.length}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
