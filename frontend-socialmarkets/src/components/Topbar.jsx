@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiSearch, FiBell, FiMenu, FiUser, FiLogOut, FiX } from 'react-icons/fi';
 import api from '../services/api';
@@ -52,6 +52,23 @@ const Topbar = ({ user }) => {
     const [pagNoti, setPagNoti] = useState(0);
     const [hasMoreNoti, setHasMoreNoti] = useState(true);
     const [cargandoMasNoti, setCargandoMasNoti] = useState(false);
+
+    const notiRef = useRef(null);
+    const profileRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickAfuera = (event) => {
+            if (notiRef.current && !notiRef.current.contains(event.target)) {
+                setPanelNotisAbierto(false);
+            }
+            if (profileRef.current && !profileRef.current.contains(event.target)) {
+                setMenuAbierto(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickAfuera);
+        return () => document.removeEventListener("mousedown", handleClickAfuera);
+    }, []);
 
     const loadMoreNotis = async (reset = false) => {
         if (!reset && (!hasMoreNoti || cargandoMasNoti)) return;
@@ -205,7 +222,7 @@ const Topbar = ({ user }) => {
                     )}
                 </div>
 
-                <div className="notification-wrapper">
+                <div className="notification-wrapper" ref={notiRef}>
                     <FiBell
                         className={`menu-icon notification-bell ${hayNuevas ? 'has-new' : ''}`}
                         onClick={togglePanelNotis}
@@ -274,7 +291,7 @@ const Topbar = ({ user }) => {
                     )}
                 </div>
 
-                <div className="dropdown-container">
+                <div className="dropdown-container" ref={profileRef}>
                     <FiMenu
                         className="menu-icon"
                         onClick={() => {
