@@ -322,24 +322,15 @@ const Perfil = () => {
         ? new Date(userProfile.fechaCreacion).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
         : "---";
 
-    // Cálculos para el popup de predicciones (Desglose Live + Histórico)
-    const statsPreds = listaAnalisis.reduce((acc, a) => {
-        if (a.estado === 'PENDIENTE') {
-            acc.activas++;
-            const price = preciosVivos[a.activo?.nombre?.toUpperCase()]?.price;
-            if (price) {
-                const isBullish = a.precioObjetivo > a.precioEntrada;
-                const isWinning = isBullish ? price >= a.precioEntrada : price <= a.precioEntrada;
-                if (isWinning) acc.ganando++;
-                else acc.perdiendo++;
-            }
-        } else if (a.estado === 'ACERTADO') {
-            acc.acertadas++;
-        } else if (a.estado === 'FALLIDO') {
-            acc.fallidas++;
-        }
-        return acc;
-    }, { activas: 0, ganando: 0, perdiendo: 0, acertadas: 0, fallidas: 0 });
+    // Cálculos para el popup de predicciones (Desglose Total desde el Backend)
+    const resumen = userProfile?.resumenProyecciones || {};
+    const statsPreds = {
+        activas: resumen.activas || 0,
+        ganando: resumen.ganando || 0,
+        perdiendo: resumen.perdiendo || 0,
+        acertadas: resumen.acertadas || 0,
+        fallidas: resumen.fallidas || 0
+    };
 
     return (
         <div className="dashboard-layout">

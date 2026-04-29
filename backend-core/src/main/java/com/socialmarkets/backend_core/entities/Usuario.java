@@ -99,14 +99,29 @@ public class Usuario {
         return "Analista Pro";
     }
 
+    @Column(name = "proyecciones_activas")
+    private Integer proyeccionesActivas = 0;
+
+    @Column(name = "proyecciones_acertadas")
+    private Integer proyeccionesAcertadas = 0;
+
+    @Column(name = "proyecciones_fallidas")
+    private Integer proyeccionesFallidas = 0;
+
+    @Column(name = "proyecciones_ganando")
+    private Integer proyeccionesGanando = 0;
+
+    @Column(name = "proyecciones_perdiendo")
+    private Integer proyeccionesPerdiendo = 0;
+
     @JsonProperty("resumenProyecciones")
     public Map<String, Integer> getResumenProyecciones() {
-        // Aquí en el futuro pondré la lista 'private List<Analisis> analisis'
-        // Por ahora, devuelve valores de ejemplo para que mi UI no esté vacía
         return Map.of(
-            "activas", 4,
-            "enVerde", 2,
-            "enRojo", 2
+            "activas", proyeccionesActivas != null ? proyeccionesActivas : 0,
+            "acertadas", proyeccionesAcertadas != null ? proyeccionesAcertadas : 0,
+            "fallidas", proyeccionesFallidas != null ? proyeccionesFallidas : 0,
+            "ganando", proyeccionesGanando != null ? proyeccionesGanando : 0,
+            "perdiendo", proyeccionesPerdiendo != null ? proyeccionesPerdiendo : 0
         );
     }
 
