@@ -41,13 +41,15 @@ public class NotificacionController {
         }
     }
 
-    // GET: http://localhost:8080/api/notificaciones/ultimas10/{usuarioId}
+    // GET: http://localhost:8080/api/notificaciones/ultimas10/{usuarioId}?page=0&size=5
     @GetMapping("/ultimas10/{usuarioId}")
-    public ResponseEntity<?> obtenerUltimas10(@PathVariable Long usuarioId) {
+    public ResponseEntity<?> obtenerUltimas10(
+            @PathVariable Long usuarioId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
         try {
             Usuario usuario = usuarioService.obtenerPorId(usuarioId);
-            List<Notificacion> ultimas = notificacionService.obtenerUltimas10(usuario);
-            return ResponseEntity.ok(ultimas);
+            return ResponseEntity.ok(notificacionService.obtenerPaginadas(usuario, page, size));
         } catch (RuntimeException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         }

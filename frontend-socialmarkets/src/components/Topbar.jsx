@@ -49,19 +49,53 @@ const Topbar = ({ user }) => {
         return () => clearInterval(interval);
     }, [user?.identificador]);
 
-    // Cargar las últimas 10 al abrir el panel
+    const [pagNoti, setPagNoti] = useState(0);
+    const [hasMoreNoti, setHasMoreNoti] = useState(true);
+    const [cargandoMasNoti, setCargandoMasNoti] = useState(false);
+
+    const loadMoreNotis = async (reset = false) => {
+        if (!reset && (!hasMoreNoti || cargandoMasNoti)) return;
+        const pageToFetch = reset ? 0 : pagNoti;
+        
+        if (reset) {
+            setPagNoti(0);
+            setHasMoreNoti(true);
+        } else {
+            setCargandoMasNoti(true);
+        }
+
+        try {
+            const res = await api.get(`/notificaciones/ultimas10/${user.identificador}?page=${pageToFetch}&size=5`);
+            const data = res.data;
+            const nuevas = data.content;
+
+            if (reset) {
+                setNotificaciones(nuevas);
+                setPagNoti(1);
+            } else {
+                setNotificaciones(prev => [...prev, ...nuevas]);
+                setPagNoti(prev => prev + 1);
+            }
+            setHasMoreNoti(!data.last);
+        } catch (err) {
+            console.error("Error cargando notis:", err);
+        } finally {
+            setCargandoMasNoti(false);
+        }
+    };
+
+    // Cargar las primeras 5 al abrir el panel
     const togglePanelNotis = async () => {
         if (!panelNotisAbierto && user?.identificador) {
-            try {
-                const res = await api.get(`/notificaciones/ultimas10/${user.identificador}`);
-                setNotificaciones(res.data);
-                // Si había nuevas, las marcamos todas como leídas al abrir
-                if (hayNuevas) {
+            loadMoreNotis(true);
+            // Si había nuevas, las marcamos todas como leídas al abrir
+            if (hayNuevas) {
+                try {
                     await api.put(`/notificaciones/leertodas/${user.identificador}`);
                     setHayNuevas(false);
+                } catch (err) {
+                    console.error("Error marcando leídas:", err);
                 }
-            } catch (err) {
-                console.error("Error cargando notis:", err);
             }
         }
         setPanelNotisAbierto(!panelNotisAbierto);
@@ -183,34 +217,55 @@ const Topbar = ({ user }) => {
                             <div className="noti-header">
                                 <h3>Notificaciones</h3>
                             </div>
-                            <div className="noti-list">
+                            <div 
+                                className="noti-list"
+                                onScroll={(e) => {
+                                    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+                                    if (scrollHeight - scrollTop <= clientHeight + 20) {
+                                        if (hasMoreNoti && !cargandoMasNoti) {
+                                            loadMoreNotis();
+                                        }
+                                    }
+                                }}
+                            >
                                 {notificaciones.length > 0 ? (
-                                    notificaciones.map(noti => {
-                                        const imagenUrl = noti.autor?.imagen;
+                                    <>
+                                        {notificaciones.map(noti => {
+                                            const imagenUrl = noti.autor?.imagen;
 
-                                        return (
-                                            <div 
-                                                key={noti.identificador} 
-                                                className={`noti-item ${!noti.leida ? 'unread' : ''}`}
-                                                onClick={() => manejarClickNotificacion(noti)}
-                                            >
-                                                <div className="noti-content-wrapper">
-                                                    <div className="noti-avatar">
-                                                        {imagenUrl && (
-                                                            <img 
-                                                                src={imagenUrl.startsWith('http') ? imagenUrl : `${API_BASE_URL}${imagenUrl}`} 
-                                                                alt="Autor" 
-                                                            />
-                                                        )}
-                                                    </div>
-                                                    <div className="noti-info">
-                                                        <p className="noti-text">{noti.texto}</p>
-                                                        <span className="noti-date">{formatearFecha(noti.fecha)}</span>
+                                            return (
+                                                <div 
+                                                    key={noti.identificador} 
+                                                    className={`noti-item ${!noti.leida ? 'unread' : ''}`}
+                                                    onClick={() => manejarClickNotificacion(noti)}
+                                                >
+                                                    <div className="noti-content-wrapper">
+                                                        <div className="noti-avatar">
+                                                            {imagenUrl && (
+                                                                <img 
+                                                                    src={imagenUrl.startsWith('http') ? imagenUrl : `${API_BASE_URL}${imagenUrl}`} 
+                                                                    alt="Autor" 
+                                                                />
+                                                            )}
+                                                        </div>
+                                                        <div className="noti-info">
+                                                            <p className="noti-text">{noti.texto}</p>
+                                                            <span className="noti-date">{formatearFecha(noti.fecha)}</span>
+                                                        </div>
                                                     </div>
                                                 </div>
+                                            );
+                                        })}
+                                        
+                                        {cargandoMasNoti && (
+                                            <div className="noti-loading-more">
+                                                <div className="loader-tiny"></div>
                                             </div>
-                                        );
-                                    })
+                                        )}
+                                        {!hasMoreNoti && notificaciones.length > 5 && (
+                                            <div className="noti-end">Fin de notificaciones</div>
+                                        )}
+                                    </>
                                 ) : (
                                     <div className="noti-empty">No tienes notificaciones</div>
                                 )}

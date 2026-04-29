@@ -3,6 +3,10 @@ package com.socialmarkets.backend_core.services;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.socialmarkets.backend_core.entities.Notificacion;
@@ -37,19 +41,31 @@ public class NotificacionService {
 
     public List<Notificacion> obtenerUltimas10(Usuario usuario) {
         List<Notificacion> notis = notificacionRepository.findTop10ByUsuarioOrderByFechaDesc(usuario);
-        // Recuperación de autor para notificaciones antiguas o sin relación directa
         for (Notificacion n : notis) {
-            if (n.getAutor() == null && n.getTexto() != null && n.getTexto().startsWith("@")) {
-                try {
-                    String username = n.getTexto().split(" ")[0].substring(1);
-                    Usuario autor = usuarioService.obtenerPorNombre(username);
-                    n.setAutor(autor);
-                } catch (Exception e) {
-                    // Si no se encuentra el usuario, se queda como null
-                }
-            }
+            recuperarAutorSiEsNecesario(n);
         }
         return notis;
+    }
+
+    public Page<Notificacion> obtenerPaginadas(Usuario usuario, int pagina, int tamano) {
+        Pageable pageable = PageRequest.of(pagina, tamano, Sort.by(Sort.Direction.DESC, "fecha"));
+        Page<Notificacion> notis = notificacionRepository.findByUsuarioOrderByFechaDesc(usuario, pageable);
+        for (Notificacion n : notis) {
+            recuperarAutorSiEsNecesario(n);
+        }
+        return notis;
+    }
+
+    private void recuperarAutorSiEsNecesario(Notificacion n) {
+        if (n.getAutor() == null && n.getTexto() != null && n.getTexto().startsWith("@")) {
+            try {
+                String username = n.getTexto().split(" ")[0].substring(1);
+                Usuario autor = usuarioService.obtenerPorNombre(username);
+                n.setAutor(autor);
+            } catch (Exception e) {
+                // Si no se encuentra el usuario, se queda como null
+            }
+        }
     }
 
     public void marcarComoLeida(Long id) {

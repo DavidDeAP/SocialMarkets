@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
     FiPlus, FiMessageSquare, FiImage, FiTarget,
@@ -207,23 +207,40 @@ const Comunidad = () => {
 
 
 
-    const fetchAnalisis = async () => {
-        setCargandoFeed(true);
-        try {
-            const respuesta = await api.get('/analisis');
-            console.log("Análisis recibidos:", respuesta.data);
+    const [pagina, setPagina] = useState(0);
+    const [hasMore, setHasMore] = useState(true);
+    const [cargandoMas, setCargandoMas] = useState(false);
 
-            // Ordenar por fecha de creación (más nuevos primero)
-            const ordenados = respuesta.data.sort((a, b) => {
-                const dateA = a.fechaCreacion ? new Date(a.fechaCreacion).getTime() : 0;
-                const dateB = b.fechaCreacion ? new Date(b.fechaCreacion).getTime() : 0;
-                return dateB - dateA;
-            });
-            setListaAnalisis(ordenados);
+    const fetchAnalisis = async (reset = false) => {
+        if (!reset && (!hasMore || cargandoMas)) return;
+        
+        const pageToFetch = reset ? 0 : pagina;
+        if (reset) {
+            setCargandoFeed(true);
+            setPagina(0);
+            setHasMore(true);
+        } else {
+            setCargandoMas(true);
+        }
+
+        try {
+            const respuesta = await api.get(`/analisis?page=${pageToFetch}&size=5`);
+            const data = respuesta.data;
+            const nuevosAnalisis = data.content;
+
+            if (reset) {
+                setListaAnalisis(nuevosAnalisis);
+                setPagina(1);
+            } else {
+                setListaAnalisis(prev => [...prev, ...nuevosAnalisis]);
+                setPagina(prev => prev + 1);
+            }
+            setHasMore(!data.last);
         } catch (err) {
             console.error("Error al obtener análisis:", err);
         } finally {
             setCargandoFeed(false);
+            setCargandoMas(false);
         }
     };
 
@@ -241,8 +258,30 @@ const Comunidad = () => {
 
     useEffect(() => {
         fetchPerfil();
-        fetchAnalisis();
+        fetchAnalisis(true);
     }, [navigate]);
+
+    // Sentinel ref for Infinite Scroll
+    const observerTarget = useRef(null);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            entries => {
+                if (entries[0].isIntersecting && hasMore && !cargandoMas && !cargandoFeed) {
+                    fetchAnalisis();
+                }
+            },
+            { threshold: 0.1 }
+        );
+
+        if (observerTarget.current) {
+            observer.observe(observerTarget.current);
+        }
+
+        return () => {
+            if (observerTarget.current) observer.unobserve(observerTarget.current);
+        };
+    }, [hasMore, cargandoMas, cargandoFeed, pagina]);
 
     // Lógica para scroll automático cuando venimos de una notificación
     useEffect(() => {
@@ -745,6 +784,19 @@ const Comunidad = () => {
                                 );
                             })
                         )}
+
+                        {cargandoMas && (
+                            <div className="loader-container-more">
+                                <div className="loader-small"></div>
+                                <p>Cargando más análisis...</p>
+                            </div>
+                        )}
+                        {!hasMore && listaAnalisis.length > 0 && (
+                            <div className="end-of-feed">
+                                <p>Has llegado al final del feed</p>
+                            </div>
+                        )}
+                        <div ref={observerTarget} style={{ height: '10px' }}></div>
                     </div>
 
                     <div className="action-bar-comunidad-fab">

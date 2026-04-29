@@ -36,10 +36,12 @@ public class AnalisisController {
         }
     }
 
-    // GET: http://localhost:8080/api/analisis
+    // GET: http://localhost:8080/api/analisis?page=0&size=5
     @GetMapping
-    public ResponseEntity<List<Analisis>> listarAnalisis() {
-        return ResponseEntity.ok(analisisService.obtenerTodos());
+    public ResponseEntity<?> listarAnalisis(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        return ResponseEntity.ok(analisisService.obtenerTodosPaginados(page, size));
     }
 
     // GET: http://localhost:8080/api/analisis/estado/{estado}
@@ -49,8 +51,11 @@ public class AnalisisController {
     }
 
     @GetMapping("/usuario/{username}")
-    public ResponseEntity<List<Analisis>> obtenerAnalisisPorUsuario(@PathVariable String username) {
-        return ResponseEntity.ok(analisisService.obtenerPorUsuario(username));
+    public ResponseEntity<?> obtenerAnalisisPorUsuario(
+            @PathVariable String username,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        return ResponseEntity.ok(analisisService.obtenerPorUsuarioPaginado(username, page, size));
     }
 
     @GetMapping("/resumen")

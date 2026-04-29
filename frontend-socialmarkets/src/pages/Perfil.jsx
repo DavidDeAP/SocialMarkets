@@ -81,21 +81,67 @@ const Perfil = () => {
         
         if (username) {
             cargarTodo();
-            fetchAnalisisUsuario();
+            fetchAnalisisUsuario(true);
         }
     }, [username, navigate]);
 
-    const fetchAnalisisUsuario = async () => {
-        setCargandoFeed(true);
+    const [pagina, setPagina] = useState(0);
+    const [hasMore, setHasMore] = useState(true);
+    const [cargandoMas, setCargandoMas] = useState(false);
+
+    const fetchAnalisisUsuario = async (reset = false) => {
+        if (!reset && (!hasMore || cargandoMas)) return;
+
+        const pageToFetch = reset ? 0 : pagina;
+        if (reset) {
+            setCargandoFeed(true);
+            setPagina(0);
+            setHasMore(true);
+        } else {
+            setCargandoMas(true);
+        }
+
         try {
-            const res = await api.get(`/analisis/usuario/${username}`);
-            setListaAnalisis(res.data);
+            const res = await api.get(`/analisis/usuario/${username}?page=${pageToFetch}&size=5`);
+            const data = res.data;
+            const nuevosAnalisis = data.content;
+
+            if (reset) {
+                setListaAnalisis(nuevosAnalisis);
+                setPagina(1);
+            } else {
+                setListaAnalisis(prev => [...prev, ...nuevosAnalisis]);
+                setPagina(prev => prev + 1);
+            }
+            setHasMore(!data.last);
         } catch (err) {
             console.error("Error al obtener análisis del usuario:", err);
         } finally {
             setCargandoFeed(false);
+            setCargandoMas(false);
         }
     };
+
+    const observerTarget = useRef(null);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            entries => {
+                if (entries[0].isIntersecting && hasMore && !cargandoMas && !cargandoFeed) {
+                    fetchAnalisisUsuario();
+                }
+            },
+            { threshold: 0.1 }
+        );
+
+        if (observerTarget.current) {
+            observer.observe(observerTarget.current);
+        }
+
+        return () => {
+            if (observerTarget.current) observer.unobserve(observerTarget.current);
+        };
+    }, [hasMore, cargandoMas, cargandoFeed, pagina, username]);
 
     // Polling de precios para los análisis del perfil
     useEffect(() => {
@@ -620,6 +666,19 @@ const Perfil = () => {
                                     );
                                 })
                             )}
+
+                            {cargandoMas && (
+                                <div className="loader-container-more">
+                                    <div className="loader-small"></div>
+                                    <p>Cargando más análisis...</p>
+                                </div>
+                            )}
+                            {!hasMore && listaAnalisis.length > 0 && (
+                                <div className="end-of-feed">
+                                    <p>Has llegado al final del historial</p>
+                                </div>
+                            )}
+                            <div ref={observerTarget} style={{ height: '10px' }}></div>
                         </div>
                     </div>
                 </main>

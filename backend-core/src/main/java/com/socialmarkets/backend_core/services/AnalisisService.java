@@ -9,6 +9,10 @@ import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -96,7 +100,13 @@ public class AnalisisService {
 
     public List<Analisis> obtenerTodos() {
         verificarAnalisisPendientes();
-        return analisisRepository.findAll();
+        return analisisRepository.findAll(Sort.by(Sort.Direction.DESC, "fechaCreacion"));
+    }
+
+    public Page<Analisis> obtenerTodosPaginados(int pagina, int tamano) {
+        verificarAnalisisPendientes();
+        Pageable pageable = PageRequest.of(pagina, tamano, Sort.by(Sort.Direction.DESC, "fechaCreacion"));
+        return analisisRepository.findAll(pageable);
     }
 
     @Transactional
@@ -187,6 +197,14 @@ public class AnalisisService {
         return analisisRepository.findByUsuario(usuario).stream()
                 .sorted((a, b) -> b.getFechaCreacion().compareTo(a.getFechaCreacion()))
                 .collect(Collectors.toList());
+    }
+
+    public Page<Analisis> obtenerPorUsuarioPaginado(String username, int pagina, int tamano) {
+        Usuario usuario = usuarioRepository.findByUsuario(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        
+        Pageable pageable = PageRequest.of(pagina, tamano, Sort.by(Sort.Direction.DESC, "fechaCreacion"));
+        return analisisRepository.findByUsuario(usuario, pageable);
     }
 
     public List<Analisis> obtenerPorEstado(String estado) {
