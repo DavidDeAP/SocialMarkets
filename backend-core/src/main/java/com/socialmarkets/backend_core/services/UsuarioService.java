@@ -112,7 +112,7 @@ public class UsuarioService {
                 objetivo, 
                 "@" + nombreSeguidor + " te ha comenzado a seguir", 
                 "/perfil/" + nombreSeguidor,
-                seguidor.getImagen()
+                seguidor
             );
             
             return true;

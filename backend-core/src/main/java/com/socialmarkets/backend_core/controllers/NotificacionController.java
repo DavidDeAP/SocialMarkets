@@ -27,10 +27,14 @@ public class NotificacionController {
             @RequestParam Long usuarioId, 
             @RequestParam String texto, 
             @RequestParam(required = false) String enlace,
-            @RequestParam(required = false) String imagenAutor) {
+            @RequestParam(required = false) Long autorId) {
         try {
             Usuario usuario = usuarioService.obtenerPorId(usuarioId);
-            Notificacion nuevaNotificacion = notificacionService.crearNotificacion(usuario, texto, enlace, imagenAutor);
+            Usuario autor = null;
+            if (autorId != null) {
+                autor = usuarioService.obtenerPorId(autorId);
+            }
+            Notificacion nuevaNotificacion = notificacionService.crearNotificacion(usuario, texto, enlace, autor);
             return ResponseEntity.ok(nuevaNotificacion);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

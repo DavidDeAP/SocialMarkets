@@ -185,32 +185,32 @@ const Topbar = ({ user }) => {
                             </div>
                             <div className="noti-list">
                                 {notificaciones.length > 0 ? (
-                                    notificaciones.map(noti => (
-                                        <div
-                                            key={noti.identificador}
-                                            className={`noti-item ${!noti.leida ? 'unread' : ''}`}
-                                            onClick={() => manejarClickNotificacion(noti)}
-                                        >
-                                            <div className="noti-content-wrapper">
-                                                <div className="noti-avatar">
-                                                    {noti.imagenAutor ? (
-                                                        <img
-                                                            src={noti.imagenAutor.startsWith('http') ? noti.imagenAutor : `${API_BASE_URL}${noti.imagenAutor}`}
-                                                            alt="Autor"
-                                                        />
-                                                    ) : (
-                                                        <div className="noti-avatar-placeholder">
-                                                            <FiUser />
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                <div className="noti-info">
-                                                    <p className="noti-text">{noti.texto}</p>
-                                                    <span className="noti-date">{formatearFecha(noti.fecha)}</span>
+                                    notificaciones.map(noti => {
+                                        const imagenUrl = noti.autor?.imagen;
+
+                                        return (
+                                            <div 
+                                                key={noti.identificador} 
+                                                className={`noti-item ${!noti.leida ? 'unread' : ''}`}
+                                                onClick={() => manejarClickNotificacion(noti)}
+                                            >
+                                                <div className="noti-content-wrapper">
+                                                    <div className="noti-avatar">
+                                                        {imagenUrl && (
+                                                            <img 
+                                                                src={imagenUrl.startsWith('http') ? imagenUrl : `${API_BASE_URL}${imagenUrl}`} 
+                                                                alt="Autor" 
+                                                            />
+                                                        )}
+                                                    </div>
+                                                    <div className="noti-info">
+                                                        <p className="noti-text">{noti.texto}</p>
+                                                        <span className="noti-date">{formatearFecha(noti.fecha)}</span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    ))
+                                        );
+                                    })
                                 ) : (
                                     <div className="noti-empty">No tienes notificaciones</div>
                                 )}

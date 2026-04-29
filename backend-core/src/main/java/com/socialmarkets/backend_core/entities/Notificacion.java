@@ -23,8 +23,10 @@ public class Notificacion {
     @Column(name = "enlace")
     private String enlace;
 
-    @Column(name = "imagen_autor")
-    private String imagenAutor;
+    @ManyToOne
+    @JoinColumn(name = "id_autor")
+    @ToString.Exclude
+    private Usuario autor;
 
     @Column(name = "fecha", nullable = false)
     private LocalDateTime fecha;
