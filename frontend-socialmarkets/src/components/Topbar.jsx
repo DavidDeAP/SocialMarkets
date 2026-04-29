@@ -118,20 +118,20 @@ const Topbar = ({ user }) => {
         <header className="topbar">
             <div className="search-container">
                 <FiSearch className="search-icon" />
-                <input 
-                    type="text" 
-                    placeholder="Buscar analistas..." 
+                <input
+                    type="text"
+                    placeholder="Buscar analistas..."
                     className="search-input"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                 />
                 {searchQuery && <FiX className="clear-search-top" onClick={() => setSearchQuery('')} />}
-                
+
                 {sugerencias.length > 0 && (
                     <div className="topbar-suggestions-dropdown">
                         {sugerencias.map(u => (
-                            <div 
-                                key={u.identificador} 
+                            <div
+                                key={u.identificador}
                                 className="topbar-suggestion-item"
                                 onClick={() => handleSelectUser(u.usuario)}
                             >
@@ -161,7 +161,7 @@ const Topbar = ({ user }) => {
             </div>
 
             <div className="user-controls">
-                <div className="avatar-container" onClick={irAMiPerfil} style={{cursor: 'pointer'}}>
+                <div className="avatar-container" onClick={irAMiPerfil} style={{ cursor: 'pointer' }}>
                     {user?.imagen ? (
                         <img src={getAvatarUrl()} alt="Perfil" className="avatar-img" />
                     ) : (
@@ -172,12 +172,12 @@ const Topbar = ({ user }) => {
                 </div>
 
                 <div className="notification-wrapper">
-                    <FiBell 
-                        className={`menu-icon notification-bell ${hayNuevas ? 'has-new' : ''}`} 
+                    <FiBell
+                        className={`menu-icon notification-bell ${hayNuevas ? 'has-new' : ''}`}
                         onClick={togglePanelNotis}
                     />
                     {hayNuevas && <span className="notification-dot"></span>}
-                    
+
                     {panelNotisAbierto && (
                         <div className="notification-panel">
                             <div className="noti-header">
@@ -186,13 +186,29 @@ const Topbar = ({ user }) => {
                             <div className="noti-list">
                                 {notificaciones.length > 0 ? (
                                     notificaciones.map(noti => (
-                                        <div 
-                                            key={noti.identificador} 
+                                        <div
+                                            key={noti.identificador}
                                             className={`noti-item ${!noti.leida ? 'unread' : ''}`}
                                             onClick={() => manejarClickNotificacion(noti)}
                                         >
-                                            <p className="noti-text">{noti.texto}</p>
-                                            <span className="noti-date">{formatearFecha(noti.fecha)}</span>
+                                            <div className="noti-content-wrapper">
+                                                <div className="noti-avatar">
+                                                    {noti.imagenAutor ? (
+                                                        <img
+                                                            src={noti.imagenAutor.startsWith('http') ? noti.imagenAutor : `${API_BASE_URL}${noti.imagenAutor}`}
+                                                            alt="Autor"
+                                                        />
+                                                    ) : (
+                                                        <div className="noti-avatar-placeholder">
+                                                            <FiUser />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="noti-info">
+                                                    <p className="noti-text">{noti.texto}</p>
+                                                    <span className="noti-date">{formatearFecha(noti.fecha)}</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     ))
                                 ) : (
@@ -202,16 +218,16 @@ const Topbar = ({ user }) => {
                         </div>
                     )}
                 </div>
-                
+
                 <div className="dropdown-container">
-                    <FiMenu 
-                        className="menu-icon" 
+                    <FiMenu
+                        className="menu-icon"
                         onClick={() => {
                             setMenuAbierto(!menuAbierto);
                             setPanelNotisAbierto(false);
-                        }} 
+                        }}
                     />
-                    
+
                     {menuAbierto && (
                         <div className="dropdown-menu">
                             <button onClick={irAMiPerfil} className="dropdown-item">

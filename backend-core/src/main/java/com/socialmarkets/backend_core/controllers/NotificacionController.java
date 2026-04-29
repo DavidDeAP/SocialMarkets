@@ -23,10 +23,14 @@ public class NotificacionController {
 
     // POST: http://localhost:8080/api/notificaciones/crear
     @PostMapping("/crear")
-    public ResponseEntity<?> crearNotificacion(@RequestParam Long usuarioId, @RequestParam String texto, @RequestParam(required = false) String enlace) {
+    public ResponseEntity<?> crearNotificacion(
+            @RequestParam Long usuarioId, 
+            @RequestParam String texto, 
+            @RequestParam(required = false) String enlace,
+            @RequestParam(required = false) String imagenAutor) {
         try {
             Usuario usuario = usuarioService.obtenerPorId(usuarioId);
-            Notificacion nuevaNotificacion = notificacionService.crearNotificacion(usuario, texto, enlace);
+            Notificacion nuevaNotificacion = notificacionService.crearNotificacion(usuario, texto, enlace, imagenAutor);
             return ResponseEntity.ok(nuevaNotificacion);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

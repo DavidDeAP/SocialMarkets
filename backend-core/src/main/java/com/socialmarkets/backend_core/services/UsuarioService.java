@@ -111,7 +111,8 @@ public class UsuarioService {
             notificacionService.crearNotificacion(
                 objetivo, 
                 "@" + nombreSeguidor + " te ha comenzado a seguir", 
-                "/perfil/" + nombreSeguidor
+                "/perfil/" + nombreSeguidor,
+                seguidor.getImagen()
             );
             
             return true;

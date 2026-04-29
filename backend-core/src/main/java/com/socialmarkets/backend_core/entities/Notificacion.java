@@ -23,6 +23,9 @@ public class Notificacion {
     @Column(name = "enlace")
     private String enlace;
 
+    @Column(name = "imagen_autor")
+    private String imagenAutor;
+
     @Column(name = "fecha", nullable = false)
     private LocalDateTime fecha;
 

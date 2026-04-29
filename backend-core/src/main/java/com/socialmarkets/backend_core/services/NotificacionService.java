@@ -15,11 +15,12 @@ public class NotificacionService {
     @Autowired
     private NotificacionRepository notificacionRepository;
 
-    public Notificacion crearNotificacion(Usuario usuario, String texto, String enlace) {
+    public Notificacion crearNotificacion(Usuario usuario, String texto, String enlace, String imagenAutor) {
         Notificacion noti = Notificacion.builder()
                 .usuario(usuario)
                 .texto(texto)
                 .enlace(enlace)
+                .imagenAutor(imagenAutor)
                 .fecha(LocalDateTime.now())
                 .leida(false)
                 .build();
