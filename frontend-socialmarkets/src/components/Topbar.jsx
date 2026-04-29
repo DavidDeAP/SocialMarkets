@@ -284,13 +284,22 @@ const Topbar = ({ user }) => {
                     />
 
                     {menuAbierto && (
-                        <div className="dropdown-menu">
-                            <button onClick={irAMiPerfil} className="dropdown-item">
-                                <FiUser /> Ver Perfil
-                            </button>
-                            <button onClick={cerrarSesion} className="dropdown-item logout-btn">
-                                <FiLogOut /> Cerrar Sesión
-                            </button>
+                        <div className="dropdown-menu modern-dropdown">
+                            <div className="dropdown-items-list">
+                                <button onClick={irAMiPerfil} className="dropdown-item">
+                                    <div className="item-icon-box"><FiUser /></div>
+                                    <div className="item-text">
+                                        <span className="item-title">Mi Perfil</span>
+                                    </div>
+                                </button>
+                                
+                                <button onClick={cerrarSesion} className="dropdown-item logout-modern">
+                                    <div className="item-icon-box logout"><FiLogOut /></div>
+                                    <div className="item-text">
+                                        <span className="item-title">Cerrar Sesión</span>
+                                    </div>
+                                </button>
+                            </div>
                         </div>
                     )}
                 </div>
