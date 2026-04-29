@@ -276,12 +276,24 @@ const Perfil = () => {
         ? new Date(userProfile.fechaCreacion).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
         : "---";
 
-    // Cálculos para el popup de predicciones
-    const statsPreds = {
-        activas: listaAnalisis.filter(a => a.estado === 'PENDIENTE').length,
-        ganadoras: listaAnalisis.filter(a => a.estado === 'ACERTADO').length,
-        perdedoras: listaAnalisis.filter(a => a.estado === 'FALLIDO').length
-    };
+    // Cálculos para el popup de predicciones (Desglose Live + Histórico)
+    const statsPreds = listaAnalisis.reduce((acc, a) => {
+        if (a.estado === 'PENDIENTE') {
+            acc.activas++;
+            const price = preciosVivos[a.activo?.nombre?.toUpperCase()]?.price;
+            if (price) {
+                const isBullish = a.precioObjetivo > a.precioEntrada;
+                const isWinning = isBullish ? price >= a.precioEntrada : price <= a.precioEntrada;
+                if (isWinning) acc.ganando++;
+                else acc.perdiendo++;
+            }
+        } else if (a.estado === 'ACERTADO') {
+            acc.acertadas++;
+        } else if (a.estado === 'FALLIDO') {
+            acc.fallidas++;
+        }
+        return acc;
+    }, { activas: 0, ganando: 0, perdiendo: 0, acertadas: 0, fallidas: 0 });
 
     return (
         <div className="dashboard-layout">
@@ -389,27 +401,25 @@ const Perfil = () => {
                                     <span className="stat-label">Predicciones</span>
                                 </div>
 
-                                {/* Popup de estadísticas detalladas */}
-                                <div className="stat-popup">
-                                    <div className="popup-item">
-                                        <span className="dot info"></span>
-                                        <span className="label">Activas:</span>
-                                        <span className="value">{statsPreds.activas}</span>
-                                    </div>
-                                    <div className="popup-item">
-                                        <span className="dot success"></span>
-                                        <span className="label">Acertadas:</span>
-                                        <span className="value">{statsPreds.ganadoras}</span>
-                                    </div>
-                                    <div className="popup-item">
-                                        <span className="dot danger"></span>
-                                        <span className="label">Fallidas:</span>
-                                        <span className="value">{statsPreds.perdedoras}</span>
+                                {/* Popup de estadísticas en vivo */}
+                                <div className="stat-popup detailed">
+                                    <div className="popup-group">
+                                        <label className="group-label">En Vivo ({statsPreds.activas})</label>
+                                        <div className="popup-item">
+                                            <span className="dot success pulse"></span>
+                                            <span className="label">Ganadoras:</span>
+                                            <span className="value">{statsPreds.ganando}</span>
+                                        </div>
+                                        <div className="popup-item">
+                                            <span className="dot danger pulse"></span>
+                                            <span className="label">Perdedoras:</span>
+                                            <span className="value">{statsPreds.perdiendo}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="stat-card highlight">
+                            <div className="stat-card highlight success-hover-box">
                                 <div className="stat-icon success"><FiTarget /></div>
                                 <div className="stat-data">
                                     <div className="success-header">
@@ -421,6 +431,23 @@ const Perfil = () => {
                                             className="progress-fill" 
                                             style={{ width: `${userProfile.indiceAcierto || 0}%` }}
                                         ></div>
+                                    </div>
+                                </div>
+
+                                {/* Popup de estadísticas históricas */}
+                                <div className="stat-popup">
+                                    <div className="popup-group">
+                                        <label className="group-label">Historial Total</label>
+                                        <div className="popup-item">
+                                            <span className="dot success"></span>
+                                            <span className="label">Acertadas:</span>
+                                            <span className="value">{statsPreds.acertadas}</span>
+                                        </div>
+                                        <div className="popup-item">
+                                            <span className="dot danger"></span>
+                                            <span className="label">Fallidas:</span>
+                                            <span className="value">{statsPreds.fallidas}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

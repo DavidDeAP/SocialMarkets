@@ -553,7 +553,8 @@
 }
 
 /* POPUP DE ESTADÍSTICAS EN EL CARD DE PREDICCIONES */
-.predictions-hover-box {
+.predictions-hover-box,
+.success-hover-box {
   position: relative;
   overflow: visible !important; /* Para que el popup no se corte */
   cursor: help;
@@ -567,17 +568,43 @@
   background: rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  padding: 1rem;
-  width: 180px;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+  border-radius: 20px;
+  padding: 1.2rem;
+  width: 200px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
   opacity: 0;
   visibility: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 100;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+}
+
+.stat-popup.detailed {
+  padding: 1.2rem;
+  width: 210px;
+}
+
+.popup-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.group-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 2px;
+}
+
+.popup-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.05);
+  margin: 2px 0;
 }
 
 /* Triangulito del popup */
@@ -592,7 +619,8 @@
   border-color: rgba(15, 23, 42, 0.95) transparent transparent transparent;
 }
 
-.predictions-hover-box:hover .stat-popup {
+.predictions-hover-box:hover .stat-popup,
+.success-hover-box:hover .stat-popup {
   opacity: 1;
   visibility: visible;
   transform: translateX(-50%) translateY(0);
@@ -614,6 +642,17 @@
 .popup-item .dot.info { background: #3b82f6; box-shadow: 0 0 8px rgba(59, 130, 246, 0.5); }
 .popup-item .dot.success { background: #10b981; box-shadow: 0 0 8px rgba(16, 185, 129, 0.5); }
 .popup-item .dot.danger { background: #ef4444; box-shadow: 0 0 8px rgba(239, 68, 68, 0.5); }
+
+/* Animación pulse para las que están en vivo */
+.dot.pulse {
+  animation: dotPulse 2s infinite;
+}
+
+@keyframes dotPulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
 
 .popup-item .label {
   color: #94a3b8;
