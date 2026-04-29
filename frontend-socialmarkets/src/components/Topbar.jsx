@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiSearch, FiBell, FiMenu, FiUser, FiLogOut, FiX } from 'react-icons/fi';
+import { FiSearch, FiBell, FiMenu, FiUser, FiLogOut, FiX, FiSettings } from 'react-icons/fi';
 import api from '../services/api';
 import './Topbar.css';
 
@@ -14,7 +14,40 @@ const Topbar = ({ user }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [sugerencias, setSugerencias] = useState([]);
     const [buscando, setBuscando] = useState(false);
+    const [showNotiSettings, setShowNotiSettings] = useState(false);
+    const [userState, setUserState] = useState(user);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        setUserState(user);
+    }, [user]);
+
+    const toggleNotiPref = async (tipo) => {
+        if (!userState) return;
+
+        // Si es null o undefined, asumimos true (por defecto)
+        const currentSeg = userState.notificarSeguidores !== false;
+        const currentPub = userState.notificarPublicaciones !== false;
+
+        const nuevoSeg = tipo === 'seguidores' ? !currentSeg : currentSeg;
+        const nuevoPub = tipo === 'publicaciones' ? !currentPub : currentPub;
+
+        // Actualización optimista
+        setUserState(prev => ({
+            ...prev,
+            notificarSeguidores: nuevoSeg,
+            notificarPublicaciones: nuevoPub
+        }));
+
+        try {
+            const res = await api.put(`/usuarios/preferencias-notificaciones?seguidores=${nuevoSeg}&publicaciones=${nuevoPub}`);
+            setUserState(res.data);
+        } catch (err) {
+            console.error("Error actualizando preferencias:", err);
+            // Revertimos en caso de error
+            setUserState(user);
+        }
+    };
 
     const irAMiPerfil = () => {
         navigate(`/perfil/${user.usuario}`);
@@ -233,7 +266,38 @@ const Topbar = ({ user }) => {
                         <div className="notification-panel">
                             <div className="noti-header">
                                 <h3>Notificaciones</h3>
+                                <button 
+                                    className={`btn-noti-settings ${showNotiSettings ? 'active' : ''}`}
+                                    onClick={() => setShowNotiSettings(!showNotiSettings)}
+                                    title="Ajustes de notificaciones"
+                                >
+                                    <FiSettings />
+                                </button>
                             </div>
+
+                            {showNotiSettings && (
+                                <div className="noti-settings-panel">
+                                    <div className="settings-item">
+                                        <span>Seguidores</span>
+                                        <button 
+                                            className={`switch-toggle ${userState?.notificarSeguidores !== false ? 'on' : 'off'}`}
+                                            onClick={() => toggleNotiPref('seguidores')}
+                                        >
+                                            <div className="switch-knob"></div>
+                                        </button>
+                                    </div>
+                                    <div className="settings-item">
+                                        <span>Publicaciones</span>
+                                        <button 
+                                            className={`switch-toggle ${userState?.notificarPublicaciones !== false ? 'on' : 'off'}`}
+                                            onClick={() => toggleNotiPref('publicaciones')}
+                                        >
+                                            <div className="switch-knob"></div>
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
                             <div 
                                 className="noti-list"
                                 onScroll={(e) => {

@@ -64,6 +64,16 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
+    public Usuario actualizarPreferenciasNotificaciones(String username, boolean seguidores, boolean publicaciones) {
+        Usuario usuario = usuarioRepository.findByUsuario(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        usuario.setNotificarSeguidores(seguidores);
+        usuario.setNotificarPublicaciones(publicaciones);
+
+        return usuarioRepository.save(usuario);
+    }
+
     public List<Usuario> obtenerTodos() {
         return usuarioRepository.findAll();
     }
@@ -107,13 +117,15 @@ public class UsuarioService {
             objetivo.getSeguidores().add(seguidor);
             usuarioRepository.save(objetivo);
             
-            // Notificar al usuario objetivo
-            notificacionService.crearNotificacion(
-                objetivo, 
-                "@" + nombreSeguidor + " te ha comenzado a seguir", 
-                "/perfil/" + nombreSeguidor,
-                seguidor
-            );
+            // Notificar al usuario objetivo (si tiene activadas las notis de seguidores)
+            if (objetivo.getNotificarSeguidores() != null && objetivo.getNotificarSeguidores()) {
+                notificacionService.crearNotificacion(
+                    objetivo, 
+                    "@" + nombreSeguidor + " te ha comenzado a seguir", 
+                    "/perfil/" + nombreSeguidor,
+                    seguidor
+                );
+            }
             
             return true;
         }

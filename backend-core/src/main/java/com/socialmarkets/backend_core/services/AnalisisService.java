@@ -91,7 +91,9 @@ public class AnalisisService {
             String enlaceNoti = "/comunidad?analisis=" + guardado.getIdentificador();
             
             for (Usuario seguidor : usuario.getSeguidores()) {
-                notificacionService.crearNotificacion(seguidor, textoNoti, enlaceNoti, usuario);
+                if (seguidor.getNotificarPublicaciones() != null && seguidor.getNotificarPublicaciones()) {
+                    notificacionService.crearNotificacion(seguidor, textoNoti, enlaceNoti, usuario);
+                }
             }
         }
 

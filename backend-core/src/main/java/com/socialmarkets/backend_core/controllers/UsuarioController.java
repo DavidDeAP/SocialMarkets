@@ -86,6 +86,20 @@ public class UsuarioController {
         }
     }
     
+    @PutMapping("/preferencias-notificaciones")
+    public ResponseEntity<?> actualizarPreferencias(
+            Principal principal,
+            @RequestParam("seguidores") boolean seguidores,
+            @RequestParam("publicaciones") boolean publicaciones) {
+        try {
+            if (principal == null) return ResponseEntity.status(401).body("No autorizado");
+            Usuario u = usuarioService.actualizarPreferenciasNotificaciones(principal.getName(), seguidores, publicaciones);
+            return ResponseEntity.ok(u);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @Autowired
     private JwtUtils jwtUtils;
 

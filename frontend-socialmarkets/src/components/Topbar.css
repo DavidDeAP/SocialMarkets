@@ -342,6 +342,93 @@
   color: white;
 }
 
+.btn-noti-settings {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  margin-top: 0;
+}
+
+.btn-noti-settings:hover {
+  color: white;
+  transform: rotate(45deg);
+}
+
+.btn-noti-settings.active {
+  color: #3b82f6;
+  transform: rotate(90deg);
+}
+
+.noti-settings-panel {
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: slideDownNoti 0.3s ease-out;
+}
+
+@keyframes slideDownNoti {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.settings-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+.switch-toggle {
+  width: 40px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 0;
+  margin-top: 0;
+}
+
+.switch-toggle.on {
+  background: #10b981;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+  border-color: rgba(16, 185, 129, 0.5);
+}
+
+.switch-knob {
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.switch-toggle.on .switch-knob {
+  left: 20px;
+}
+
+.switch-toggle:active .switch-knob {
+  width: 22px;
+}
+
 .noti-list {
   max-height: 400px;
   overflow-y: auto;

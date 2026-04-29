@@ -114,6 +114,12 @@ public class Usuario {
     @Column(name = "proyecciones_perdiendo")
     private Integer proyeccionesPerdiendo = 0;
 
+    @Column(name = "notificar_seguidores")
+    private Boolean notificarSeguidores = true;
+
+    @Column(name = "notificar_publicaciones")
+    private Boolean notificarPublicaciones = true;
+
     @JsonProperty("resumenProyecciones")
     public Map<String, Integer> getResumenProyecciones() {
         return Map.of(
