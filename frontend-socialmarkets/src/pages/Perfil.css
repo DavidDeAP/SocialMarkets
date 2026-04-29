@@ -551,3 +551,76 @@
   overflow-y: visible;
   padding-bottom: 4rem;
 }
+
+/* POPUP DE ESTADÍSTICAS EN EL CARD DE PREDICCIONES */
+.predictions-hover-box {
+  position: relative;
+  overflow: visible !important; /* Para que el popup no se corte */
+  cursor: help;
+}
+
+.stat-popup {
+  position: absolute;
+  bottom: 110%; /* Aparece arriba del card */
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 1rem;
+  width: 180px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Triangulito del popup */
+.stat-popup::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 8px;
+  border-style: solid;
+  border-color: rgba(15, 23, 42, 0.95) transparent transparent transparent;
+}
+
+.predictions-hover-box:hover .stat-popup {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.popup-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+}
+
+.popup-item .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.popup-item .dot.info { background: #3b82f6; box-shadow: 0 0 8px rgba(59, 130, 246, 0.5); }
+.popup-item .dot.success { background: #10b981; box-shadow: 0 0 8px rgba(16, 185, 129, 0.5); }
+.popup-item .dot.danger { background: #ef4444; box-shadow: 0 0 8px rgba(239, 68, 68, 0.5); }
+
+.popup-item .label {
+  color: #94a3b8;
+  flex: 1;
+}
+
+.popup-item .value {
+  color: white;
+  font-weight: 700;
+}

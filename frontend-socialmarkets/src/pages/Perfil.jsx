@@ -276,6 +276,13 @@ const Perfil = () => {
         ? new Date(userProfile.fechaCreacion).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
         : "---";
 
+    // Cálculos para el popup de predicciones
+    const statsPreds = {
+        activas: listaAnalisis.filter(a => a.estado === 'PENDIENTE').length,
+        ganadoras: listaAnalisis.filter(a => a.estado === 'ACERTADO').length,
+        perdedoras: listaAnalisis.filter(a => a.estado === 'FALLIDO').length
+    };
+
     return (
         <div className="dashboard-layout">
             <Sidebar />
@@ -375,11 +382,30 @@ const Perfil = () => {
                                 </div>
                             </div>
 
-                            <div className="stat-card">
+                            <div className="stat-card predictions-hover-box">
                                 <div className="stat-icon predictions"><FiTrendingUp /></div>
                                 <div className="stat-data">
                                     <span className="stat-value">{userProfile.numeroPredicciones || 0}</span>
                                     <span className="stat-label">Predicciones</span>
+                                </div>
+
+                                {/* Popup de estadísticas detalladas */}
+                                <div className="stat-popup">
+                                    <div className="popup-item">
+                                        <span className="dot info"></span>
+                                        <span className="label">Activas:</span>
+                                        <span className="value">{statsPreds.activas}</span>
+                                    </div>
+                                    <div className="popup-item">
+                                        <span className="dot success"></span>
+                                        <span className="label">Acertadas:</span>
+                                        <span className="value">{statsPreds.ganadoras}</span>
+                                    </div>
+                                    <div className="popup-item">
+                                        <span className="dot danger"></span>
+                                        <span className="label">Fallidas:</span>
+                                        <span className="value">{statsPreds.perdedoras}</span>
+                                    </div>
                                 </div>
                             </div>
 
