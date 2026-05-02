@@ -55,7 +55,6 @@ public class Usuario {
 
     private String imagen;
 
-    // Cambiamos el nombre en el JSON para que el frontend lo lea como 'fechaCreacion'
     @JsonProperty("fechaCreacion")
     @Column(name = "fecha_registro")
     private LocalDateTime fechaRegistro;
@@ -75,7 +74,7 @@ public class Usuario {
         joinColumns = @JoinColumn(name = "usuario_id"),
         inverseJoinColumns = @JoinColumn(name = "seguidor_id")
     )
-    @ToString.Exclude // Evita bucles infinitos al imprimir
+    @ToString.Exclude 
     private Set<Usuario> seguidores;
 
     @JsonProperty("seguidores")

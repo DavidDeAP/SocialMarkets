@@ -55,7 +55,7 @@ const Topbar = ({ user }) => {
 
     const cerrarSesion = () => {
         localStorage.removeItem('token');
-        navigate('/login');
+        window.location.href = '/login';
     };
 
     const getAvatarUrl = () => {

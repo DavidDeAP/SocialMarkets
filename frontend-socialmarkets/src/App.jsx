@@ -20,7 +20,6 @@ const PublicRoute = ({ children }) => {
 };
 
 function App() {
-  // Vigilante de expiración de token
   useEffect(() => {
     const checkToken = () => {
       const token = localStorage.getItem('token');
@@ -32,16 +31,13 @@ function App() {
         const timeLeft = expirationTime - Date.now();
 
         if (timeLeft <= 0) {
-          console.warn("Token expirado (App Watcher).");
           localStorage.removeItem('token');
           window.location.href = '/login';
         } else {
-          // Programamos el siguiente check justo cuando caduque
           const timer = setTimeout(() => {
             localStorage.removeItem('token');
             window.location.href = '/login';
-          }, timeLeft + 1000); // 1 segundo extra de margen
-
+          }, timeLeft + 1000);
           return () => clearTimeout(timer);
         }
       } catch (e) {
@@ -50,7 +46,6 @@ function App() {
     };
 
     checkToken();
-    // También escuchamos cambios en otras pestañas
     window.addEventListener('storage', checkToken);
     return () => window.removeEventListener('storage', checkToken);
   }, []);
@@ -59,69 +54,14 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
-          <Route 
-            path="/" 
-            element={<Navigate to="/home" />} 
-          />
-
-          <Route 
-            path="/login" 
-            element={
-              <PublicRoute>
-                <Login />
-              </PublicRoute>
-            } 
-          />
-          <Route 
-            path="/registro" 
-            element={
-              <PublicRoute>
-                <Registro />
-              </PublicRoute>
-            } 
-          />
-          
-          <Route 
-            path="/home" 
-            element={
-              <PrivateRoute>
-                <Home />
-              </PrivateRoute>
-            } 
-          />
-          <Route 
-            path="/comunidad" 
-            element={
-              <PrivateRoute>
-                <Comunidad />
-              </PrivateRoute>
-            } 
-          />
-          <Route 
-            path="/perfil/:username" 
-            element={
-              <PrivateRoute>
-                <Perfil />
-              </PrivateRoute>
-            } 
-          />
-          <Route 
-            path="/clasificacion" 
-            element={
-              <PrivateRoute>
-                <Clasificacion />
-              </PrivateRoute>
-            } 
-          />
-          <Route 
-            path="/mercados" 
-            element={
-              <PrivateRoute>
-                <Mercados />
-              </PrivateRoute>
-            } 
-          />
-
+          <Route path="/" element={<Navigate to="/home" />} />
+          <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+          <Route path="/registro" element={<PublicRoute><Registro /></PublicRoute>} />
+          <Route path="/home" element={<PrivateRoute><Home /></PrivateRoute>} />
+          <Route path="/comunidad" element={<PrivateRoute><Comunidad /></PrivateRoute>} />
+          <Route path="/perfil/:username" element={<PrivateRoute><Perfil /></PrivateRoute>} />
+          <Route path="/clasificacion" element={<PrivateRoute><Clasificacion /></PrivateRoute>} />
+          <Route path="/mercados" element={<PrivateRoute><Mercados /></PrivateRoute>} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>

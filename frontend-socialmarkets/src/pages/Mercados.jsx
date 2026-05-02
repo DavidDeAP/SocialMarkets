@@ -47,13 +47,13 @@ const Mercados = () => {
             <div className="main-wrapper">
                 <Topbar user={user} />
                 
-                <main className={`main-content mercados-content-area ${!selectedSymbol ? 'initial-state' : 'active-state'}`}>
+                <main className={`main-content-no-scroll ${!selectedSymbol ? 'initial-state' : 'active-state'}`}>
                     
                     <div className="search-section-wrapper animate-transition">
                         {!selectedSymbol && (
                             <div className="market-welcome-text">
                                 <h1 className="text-neon-glow">Explora el Mercado</h1>
-                                <p>Analiza cualquier activo con herramientas profesionales en tiempo real.</p>
+                                <p>Visualiza cualquier activo con datos profesionales en tiempo real.</p>
                             </div>
                         )}
                         <div className="search-bar-container">
@@ -62,8 +62,8 @@ const Mercados = () => {
                     </div>
 
                     {selectedSymbol && (
-                        <div className="market-view-container animate-fade-in">
-                            <div className="asset-info-header">
+                        <div className="market-full-view animate-fade-in">
+                            <div className="asset-info-header-compact">
                                 <div className="asset-titles">
                                     <span className="asset-ticker-tag">{selectedSymbol}</span>
                                     <h2 className="asset-main-name">{assetInfo?.name}</h2>
@@ -74,12 +74,11 @@ const Mercados = () => {
                                 </div>
                             </div>
 
-                            <div className="chart-wrapper-card">
-                                <TradingViewChart symbol={selectedSymbol} />
-                            </div>
-
-                            <div className="market-footer-info">
-                                <p>💡 Tus análisis (dibujos e indicadores) se guardan automáticamente en este navegador.</p>
+                            <div className="chart-flex-container">
+                                <TradingViewChart 
+                                    symbol={selectedSymbol} 
+                                    exchange={assetInfo?.exchange} 
+                                />
                             </div>
                         </div>
                     )}
