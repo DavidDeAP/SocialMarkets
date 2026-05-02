@@ -310,6 +310,6 @@ button:active {
 
 
 .acierto-val {
-  color: #ffffff;
+  color: #00ff88; /* Verde brillante para resaltar el acierto */
   font-weight: 700;
 }
