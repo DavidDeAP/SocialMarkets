@@ -105,9 +105,16 @@ public class AnalisisService {
         return analisisRepository.findAll(Sort.by(Sort.Direction.DESC, "fechaCreacion"));
     }
 
-    public Page<Analisis> obtenerTodosPaginados(int pagina, int tamano) {
+    public Page<Analisis> obtenerTodosPaginados(int pagina, int tamano, String orden) {
         verificarAnalisisPendientes();
-        Pageable pageable = PageRequest.of(pagina, tamano, Sort.by(Sort.Direction.DESC, "fechaCreacion"));
+        Pageable pageable;
+        
+        if ("likes".equals(orden)) {
+            pageable = PageRequest.of(pagina, tamano);
+            return analisisRepository.findAllOrderByPopularity(pageable);
+        }
+        
+        pageable = PageRequest.of(pagina, tamano, Sort.by(Sort.Direction.DESC, "fechaCreacion"));
         return analisisRepository.findAll(pageable);
     }
 

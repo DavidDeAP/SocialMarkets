@@ -40,8 +40,9 @@ public class AnalisisController {
     @GetMapping
     public ResponseEntity<?> listarAnalisis(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size) {
-        return ResponseEntity.ok(analisisService.obtenerTodosPaginados(page, size));
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = false) String orden) {
+        return ResponseEntity.ok(analisisService.obtenerTodosPaginados(page, size, orden));
     }
 
     // GET: http://localhost:8080/api/analisis/estado/{estado}

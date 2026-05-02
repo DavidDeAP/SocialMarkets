@@ -31,7 +31,7 @@ const Comunidad = () => {
     const [selectedFiles, setSelectedFiles] = useState([]);
 
     // Estados de filtrado avanzado
-    const [filtrosSeleccionados, setFiltrosSeleccionados] = useState(['recientes']);
+    const [filtrosSeleccionados, setFiltrosSeleccionados] = useState(['likes']);
     const [searchQuery, setSearchQuery] = useState('');
     const [showFilters, setShowFilters] = useState(false);
     const [sugerenciasUsuarios, setSugerenciasUsuarios] = useState([]);
@@ -224,7 +224,10 @@ const Comunidad = () => {
         }
 
         try {
-            const respuesta = await api.get(`/analisis?page=${pageToFetch}&size=5`);
+            const filtrosOrden = filtrosSeleccionados.filter(f => ['recientes', 'likes', 'acierto'].includes(f));
+            const ordenPrincipal = filtrosOrden[filtrosOrden.length - 1] || 'likes';
+            
+            const respuesta = await api.get(`/analisis?page=${pageToFetch}&size=5&orden=${ordenPrincipal}`);
             const data = respuesta.data;
             const nuevosAnalisis = data.content;
 
@@ -258,8 +261,12 @@ const Comunidad = () => {
 
     useEffect(() => {
         fetchPerfil();
-        fetchAnalisis(true);
     }, [navigate]);
+
+    // Cada vez que cambien los filtros de orden, reseteamos y pedimos de nuevo al backend
+    useEffect(() => {
+        fetchAnalisis(true);
+    }, [filtrosSeleccionados]);
 
     // Sentinel ref for Infinite Scroll
     const observerTarget = useRef(null);
