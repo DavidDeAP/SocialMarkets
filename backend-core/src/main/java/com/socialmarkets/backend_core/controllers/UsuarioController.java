@@ -173,4 +173,9 @@ public class UsuarioController {
     public ResponseEntity<List<Usuario>> buscarUsuarios(@RequestParam("q") String query) {
         return ResponseEntity.ok(usuarioService.buscarPorNombre(query));
     }
+
+    @GetMapping("/ranking")
+    public ResponseEntity<List<Usuario>> obtenerRanking(@RequestParam(value = "filtro", defaultValue = "indice") String filtro) {
+        return ResponseEntity.ok(usuarioService.obtenerRanking(filtro));
+    }
 }

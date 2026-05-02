@@ -35,7 +35,10 @@ const Sidebar = () => {
                     <FiUsers className="nav-icon" /> Comunidad
                 </button>
 
-                <button className="nav-item">
+                <button 
+                    className={`nav-item ${isActive('/clasificacion')}`}
+                    onClick={() => navigate('/clasificacion')}
+                >
                     <FiAward className="nav-icon" /> Clasificación
                 </button>
                 

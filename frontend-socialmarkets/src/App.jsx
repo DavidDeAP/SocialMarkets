@@ -5,6 +5,7 @@ import Registro from './pages/Registro';
 import Home from './pages/Home';
 import Perfil from './pages/Perfil';
 import Comunidad from './pages/Comunidad';
+import Clasificacion from './pages/Clasificacion';
 import './App.css';
 
 const PrivateRoute = ({ children }) => {
@@ -100,6 +101,14 @@ function App() {
             element={
               <PrivateRoute>
                 <Perfil />
+              </PrivateRoute>
+            } 
+          />
+          <Route 
+            path="/clasificacion" 
+            element={
+              <PrivateRoute>
+                <Clasificacion />
               </PrivateRoute>
             } 
           />

@@ -137,4 +137,23 @@ public class UsuarioService {
         usuarios.forEach(u -> analisisService.actualizarEstadisticasUsuario(u));
         return usuarios;
     }
+
+    public List<Usuario> obtenerRanking(String filtro) {
+        List<Usuario> ranking;
+        switch (filtro) {
+            case "predicciones":
+                ranking = usuarioRepository.findTop10ByOrderByNumeroPrediccionesDesc(org.springframework.data.domain.PageRequest.of(0, 10));
+                break;
+            case "acertadas":
+                ranking = usuarioRepository.findTop10ByOrderByProyeccionesAcertadasDesc();
+                break;
+            case "indice":
+            default:
+                ranking = usuarioRepository.findTop10ByOrderByIndiceAciertoDesc();
+                break;
+        }
+        // Aseguramos que las estadísticas estén al día para el ranking
+        ranking.forEach(u -> analisisService.actualizarEstadisticasUsuario(u));
+        return ranking;
+    }
 }
