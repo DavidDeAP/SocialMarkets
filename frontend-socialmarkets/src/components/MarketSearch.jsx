@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FiSearch, FiTrendingUp, FiBarChart2, FiActivity } from 'react-icons/fi';
+import { FiSearch, FiActivity, FiGlobe, FiBriefcase, FiDollarSign, FiZap } from 'react-icons/fi';
 import './MarketSearch.css';
 
 const MarketSearch = ({ onSelect }) => {
@@ -28,35 +28,33 @@ const MarketSearch = ({ onSelect }) => {
         const timer = setTimeout(async () => {
             setIsLoading(true);
             try {
-                // Usamos el endpoint de Yahoo Finance para búsqueda (es muy completo)
-                const response = await fetch(`https://cors-anywhere.herokuapp.com/https://query1.finance.yahoo.com/v1/finance/search?q=${query}&quotesCount=10&newsCount=0`);
-                // Nota: En producción esto debería pasar por el backend para evitar CORS
-                // Por ahora, si falla el fetch directo por CORS, usaremos una simulación o un proxy
+                // Usamos el endpoint de Yahoo Finance para búsqueda
+                const response = await fetch(`https://cors-anywhere.herokuapp.com/https://query1.finance.yahoo.com/v1/finance/search?q=${query}&quotesCount=8&newsCount=0`);
                 
-                let data;
                 if (response.ok) {
-                    data = await response.json();
+                    const data = await response.json();
                     const filtered = data.quotes.map(q => ({
                         symbol: q.symbol,
                         name: q.shortname || q.longname || q.symbol,
                         exchange: q.exchange,
                         type: q.quoteType,
-                        typeDisp: q.typeDisp
+                        typeDisp: q.typeDisp || q.quoteType
                     }));
                     setResults(filtered);
                 } else {
-                    // Fallback fallback simple si falla el proxy/cors
-                    throw new Error('CORS issue or API error');
+                    throw new Error('API error');
                 }
             } catch (error) {
                 console.error("Search error:", error);
-                // Mock de resultados si la API falla por CORS en el entorno local
+                // Mocks de alta calidad para fallos locales/CORS
                 const mocks = [
-                    { symbol: 'AAPL', name: 'Apple Inc.', exchange: 'NASDAQ', type: 'EQUITY' },
-                    { symbol: 'BTC-USD', name: 'Bitcoin USD', exchange: 'CCC', type: 'CRYPTO' },
-                    { symbol: 'TSLA', name: 'Tesla, Inc.', exchange: 'NASDAQ', type: 'EQUITY' },
-                    { symbol: 'EURUSD=X', name: 'EUR/USD', exchange: 'CCY', type: 'CURRENCY' },
-                    { symbol: 'ETH-USD', name: 'Ethereum USD', exchange: 'CCC', type: 'CRYPTO' }
+                    { symbol: 'AAPL', name: 'Apple Inc.', exchange: 'NASDAQ', type: 'EQUITY', typeDisp: 'Acción' },
+                    { symbol: 'BTC-USD', name: 'Bitcoin USD', exchange: 'CRYPTO', type: 'CRYPTO', typeDisp: 'Cripto' },
+                    { symbol: 'TSLA', name: 'Tesla, Inc.', exchange: 'NASDAQ', type: 'EQUITY', typeDisp: 'Acción' },
+                    { symbol: 'EURUSD=X', name: 'Euro / US Dollar', exchange: 'FX', type: 'CURRENCY', typeDisp: 'Forex' },
+                    { symbol: 'ETH-USD', name: 'Ethereum USD', exchange: 'CRYPTO', type: 'CRYPTO', typeDisp: 'Cripto' },
+                    { symbol: 'NVDA', name: 'NVIDIA Corporation', exchange: 'NASDAQ', type: 'EQUITY', typeDisp: 'Acción' },
+                    { symbol: 'MSFT', name: 'Microsoft Corporation', exchange: 'NASDAQ', type: 'EQUITY', typeDisp: 'Acción' }
                 ].filter(m => m.symbol.includes(query.toUpperCase()) || m.name.toUpperCase().includes(query.toUpperCase()));
                 setResults(mocks);
             } finally {
@@ -73,10 +71,19 @@ const MarketSearch = ({ onSelect }) => {
         setShowResults(false);
     };
 
+    const getTypeIcon = (type) => {
+        const t = type?.toUpperCase();
+        if (t === 'CRYPTO') return <FiActivity className="icon-crypto" />;
+        if (t === 'CURRENCY' || t === 'FOREX') return <FiDollarSign className="icon-forex" />;
+        if (t === 'EQUITY' || t === 'ACCION') return <FiZap className="icon-equity" />;
+        if (t === 'ETF') return <FiBriefcase className="icon-etf" />;
+        return <FiGlobe className="icon-default" />;
+    };
+
     return (
         <div className="market-search-container" ref={searchRef}>
-            <div className={`search-input-group ${showResults ? 'focused' : ''}`}>
-                <FiSearch className="search-icon" />
+            <div className={`search-input-group ${showResults && query.length >= 2 ? 'has-results' : ''}`}>
+                <FiSearch className="search-icon-main" />
                 <input
                     type="text"
                     placeholder="Buscar activo (Ej: BTC, AAPL, EURUSD...)"
@@ -87,27 +94,36 @@ const MarketSearch = ({ onSelect }) => {
                     }}
                     onFocus={() => setShowResults(true)}
                 />
-                {isLoading && <div className="search-loader"></div>}
+                {isLoading && (
+                    <div className="search-loader-container">
+                        <div className="loader-dot"></div>
+                    </div>
+                )}
             </div>
 
             {showResults && results.length > 0 && (
-                <div className="search-results-panel animate-slide-up">
+                <div className="search-results-panel modern-scroll">
+                    <div className="search-results-header">Resultados Sugeridos</div>
                     {results.map((item, index) => (
                         <div 
                             key={index} 
-                            className="search-result-item"
+                            className="search-result-item-premium"
                             onClick={() => handleSelect(item)}
                         >
-                            <div className="result-icon">
-                                {item.type === 'CRYPTO' ? <FiActivity /> : <FiBarChart2 />}
+                            <div className="result-main-info">
+                                <div className={`result-type-icon ${item.type?.toLowerCase()}`}>
+                                    {getTypeIcon(item.type)}
+                                </div>
+                                <div className="result-text-group">
+                                    <div className="result-symbol-row">
+                                        <span className="result-symbol-name">{item.symbol}</span>
+                                        <span className="result-exchange-badge">{item.exchange}</span>
+                                    </div>
+                                    <span className="result-full-name">{item.name}</span>
+                                </div>
                             </div>
-                            <div className="result-details">
-                                <span className="result-symbol">{item.symbol}</span>
-                                <span className="result-name">{item.name}</span>
-                            </div>
-                            <div className="result-meta">
-                                <span className="result-exchange">{item.exchange}</span>
-                                <span className="result-type">{item.typeDisp || item.type}</span>
+                            <div className="result-type-tag">
+                                {item.typeDisp}
                             </div>
                         </div>
                     ))}
