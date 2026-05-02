@@ -134,57 +134,42 @@ const Home = () => {
 
                     <div className="stats-grid-modern">
                         <div className="stat-card animate-card" style={{"--delay": "0.1s"}}>
-                            <div className="card-info-left">
-                                <div className="card-header-v2">
-                                    <div className="icon-box target"><FiTarget /></div>
-                                    <span className="label">Eficiencia</span>
-                                </div>
-                                <div className="card-footer-v2">
-                                    <span className={`trend ${aumentoMes >= 0 ? 'positive' : 'negative'}`}>
-                                        <FiArrowUpRight /> {aumentoMes >= 0 ? '+' : ''}{aumentoMes.toFixed(1)}% este mes
-                                    </span>
-                                    <div className="progress-track-v2">
-                                        <div className="progress-bar-fill" style={{ width: `${indiceAcierto}%` }}></div>
-                                    </div>
-                                </div>
+                            <div className="card-header-v2">
+                                <div className="icon-box target"><FiTarget /></div>
+                                <span className="label">Eficiencia</span>
                             </div>
-                            <div className="card-value-right">
-                                <div className="main-value-v2 success-glow">{indiceAcierto}<span>%</span></div>
+                            <div className="main-value-v2 success-glow">{indiceAcierto}<span>%</span></div>
+                            <div className="card-footer-v2">
+                                <div className="progress-track-v2">
+                                    <div className="progress-bar-fill" style={{ width: `${indiceAcierto}%` }}></div>
+                                </div>
                             </div>
                         </div>
 
                         <div className="stat-card animate-card" style={{"--delay": "0.2s"}}>
-                            <div className="card-info-left">
-                                <div className="card-header-v2">
-                                    <div className="icon-box total"><FiTrendingUp /></div>
-                                    <span className="label">Proyecciones</span>
-                                </div>
-                                <div className="card-footer-v2">
-                                    <div className="badge-rank-v2">
-                                        Nivel: <span>{user.nivel || 'Analista'}</span>
-                                    </div>
-                                </div>
+                            <div className="card-header-v2">
+                                <div className="icon-box total"><FiTrendingUp /></div>
+                                <span className="label">Proyecciones Totales</span>
                             </div>
-                            <div className="card-value-right">
-                                <div className="main-value-v2 primary-glow">{proyeccionesTotales}</div>
+                            <div className="main-value-v2 primary-glow">{proyeccionesTotales}</div>
+                            <div className="card-footer-v2">
+                                <div className="badge-rank-v2">
+                                    Nivel: <span>{user.nivel || 'Analista'}</span>
+                                </div>
                             </div>
                         </div>
 
                         <div className="stat-card animate-card" style={{"--delay": "0.3s"}}>
-                            <div className="card-info-left">
-                                <div className="card-header-v2">
-                                    <div className="icon-box active"><FiActivity /></div>
-                                    <span className="label">En Curso</span>
-                                </div>
-                                <div className="card-footer-v2">
-                                    <div className="status-split-v2">
-                                        <div className="split-item win">{liveStats.wins} Ganadoras</div>
-                                        <div className="split-item loss">{liveStats.losses} Perdedoras</div>
-                                    </div>
-                                </div>
+                            <div className="card-header-v2">
+                                <div className="icon-box active"><FiActivity /></div>
+                                <span className="label">Análisis en Curso</span>
                             </div>
-                            <div className="card-value-right">
-                                <div className="main-value-v2 warning-glow">{proyeccionesActivas}</div>
+                            <div className="main-value-v2 warning-glow">{proyeccionesActivas}</div>
+                            <div className="card-footer-v2">
+                                <div className="status-split-v2">
+                                    <div className="split-item win">{liveStats.wins} Ganadoras</div>
+                                    <div className="split-item loss">{liveStats.losses} Perdedoras</div>
+                                </div>
                             </div>
                         </div>
                     </div>
