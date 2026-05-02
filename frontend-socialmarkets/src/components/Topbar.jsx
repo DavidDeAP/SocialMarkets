@@ -250,10 +250,6 @@ const Topbar = ({ user }) => {
                                     <div className="sugg-stats">
                                         <span className="acierto-val">{u.indiceAcierto?.toFixed(1) || 0}% acierto</span>
                                         <span className="sep">•</span>
-                                        <span className={`rendimiento-val ${u.rendimientoMes >= 0 ? 'pos' : 'neg'}`}>
-                                            {u.rendimientoMes >= 0 ? '+' : ''}{u.rendimientoMes?.toFixed(1) || 0}% mes
-                                        </span>
-                                        <span className="sep">•</span>
                                         <span>{u.numeroPredicciones || 0} predicciones</span>
                                     </div>
                                 </div>

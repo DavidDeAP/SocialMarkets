@@ -308,18 +308,6 @@ button:active {
   flex-shrink: 0;
 }
 
-.rendimiento-val {
-  font-weight: 800;
-  letter-spacing: 0.5px;
-}
-
-.rendimiento-val.pos {
-  color: #10b981;
-}
-
-.rendimiento-val.neg {
-  color: #ef4444;
-}
 
 .acierto-val {
   color: #ffffff;
