@@ -107,7 +107,15 @@ const Clasificacion = () => {
                                     className={`podium-item ${getPodiumClass(index)}`}
                                     initial={{ opacity: 0, y: 50 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: index * 0.2, duration: 0.5 }}
+                                    whileHover={{ 
+                                        y: -20,
+                                        transition: { type: "spring", stiffness: 400, damping: 10 }
+                                    }}
+                                    transition={{ 
+                                        delay: index * 0.2, 
+                                        duration: 0.5,
+                                        y: { type: "spring", stiffness: 400, damping: 10 } 
+                                    }}
                                     onClick={() => navigate(`/perfil/${u.usuario}`)}
                                 >
                                     <span className="crown">{getCrownIcon(index)}</span>
@@ -164,8 +172,8 @@ const Clasificacion = () => {
                                                 <span className="r-name">{u.usuario}</span>
                                             </div>
                                             <div className="r-stat-val acierto">{(u.indiceAcierto || 0).toFixed(1)}%</div>
-                                            <div className="r-stat-val">{u.numeroPredicciones} <small style={{ color: '#666' }}>preds</small></div>
-                                            <div className="r-stat-val">{u.resumenProyecciones?.acertadas || 0} <small style={{ color: '#666' }}>ok</small></div>
+                                            <div className="r-stat-val">{u.numeroPredicciones} <small style={{ color: '#888', fontSize: '0.8rem' }}>Predicciones</small></div>
+                                            <div className="r-stat-val">{u.resumenProyecciones?.acertadas || 0} <small style={{ color: '#888', fontSize: '0.8rem' }}>Acertadas</small></div>
                                         </div>
                                     ))}
                                 </motion.div>

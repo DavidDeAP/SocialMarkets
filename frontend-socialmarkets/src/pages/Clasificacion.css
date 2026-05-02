@@ -97,8 +97,22 @@
 }
 
 .podium-item:hover {
-    transform: translateY(-10px);
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.podium-item.first:hover {
+    box-shadow: 0 20px 50px rgba(255, 204, 0, 0.35);
+    border-color: rgba(255, 204, 0, 0.8);
+}
+
+.podium-item.second:hover {
+    box-shadow: 0 20px 50px rgba(192, 192, 192, 0.25);
+    border-color: rgba(192, 192, 192, 0.8);
+}
+
+.podium-item.third:hover {
+    box-shadow: 0 20px 50px rgba(205, 127, 50, 0.25);
+    border-color: rgba(205, 127, 50, 0.8);
 }
 
 .podium-item.first {
@@ -222,9 +236,10 @@
 }
 
 .r-pos {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #555;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #a5a5a5; /* Más visible */
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
 }
 
 .r-user {
