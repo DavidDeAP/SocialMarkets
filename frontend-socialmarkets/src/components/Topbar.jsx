@@ -152,6 +152,25 @@ const Topbar = ({ user }) => {
         setMenuAbierto(false);
     };
 
+    const [deletingNotis, setDeletingNotis] = useState([]);
+
+    const handleEliminarNotificacion = async (e, id) => {
+        e.stopPropagation();
+        setDeletingNotis(prev => [...prev, id]);
+        
+        // Tiempo para la animación de salida
+        setTimeout(async () => {
+            try {
+                await api.delete(`/notificaciones/${id}`);
+                setNotificaciones(prev => prev.filter(n => n.identificador !== id));
+                setDeletingNotis(prev => prev.filter(d => d !== id));
+            } catch (err) {
+                console.error("Error eliminando notificacion:", err);
+                setDeletingNotis(prev => prev.filter(d => d !== id));
+            }
+        }, 400);
+    };
+
     const manejarClickNotificacion = (noti) => {
         setPanelNotisAbierto(false);
         if (noti.enlace) {
@@ -317,7 +336,7 @@ const Topbar = ({ user }) => {
                                             return (
                                                 <div 
                                                     key={noti.identificador} 
-                                                    className={`noti-item ${!noti.leida ? 'unread' : ''}`}
+                                                    className={`noti-item ${!noti.leida ? 'unread' : ''} ${deletingNotis.includes(noti.identificador) ? 'removing' : ''}`}
                                                     onClick={() => manejarClickNotificacion(noti)}
                                                 >
                                                     <div className="noti-content-wrapper">
@@ -334,6 +353,13 @@ const Topbar = ({ user }) => {
                                                             <span className="noti-date">{formatearFecha(noti.fecha)}</span>
                                                         </div>
                                                     </div>
+                                                    <button 
+                                                        className="btn-delete-noti"
+                                                        onClick={(e) => handleEliminarNotificacion(e, noti.identificador)}
+                                                        title="Eliminar notificación"
+                                                    >
+                                                        <FiX />
+                                                    </button>
                                                 </div>
                                             );
                                         })}

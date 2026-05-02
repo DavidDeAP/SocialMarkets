@@ -80,4 +80,11 @@ public class NotificacionService {
         noLeidas.forEach(n -> n.setLeida(true));
         notificacionRepository.saveAll(noLeidas);
     }
+
+    public void eliminarNotificacion(Long id) {
+        if (!notificacionRepository.existsById(id)) {
+            throw new RuntimeException("Notificación no encontrada");
+        }
+        notificacionRepository.deleteById(id);
+    }
 }

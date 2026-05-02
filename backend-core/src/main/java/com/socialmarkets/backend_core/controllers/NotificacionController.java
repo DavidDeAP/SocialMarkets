@@ -78,13 +78,23 @@ public class NotificacionController {
         }
     }
 
-    // PUT: http://localhost:8080/api/notificaciones/leertodas/{usuarioId}
     @PutMapping("/leertodas/{usuarioId}")
     public ResponseEntity<?> marcarTodasComoLeidas(@PathVariable Long usuarioId) {
         try {
             Usuario usuario = usuarioService.obtenerPorId(usuarioId);
             notificacionService.marcarTodasComoLeidas(usuario);
             return ResponseEntity.ok("Todas las notificaciones marcadas como leídas");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // DELETE: http://localhost:8080/api/notificaciones/{id}
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminarNotificacion(@PathVariable Long id) {
+        try {
+            notificacionService.eliminarNotificacion(id);
+            return ResponseEntity.ok("Notificación eliminada");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

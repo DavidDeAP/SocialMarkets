@@ -468,6 +468,53 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-delete-noti {
+  position: absolute;
+  top: 50%;
+  right: 18px;
+  transform: translateY(-50%) scale(0.8);
+  background: transparent !important; /* Evitar el azul global */
+  color: #ff4d4d;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.2s ease;
+  z-index: 10;
+  padding: 5px;
+  margin: 0 !important; /* Quitar margen global de botones */
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.noti-item:hover .btn-delete-noti {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
+.btn-delete-noti:hover {
+  color: white !important;
+  background: transparent !important;
+  transform: translateY(-50%) scale(1.1) !important;
+  box-shadow: none !important;
+}
+
+.noti-item.removing {
+  animation: slideOutNoti 0.4s forwards ease-in-out;
+}
+
+@keyframes slideOutNoti {
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
 }
 
 .noti-item:hover {
