@@ -203,23 +203,6 @@ public class AnalisisService {
             usuario.setIndiceAcierto((double) acertadas / cerradosTotales * 100.0);
         }
 
-        // 3. Rendimiento Mensual
-        LocalDateTime haceUnMes = LocalDateTime.now().minusDays(30);
-        List<Analisis> cerradosHaceUnMes = todos.stream()
-                .filter(a -> a.getEstado() != EstadoAnalisis.PENDIENTE)
-                .filter(a -> a.getFechaCierre() != null && a.getFechaCierre().isBefore(haceUnMes))
-                .collect(Collectors.toList());
-
-        double indiceHaceUnMes = 0.0;
-        if (!cerradosHaceUnMes.isEmpty()) {
-            long acertadosHaceUnMes = cerradosHaceUnMes.stream()
-                    .filter(a -> a.getEstado() == EstadoAnalisis.ACERTADO)
-                    .count();
-            indiceHaceUnMes = (double) acertadosHaceUnMes / cerradosHaceUnMes.size() * 100.0;
-        }
-
-        usuario.setRendimientoMes(usuario.getIndiceAcierto() - indiceHaceUnMes);
-
         usuarioRepository.save(usuario);
     }
 
