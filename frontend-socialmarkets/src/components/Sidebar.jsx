@@ -25,7 +25,10 @@ const Sidebar = () => {
                     <FiGrid className="nav-icon" /> Panel
                 </button>
                 
-                <button className="nav-item">
+                <button 
+                    className={`nav-item ${isActive('/mercados')}`} 
+                    onClick={() => navigate('/mercados')}
+                >
                     <FiTrendingUp className="nav-icon" /> Mercados
                 </button>
                 <button 

@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Perfil from './pages/Perfil';
 import Comunidad from './pages/Comunidad';
 import Clasificacion from './pages/Clasificacion';
+import Mercados from './pages/Mercados';
 import './App.css';
 
 const PrivateRoute = ({ children }) => {
@@ -109,6 +110,14 @@ function App() {
             element={
               <PrivateRoute>
                 <Clasificacion />
+              </PrivateRoute>
+            } 
+          />
+          <Route 
+            path="/mercados" 
+            element={
+              <PrivateRoute>
+                <Mercados />
               </PrivateRoute>
             } 
           />
