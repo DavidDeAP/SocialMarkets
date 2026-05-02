@@ -10,8 +10,22 @@ const TradingViewChart = ({ symbol, exchange }) => {
                 
                 let formattedSymbol = symbol;
                 
-                // Normalización de símbolos para visualización
-                if (!symbol.includes(':')) {
+                // Mapeo de Símbolos Yahoo -> TradingView (Los índices de Yahoo usan ^)
+                const symbolMapping = {
+                    '^GSPC': 'SPX',
+                    '^IBEX': 'IBEX35',
+                    '^IXIC': 'IXIC',
+                    '^DJI': 'DJI',
+                    '^GDAXI': 'DAX',
+                    '^FCHI': 'PX1',
+                    'GC=F': 'GOLD',
+                    'CL=F': 'USOIL',
+                    'SI=F': 'SILVER'
+                };
+
+                if (symbolMapping[symbol]) {
+                    formattedSymbol = symbolMapping[symbol];
+                } else if (!symbol.includes(':')) {
                     if (exchange === 'NMS' || exchange === 'NASDAQ') {
                         formattedSymbol = `NASDAQ:${symbol}`;
                     } else if (exchange === 'NYQ' || exchange === 'NYSE') {

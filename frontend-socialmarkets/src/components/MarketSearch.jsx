@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FiSearch, FiActivity, FiGlobe, FiBriefcase, FiDollarSign, FiZap } from 'react-icons/fi';
+import { FiSearch, FiActivity, FiGlobe, FiBriefcase, FiDollarSign, FiZap, FiPieChart } from 'react-icons/fi';
+import api from '../services/api';
 import './MarketSearch.css';
 
 const MarketSearch = ({ onSelect }) => {
@@ -20,7 +21,7 @@ const MarketSearch = ({ onSelect }) => {
     }, []);
 
     useEffect(() => {
-        if (query.length < 2) {
+        if (query.trim().length < 2) {
             setResults([]);
             return;
         }
@@ -28,39 +29,17 @@ const MarketSearch = ({ onSelect }) => {
         const timer = setTimeout(async () => {
             setIsLoading(true);
             try {
-                // Usamos el endpoint de Yahoo Finance para búsqueda
-                const response = await fetch(`https://cors-anywhere.herokuapp.com/https://query1.finance.yahoo.com/v1/finance/search?q=${query}&quotesCount=8&newsCount=0`);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    const filtered = data.quotes.map(q => ({
-                        symbol: q.symbol,
-                        name: q.shortname || q.longname || q.symbol,
-                        exchange: q.exchange,
-                        type: q.quoteType,
-                        typeDisp: q.typeDisp || q.quoteType
-                    }));
-                    setResults(filtered);
-                } else {
-                    throw new Error('API error');
-                }
+                // Usamos nuestro propio backend para evitar problemas de CORS y mejorar la precisión
+                const response = await api.get(`/mercados/buscar?q=${encodeURIComponent(query)}`);
+                setResults(response.data);
+                setShowResults(true);
             } catch (error) {
                 console.error("Search error:", error);
-                // Mocks de alta calidad para fallos locales/CORS
-                const mocks = [
-                    { symbol: 'AAPL', name: 'Apple Inc.', exchange: 'NASDAQ', type: 'EQUITY', typeDisp: 'Acción' },
-                    { symbol: 'BTC-USD', name: 'Bitcoin USD', exchange: 'CRYPTO', type: 'CRYPTO', typeDisp: 'Cripto' },
-                    { symbol: 'TSLA', name: 'Tesla, Inc.', exchange: 'NASDAQ', type: 'EQUITY', typeDisp: 'Acción' },
-                    { symbol: 'EURUSD=X', name: 'Euro / US Dollar', exchange: 'FX', type: 'CURRENCY', typeDisp: 'Forex' },
-                    { symbol: 'ETH-USD', name: 'Ethereum USD', exchange: 'CRYPTO', type: 'CRYPTO', typeDisp: 'Cripto' },
-                    { symbol: 'NVDA', name: 'NVIDIA Corporation', exchange: 'NASDAQ', type: 'EQUITY', typeDisp: 'Acción' },
-                    { symbol: 'MSFT', name: 'Microsoft Corporation', exchange: 'NASDAQ', type: 'EQUITY', typeDisp: 'Acción' }
-                ].filter(m => m.symbol.includes(query.toUpperCase()) || m.name.toUpperCase().includes(query.toUpperCase()));
-                setResults(mocks);
+                setResults([]);
             } finally {
                 setIsLoading(false);
             }
-        }, 300);
+        }, 350);
 
         return () => clearTimeout(timer);
     }, [query]);
@@ -77,16 +56,17 @@ const MarketSearch = ({ onSelect }) => {
         if (t === 'CURRENCY' || t === 'FOREX') return <FiDollarSign className="icon-forex" />;
         if (t === 'EQUITY' || t === 'ACCION') return <FiZap className="icon-equity" />;
         if (t === 'ETF') return <FiBriefcase className="icon-etf" />;
+        if (t === 'INDEX' || t === 'INDICE' || t === 'COMMODITY') return <FiPieChart className="icon-index" />;
         return <FiGlobe className="icon-default" />;
     };
 
     return (
         <div className="market-search-container" ref={searchRef}>
-            <div className={`search-input-group ${showResults && query.length >= 2 ? 'has-results' : ''}`}>
+            <div className={`search-input-group ${showResults && results.length > 0 ? 'has-results' : ''}`}>
                 <FiSearch className="search-icon-main" />
                 <input
                     type="text"
-                    placeholder="Buscar activo (Ej: BTC, AAPL, EURUSD...)"
+                    placeholder="Busca por nombre o ticker (Ej: S&P 500, Oro, Apple, BTC...)"
                     value={query}
                     onChange={(e) => {
                         setQuery(e.target.value);
@@ -103,10 +83,10 @@ const MarketSearch = ({ onSelect }) => {
 
             {showResults && results.length > 0 && (
                 <div className="search-results-panel modern-scroll">
-                    <div className="search-results-header">Resultados Sugeridos</div>
+                    <div className="search-results-header">Activos Encontrados</div>
                     {results.map((item, index) => (
                         <div 
-                            key={index} 
+                            key={`${item.symbol}-${index}`} 
                             className="search-result-item-premium"
                             onClick={() => handleSelect(item)}
                         >

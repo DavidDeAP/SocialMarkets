@@ -83,9 +83,28 @@
     border-top: none;
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
-    overflow: hidden;
+    max-height: 400px; /* Altura máxima para permitir scroll */
+    overflow-y: auto;  /* Habilita el scroll vertical */
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
     animation: slideDown 0.3s ease-out;
+}
+
+/* Scrollbar personalizado para el panel de resultados */
+.search-results-panel::-webkit-scrollbar {
+    width: 6px;
+}
+
+.search-results-panel::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.search-results-panel::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.search-results-panel::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
 }
 
 @keyframes slideDown {
@@ -151,6 +170,7 @@
 .result-type-icon.crypto { color: #10b981; }
 .result-type-icon.currency { color: #f59e0b; }
 .result-type-icon.etf { color: #8b5cf6; }
+.result-type-icon.index { color: #ff4d4d; }
 
 .result-text-group {
     display: flex;
