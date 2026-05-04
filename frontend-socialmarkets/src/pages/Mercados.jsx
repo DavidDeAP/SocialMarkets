@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
+import TickerTape from '../components/TickerTape';
 import MarketSearch from '../components/MarketSearch';
 import TradingViewChart from '../components/TradingViewChart';
 import api from '../services/api';
@@ -46,6 +47,7 @@ const Mercados = () => {
             <Sidebar />
             <div className="main-wrapper">
                 <Topbar user={user} />
+                <TickerTape />
                 
                 <main className={`main-content-no-scroll ${!selectedSymbol ? 'initial-state' : 'active-state'}`}>
                     

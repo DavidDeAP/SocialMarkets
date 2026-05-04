@@ -11,6 +11,7 @@ import {
 
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
+import TickerTape from '../components/TickerTape';
 import api from '../services/api';
 import './Perfil.css';
 import './Comunidad.css'; // Reutilizamos estilos de la comunidad para los posts
@@ -337,6 +338,7 @@ const Perfil = () => {
             <Sidebar />
             <div className="main-wrapper">
                 <Topbar user={user} />
+                <TickerTape />
                 
                 <main className="main-content">
                     {notificacion.mostrar && (

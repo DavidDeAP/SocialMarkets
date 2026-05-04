@@ -5,6 +5,7 @@ import {
 } from 'react-icons/fi';
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
+import TickerTape from '../components/TickerTape';
 import api from '../services/api';
 import './Home.css';
 
@@ -119,6 +120,7 @@ const Home = () => {
             <Sidebar />
             <div className="main-wrapper">
                 <Topbar user={user} />
+                <TickerTape />
                 <main className="main-content">
                     
                     <header className="dashboard-header animate-in">

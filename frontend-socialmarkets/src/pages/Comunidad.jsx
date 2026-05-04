@@ -8,6 +8,7 @@ import {
 } from 'react-icons/fi';
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
+import TickerTape from '../components/TickerTape';
 import api from '../services/api';
 import './Comunidad.css';
 
@@ -526,6 +527,7 @@ const Comunidad = () => {
             <Sidebar />
             <div className="main-wrapper">
                 <Topbar user={user} />
+                <TickerTape />
 
                 <main className="comunidad-container">
                     <header className="comunidad-header">
