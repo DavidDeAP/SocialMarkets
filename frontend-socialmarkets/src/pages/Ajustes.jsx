@@ -4,7 +4,7 @@ import Topbar from '../components/Topbar';
 import TickerTape from '../components/TickerTape';
 import api from '../services/api';
 import { useSettings } from '../context/SettingsContext';
-import { FiMonitor, FiEye, FiEyeOff, FiLock, FiUnlock, FiSliders, FiCheckCircle, FiXCircle, FiLogOut } from 'react-icons/fi';
+import { FiMonitor, FiEye, FiEyeOff, FiLock, FiUnlock, FiSliders, FiCheckCircle, FiXCircle, FiLogOut, FiTrash2, FiAlertTriangle, FiRotateCcw } from 'react-icons/fi';
 import './Ajustes.css';
 
 const Ajustes = () => {
@@ -40,6 +40,43 @@ const Ajustes = () => {
         localStorage.removeItem('token');
         window.location.href = '/login';
     };
+
+    const [confirmandoBorrado, setConfirmandoBorrado] = useState(false);
+    const [segundosRestantes, setSegundosRestantes] = useState(0);
+    const [timerIniciado, setTimerIniciado] = useState(false);
+
+    const iniciarCuentaAtras = () => {
+        setSegundosRestantes(3);
+        setTimerIniciado(true);
+    };
+
+    const cancelarBorrado = () => {
+        setConfirmandoBorrado(false);
+        setSegundosRestantes(0);
+        setTimerIniciado(false);
+    };
+
+    useEffect(() => {
+        let interval = null;
+        if (segundosRestantes > 0 && timerIniciado) {
+            interval = setInterval(() => {
+                setSegundosRestantes(prev => prev - 1);
+            }, 1000);
+        } else if (segundosRestantes === 0 && timerIniciado) {
+            const borrarCuenta = async () => {
+                try {
+                    await api.post('/usuarios/eliminar');
+                    handleLogout();
+                } catch (err) {
+                    console.error("Error al borrar cuenta", err);
+                    setNotificacion({ mostrar: true, mensaje: 'Error al borrar cuenta', tipo: 'error' });
+                    cancelarBorrado();
+                }
+            };
+            borrarCuenta();
+        }
+        return () => { if (interval) clearInterval(interval); };
+    }, [segundosRestantes, timerIniciado]);
 
     const guardarPrivacidad = async (nuevosDatos) => {
         try {
@@ -241,6 +278,40 @@ const Ajustes = () => {
                                     <button className="btn-logout-modern" onClick={handleLogout}>
                                         <FiLogOut /> Cerrar Sesión
                                     </button>
+                                </div>
+                            </div>
+
+                            {/* BORRAR CUENTA */}
+                            <div className="ajuste-card delete-account-card glass-card">
+                                <div className="ajuste-info">
+                                    <div className="ajuste-label danger-text">Borrar Cuenta</div>
+                                    <p className="ajuste-description">Elimina permanentemente tu cuenta y todos tus datos.</p>
+                                </div>
+                                <div className="ajuste-action">
+                                    {!confirmandoBorrado ? (
+                                        <button className="btn-delete-account" onClick={() => setConfirmandoBorrado(true)}>
+                                            <FiTrash2 /> Borrar Cuenta
+                                        </button>
+                                    ) : segundosRestantes > 0 ? (
+                                        <div className="delete-countdown-wrapper">
+                                            <span className="countdown-text">Borrando en {segundosRestantes}s...</span>
+                                            <button className="btn-cancel-delete" onClick={cancelarBorrado}>
+                                                <FiRotateCcw /> Cancelar
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="delete-confirm-wrapper">
+                                            <span className="confirm-warning">¿Estás seguro? Esta acción es irreversible.</span>
+                                            <div className="confirm-actions">
+                                                <button className="btn-confirm-delete" onClick={iniciarCuentaAtras}>
+                                                    Sí, eliminar definitivamente
+                                                </button>
+                                                <button className="btn-cancel-simple" onClick={() => setConfirmandoBorrado(false)}>
+                                                    No, volver
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>

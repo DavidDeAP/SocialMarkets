@@ -169,4 +169,13 @@ public class UsuarioService {
         ranking.forEach(u -> analisisService.actualizarEstadisticasUsuario(u));
         return ranking;
     }
+
+    @Transactional
+    public void eliminarUsuario(String username) {
+        Usuario usuario = usuarioRepository.findByUsuario(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        
+        // El CascadeType.ALL en Usuario.java se encarga de Analisis y Notificaciones
+        usuarioRepository.delete(usuario);
+    }
 }

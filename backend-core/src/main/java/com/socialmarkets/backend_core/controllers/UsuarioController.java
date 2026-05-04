@@ -202,4 +202,15 @@ public class UsuarioController {
     public ResponseEntity<List<Usuario>> obtenerRanking(@RequestParam(value = "filtro", defaultValue = "indice") String filtro) {
         return ResponseEntity.ok(usuarioService.obtenerRanking(filtro));
     }
+
+    @PostMapping("/eliminar")
+    public ResponseEntity<?> eliminarCuenta(Principal principal) {
+        try {
+            if (principal == null) return ResponseEntity.status(401).body("No autorizado");
+            usuarioService.eliminarUsuario(principal.getName());
+            return ResponseEntity.ok("Cuenta eliminada con éxito");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al eliminar la cuenta: " + e.getMessage());
+        }
+    }
 }
