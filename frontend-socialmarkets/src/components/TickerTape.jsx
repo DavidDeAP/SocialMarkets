@@ -17,6 +17,10 @@ const TickerTape = () => {
                 "symbols": [
                     { "proName": "FOREXCOM:SPX500", "title": "S&P 500" },
                     { "proName": "FOREXCOM:NSXUSD", "title": "Nasdaq 100" },
+                    { "proName": "TVC:GOLD", "title": "Oro" },
+                    { "proName": "TVC:SILVER", "title": "Plata" },
+                    { "proName": "TVC:USOIL", "title": "Petróleo" },
+                    { "proName": "NASDAQ:TSLA", "title": "Tesla" },
                     { "proName": "FX_IDC:EURUSD", "title": "EUR/USD" },
                     { "proName": "BITSTAMP:BTCUSD", "title": "Bitcoin" },
                     { "proName": "BITSTAMP:ETHUSD", "title": "Ethereum" }
@@ -24,7 +28,7 @@ const TickerTape = () => {
                 "showSymbolLogo": true,
                 "colorTheme": "dark",
                 "isTransparent": true,
-                "displayMode": "adaptive",
+                "displayMode": "regular",
                 "locale": "es"
             });
             container.current.appendChild(script);
