@@ -6,7 +6,7 @@ import {
     FiCalendar, FiUsers, FiTrendingUp, FiTarget, 
     FiTrash2, FiUserPlus, FiUserMinus, FiHeart,
     FiArrowUpRight, FiArrowDownRight, FiActivity,
-    FiChevronLeft, FiChevronRight, FiMessageSquare
+    FiChevronLeft, FiChevronRight, FiMessageSquare, FiLock
 } from 'react-icons/fi';
 
 import Sidebar from '../components/Sidebar';
@@ -522,13 +522,13 @@ const Perfil = () => {
                     </div>
 
                     {/* FEED DE ANÁLISIS DEL USUARIO */}
-                    {shouldShow('POSTS') ? (
-                        <div className="profile-feed-section">
-                            <div className="section-title-row">
-                                <FiBarChart2 />
-                                <h2>Historial de Análisis</h2>
-                            </div>
+                    <div className="profile-feed-section">
+                        <div className="section-title-row">
+                            <FiBarChart2 />
+                            <h2>Historial de Análisis</h2>
+                        </div>
 
+                        {shouldShow('POSTS') ? (
                             <div className="feed-analisis profile-mode">
                                 {cargandoFeed ? (
                                     <div className="loader-container-feed">
@@ -695,14 +695,14 @@ const Perfil = () => {
                                 )}
                                 <div ref={observerTarget} style={{ height: '10px' }}></div>
                             </div>
-                        </div>
-                    ) : (
-                        <div className="private-profile-placeholder glass-card">
-                            <FiLock size={40} />
-                            <h3>Publicaciones Privadas</h3>
-                            <p>Este analista ha decidido mantener su historial de análisis oculto.</p>
-                        </div>
-                    )}
+                        ) : (
+                            <div className="private-profile-placeholder glass-card">
+                                <FiLock size={40} />
+                                <h3>Contenido Restringido</h3>
+                                <p>Este analista ha decidido mantener su historial de análisis oculto.</p>
+                            </div>
+                        )}
+                    </div>
                 </main>
             </div>
 
