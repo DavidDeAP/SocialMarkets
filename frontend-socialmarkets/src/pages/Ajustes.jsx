@@ -78,7 +78,7 @@ const Ajustes = () => {
                     </header>
 
                     <div className="ajustes-container animate-in-up">
-                        
+
                         {/* SECCIÓN INTERFAZ */}
                         <div className="ajustes-section">
                             <div className="section-header">
@@ -96,8 +96,8 @@ const Ajustes = () => {
                                     </div>
                                     <div className="ajuste-action">
                                         <label className="switch">
-                                            <input 
-                                                type="checkbox" 
+                                            <input
+                                                type="checkbox"
                                                 checked={showTicker}
                                                 onChange={(e) => setShowTicker(e.target.checked)}
                                             />
@@ -114,9 +114,9 @@ const Ajustes = () => {
                                 <FiLock />
                                 <h3>Privacidad del Perfil</h3>
                             </div>
-                            
+
                             <div className="privacy-modes-grid">
-                                <button 
+                                <button
                                     className={`privacy-mode-card ${privacidad === 'PUBLICO' ? 'active' : ''}`}
                                     onClick={() => { setPrivacidad('PUBLICO'); guardarPrivacidad({ privacidad: 'PUBLICO' }); }}
                                 >
@@ -127,7 +127,7 @@ const Ajustes = () => {
                                     </div>
                                 </button>
 
-                                <button 
+                                <button
                                     className={`privacy-mode-card ${privacidad === 'PRIVADO' ? 'active' : ''}`}
                                     onClick={() => { setPrivacidad('PRIVADO'); guardarPrivacidad({ privacidad: 'PRIVADO' }); }}
                                 >
@@ -138,7 +138,7 @@ const Ajustes = () => {
                                     </div>
                                 </button>
 
-                                <button 
+                                <button
                                     className={`privacy-mode-card ${privacidad === 'PERSONALIZADO' ? 'active' : ''}`}
                                     onClick={() => { setPrivacidad('PERSONALIZADO'); guardarPrivacidad({ privacidad: 'PERSONALIZADO' }); }}
                                 >
@@ -159,8 +159,8 @@ const Ajustes = () => {
                                             </div>
                                             <div className="ajuste-action">
                                                 <label className="switch small">
-                                                    <input 
-                                                        type="checkbox" 
+                                                    <input
+                                                        type="checkbox"
                                                         checked={ocultarSeguidores}
                                                         onChange={(e) => { setOcultarSeguidores(e.target.checked); guardarPrivacidad({ ocultarSeguidores: e.target.checked }); }}
                                                     />
@@ -175,8 +175,8 @@ const Ajustes = () => {
                                             </div>
                                             <div className="ajuste-action">
                                                 <label className="switch small">
-                                                    <input 
-                                                        type="checkbox" 
+                                                    <input
+                                                        type="checkbox"
                                                         checked={ocultarPredicciones}
                                                         onChange={(e) => { setOcultarPredicciones(e.target.checked); guardarPrivacidad({ ocultarPredicciones: e.target.checked }); }}
                                                     />
@@ -191,8 +191,8 @@ const Ajustes = () => {
                                             </div>
                                             <div className="ajuste-action">
                                                 <label className="switch small">
-                                                    <input 
-                                                        type="checkbox" 
+                                                    <input
+                                                        type="checkbox"
                                                         checked={ocultarIndice}
                                                         onChange={(e) => { setOcultarIndice(e.target.checked); guardarPrivacidad({ ocultarIndice: e.target.checked }); }}
                                                     />
@@ -207,8 +207,8 @@ const Ajustes = () => {
                                             </div>
                                             <div className="ajuste-action">
                                                 <label className="switch small">
-                                                    <input 
-                                                        type="checkbox" 
+                                                    <input
+                                                        type="checkbox"
                                                         checked={ocultarPublicaciones}
                                                         onChange={(e) => { setOcultarPublicaciones(e.target.checked); guardarPrivacidad({ ocultarPublicaciones: e.target.checked }); }}
                                                     />

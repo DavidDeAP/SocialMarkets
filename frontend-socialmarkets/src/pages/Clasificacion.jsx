@@ -48,7 +48,7 @@ const Clasificacion = () => {
                 setCargandoFiltro(true);
                 // Scroll hacia arriba para que el usuario vea el podio actualizado
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-                
+
                 const res = await api.get(`/usuarios/ranking?filtro=${filtro}`);
                 setRanking(res.data);
             } catch (err) {
@@ -137,7 +137,7 @@ const Clasificacion = () => {
                             {/* Overlay de Carga Localizado */}
                             <AnimatePresence>
                                 {cargandoFiltro && (
-                                    <motion.div 
+                                    <motion.div
                                         className="ranking-loader-overlay"
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
@@ -159,14 +159,14 @@ const Clasificacion = () => {
                                             className={`podium-item ${getPodiumClass(index)}`}
                                             initial={{ opacity: 0, y: 50 }}
                                             animate={{ opacity: 1, y: 0 }}
-                                            whileHover={{ 
+                                            whileHover={{
                                                 y: -20,
                                                 transition: { type: "spring", stiffness: 400, damping: 10 }
                                             }}
-                                            transition={{ 
-                                                delay: index * 0.1, 
+                                            transition={{
+                                                delay: index * 0.1,
                                                 duration: 0.5,
-                                                y: { type: "spring", stiffness: 400, damping: 10 } 
+                                                y: { type: "spring", stiffness: 400, damping: 10 }
                                             }}
                                             onClick={() => navigate(`/perfil/${u.usuario}`)}
                                         >

@@ -48,9 +48,9 @@ const Mercados = () => {
             <div className="main-wrapper">
                 <Topbar user={user} />
                 <TickerTape />
-                
+
                 <main className={`main-content-no-scroll ${!selectedSymbol ? 'initial-state' : 'active-state'}`}>
-                    
+
                     <div className="search-section-wrapper animate-transition">
                         {!selectedSymbol && (
                             <div className="market-welcome-text">
@@ -77,9 +77,9 @@ const Mercados = () => {
                             </div>
 
                             <div className="chart-flex-container">
-                                <TradingViewChart 
-                                    symbol={selectedSymbol} 
-                                    exchange={assetInfo?.exchange} 
+                                <TradingViewChart
+                                    symbol={selectedSymbol}
+                                    exchange={assetInfo?.exchange}
                                 />
                             </div>
                         </div>

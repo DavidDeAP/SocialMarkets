@@ -1,5 +1,5 @@
 .news-page {
-  padding-top: 1rem !important;
+  padding-top: 2rem !important;
 }
 
 .news-header {
@@ -11,8 +11,8 @@
 }
 
 .news-grid {
-  height: calc(100vh - 280px);
-  min-height: 550px;
+  flex: 1;
+  min-height: 400px; /* Reducido un poco para dar aire */
 }
 
 .news-main-card {

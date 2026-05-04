@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import defaultUser from '../assets/defaultuser.png';
-import { 
-    FiEdit2, FiBarChart2, FiCheckCircle, FiXCircle, 
-    FiCalendar, FiUsers, FiTrendingUp, FiTarget, 
+import {
+    FiEdit2, FiBarChart2, FiCheckCircle, FiXCircle,
+    FiCalendar, FiUsers, FiTrendingUp, FiTarget,
     FiTrash2, FiUserPlus, FiUserMinus, FiHeart,
     FiArrowUpRight, FiArrowDownRight, FiActivity,
     FiChevronLeft, FiChevronRight, FiMessageSquare, FiLock, FiEyeOff
@@ -17,7 +17,7 @@ import './Perfil.css';
 import './Comunidad.css'; // Reutilizamos estilos de la comunidad para los posts
 
 const Perfil = () => {
-    const { username } = useParams(); 
+    const { username } = useParams();
     const [user, setUser] = useState(null);
     const [isFollowing, setIsFollowing] = useState(false);
     const [userProfile, setUserProfile] = useState(null);
@@ -29,7 +29,7 @@ const Perfil = () => {
     const [borrarFoto, setBorrarFoto] = useState(false);
     const [previewUrl, setPreviewUrl] = useState(null);
     const [editando, setEditando] = useState(false);
-    
+
     // Estados para el feed de análisis del usuario
     const [listaAnalisis, setListaAnalisis] = useState([]);
     const [cargandoFeed, setCargandoFeed] = useState(true);
@@ -39,7 +39,7 @@ const Perfil = () => {
         images: [],
         currentIndex: 0
     });
-    
+
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
 
@@ -47,10 +47,10 @@ const Perfil = () => {
         const cargarTodo = async () => {
             setCargando(true);
 
-            setIsFollowing(false); 
+            setIsFollowing(false);
             setBorrarFoto(false);
             setPreviewUrl(null);
-            
+
             try {
                 const [meRes, perfilRes] = await Promise.all([
                     api.get('/usuarios/perfil'),
@@ -60,7 +60,7 @@ const Perfil = () => {
                 setUser(meRes.data);
                 setUserProfile(perfilRes.data);
                 setTempBio(perfilRes.data.biografia || '');
-                
+
                 if (meRes.data.usuario !== username) {
                     try {
                         const resSigue = await api.get(`/usuarios/${username}/siguiendo`);
@@ -74,12 +74,12 @@ const Perfil = () => {
             } catch (err) {
                 console.error("Error cargando perfil", err);
                 if (err.response?.status === 401) navigate('/login');
-                else navigate('/home'); 
+                else navigate('/home');
             } finally {
                 setCargando(false);
             }
         };
-        
+
         if (username) {
             cargarTodo();
             fetchAnalisisUsuario(true);
@@ -241,9 +241,9 @@ const Perfil = () => {
         try {
             const response = await api.post(`/usuarios/${username}/follow`);
             const siguiendo = response.data; // El backend devuelve true o false
-            
+
             setIsFollowing(siguiendo);
-            
+
             // Actualizamos visualmente el número de seguidores sin recargar
             setUserProfile(prev => ({
                 ...prev,
@@ -269,7 +269,7 @@ const Perfil = () => {
     const shouldShow = (type) => {
         if (esMiPerfil) return true;
         const privacidad = userProfile.privacidadPerfil || 'PUBLICO';
-        
+
         if (privacidad === 'PRIVADO') return false;
         if (privacidad === 'PERSONALIZADO') {
             if (type === 'FOLLOWERS') return !userProfile.ocultarSeguidores;
@@ -303,7 +303,7 @@ const Perfil = () => {
     const guardarCambios = async () => {
         const formData = new FormData();
         formData.append('biografia', tempBio);
-        
+
         if (tempFoto) {
             formData.append('foto', tempFoto);
         } else if (borrarFoto) {
@@ -313,7 +313,7 @@ const Perfil = () => {
         try {
             const res = await api.put('/usuarios/actualizar', formData);
             setUser(res.data);
-            setUserProfile(res.data); 
+            setUserProfile(res.data);
             setEditando(false);
             setBorrarFoto(false);
             setTempFoto(null);
@@ -334,7 +334,7 @@ const Perfil = () => {
         setEditando(false);
     };
 
-    const fechaRegistro = userProfile?.fechaCreacion 
+    const fechaRegistro = userProfile?.fechaCreacion
         ? new Date(userProfile.fechaCreacion).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
         : "---";
 
@@ -354,7 +354,7 @@ const Perfil = () => {
             <div className="main-wrapper">
                 <Topbar user={user} />
                 <TickerTape />
-                
+
                 <main className="main-content">
                     {notificacion.mostrar && (
                         <div className={`notification-toast ${notificacion.tipo}`}>
@@ -366,19 +366,19 @@ const Perfil = () => {
                     <div className="profile-glass-card">
                         <div className="profile-hero">
                             <div className={`profile-avatar-container ${editando ? 'mode-edit' : ''}`} onClick={handleFotoClick}>
-                                <img 
-                                    src={previewUrl || (!borrarFoto && userProfile.imagen ? userProfile.imagen : defaultUser)} 
-                                    alt="Avatar" 
+                                <img
+                                    src={previewUrl || (!borrarFoto && userProfile.imagen ? userProfile.imagen : defaultUser)}
+                                    alt="Avatar"
                                     className="profile-avatar-img"
                                 />
                                 {editando && (
                                     <>
                                         <div className="avatar-overlay"><FiEdit2 /><span>Cambiar</span></div>
-                                        
+
                                         {/* BOTÓN DE ELIMINAR INTEGRADO */}
                                         {(previewUrl || (userProfile.imagen && !borrarFoto)) && (
-                                            <button 
-                                                className="delete-photo-btn" 
+                                            <button
+                                                className="delete-photo-btn"
                                                 onClick={handleEliminarFoto}
                                                 title="Eliminar foto"
                                             >
@@ -393,7 +393,7 @@ const Perfil = () => {
                             <div className="profile-main-info">
                                 <div className="name-row">
                                     <h1 className="text-neon-green">{userProfile.usuario}</h1>
-                                    
+
                                     {esMiPerfil ? (
                                         !editando && (
                                             <button className="btn-edit-profile" onClick={() => setEditando(true)}>
@@ -401,18 +401,18 @@ const Perfil = () => {
                                             </button>
                                         )
                                     ) : (
-                                        <button 
-                                            className={`btn-follow ${isFollowing ? 'is-following' : ''}`} 
+                                        <button
+                                            className={`btn-follow ${isFollowing ? 'is-following' : ''}`}
                                             onClick={handleFollow}
                                         >
                                             {isFollowing ? (
                                                 <>
-                                                    <FiUserMinus style={{ fontSize: '1.1rem' }} /> 
+                                                    <FiUserMinus style={{ fontSize: '1.1rem' }} />
                                                     <span>Siguiendo</span>
                                                 </>
                                             ) : (
                                                 <>
-                                                    <FiUserPlus style={{ fontSize: '1.1rem' }} /> 
+                                                    <FiUserPlus style={{ fontSize: '1.1rem' }} />
                                                     <span>Seguir</span>
                                                 </>
                                             )}
@@ -422,10 +422,10 @@ const Perfil = () => {
                                 <p className="member-since">
                                     <FiCalendar /> Analista desde {fechaRegistro}
                                 </p>
-                                
+
                                 <div className="bio-section">
                                     {editando ? (
-                                        <textarea 
+                                        <textarea
                                             className="bio-editor"
                                             value={tempBio}
                                             onChange={(e) => setTempBio(e.target.value)}
@@ -497,8 +497,8 @@ const Perfil = () => {
                                     </div>
                                     {shouldShow('SUCCESS_RATE') && (
                                         <div className="success-progress-bar">
-                                            <div 
-                                                className="progress-fill" 
+                                            <div
+                                                className="progress-fill"
                                                 style={{ width: `${userProfile.indiceAcierto || 0}%` }}
                                             ></div>
                                         </div>
@@ -726,7 +726,7 @@ const Perfil = () => {
             {lightbox.isOpen && (
                 <div className="lightbox-overlay" onClick={closeLightbox}>
                     <button className="lightbox-close" onClick={closeLightbox}><FiXCircle /></button>
-                    
+
                     {lightbox.images.length > 1 && (
                         <>
                             <button className="lightbox-nav prev" onClick={prevImage}><FiChevronLeft /></button>

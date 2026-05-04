@@ -1,12 +1,12 @@
 .main-content-no-scroll {
     flex: 1;
-    padding: 1rem 1.5rem; /* Reducido padding lateral y superior */
+    padding: 1rem 1.5rem;
+    /* Reducido padding lateral y superior */
     display: flex;
     flex-direction: column;
     transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-    height: calc(100vh - 80px);
 }
 
 /* Estado Inicial */
@@ -37,12 +37,14 @@
 /* Estado Activo - MÁS COMPACTO */
 .main-content-no-scroll.active-state {
     justify-content: flex-start;
-    padding-top: 0.5rem; /* Casi pegado al topbar */
+    padding-top: 0.5rem;
+    /* Casi pegado al topbar */
 }
 
 .main-content-no-scroll.active-state .search-section-wrapper {
     width: 100%;
-    max-width: 450px; /* Buscador más pequeño cuando está activo */
+    max-width: 450px;
+    /* Buscador más pequeño cuando está activo */
     margin-bottom: 0.8rem;
 }
 
@@ -50,7 +52,8 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem; /* Menos espacio entre cabecera y gráfico */
+    gap: 0.5rem;
+    /* Menos espacio entre cabecera y gráfico */
     min-height: 0;
 }
 
@@ -72,7 +75,8 @@
 }
 
 .asset-main-name {
-    font-size: 1.4rem; /* Nombre del activo más pequeño */
+    font-size: 1.4rem;
+    /* Nombre del activo más pequeño */
     margin-top: 0.1rem;
     font-weight: 700;
     color: white;
@@ -82,7 +86,8 @@
     display: flex;
     gap: 0.8rem;
     color: rgba(255, 255, 255, 0.3);
-    font-size: 0.75rem; /* Meta info más pequeña */
+    font-size: 0.75rem;
+    /* Meta info más pequeña */
 }
 
 .meta-item.type {
@@ -96,7 +101,8 @@
     background: #0f172a;
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 8px;
-    padding: 0; /* Eliminado padding interno para que el gráfico toque los bordes */
+    padding: 0;
+    /* Eliminado padding interno para que el gráfico toque los bordes */
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     min-height: 0;
     overflow: hidden;
@@ -108,8 +114,15 @@
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(5px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .animate-fade-in {

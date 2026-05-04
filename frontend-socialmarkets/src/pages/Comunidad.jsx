@@ -214,7 +214,7 @@ const Comunidad = () => {
 
     const fetchAnalisis = async (reset = false) => {
         if (!reset && (!hasMore || cargandoMas)) return;
-        
+
         const pageToFetch = reset ? 0 : pagina;
         if (reset) {
             setCargandoFeed(true);
@@ -227,7 +227,7 @@ const Comunidad = () => {
         try {
             const filtrosOrden = filtrosSeleccionados.filter(f => ['recientes', 'likes', 'acierto'].includes(f));
             const ordenPrincipal = filtrosOrden[filtrosOrden.length - 1] || 'likes';
-            
+
             const respuesta = await api.get(`/analisis?page=${pageToFetch}&size=5&orden=${ordenPrincipal}`);
             const data = respuesta.data;
             const nuevosAnalisis = data.content;
@@ -295,7 +295,7 @@ const Comunidad = () => {
     useEffect(() => {
         const queryParams = new URLSearchParams(location.search);
         const targetId = queryParams.get('analisis');
-        
+
         if (targetId && listaAnalisis.length > 0) {
             // Esperamos a que el feed cargue y se renderice
             const timer = setTimeout(() => {
@@ -546,13 +546,13 @@ const Comunidad = () => {
                                 />
                                 {searchQuery && <FiX className="clear-search" onClick={() => setSearchQuery('')} />}
                                 {buscandoUsuarios && <div className="loader-input-search"></div>}
-                                
+
                                 {/* Sugerencias de Usuarios */}
                                 {sugerenciasUsuarios.length > 0 && (
                                     <div className="user-suggestions-dropdown">
                                         {sugerenciasUsuarios.map(u => (
-                                            <div 
-                                                key={u.identificador} 
+                                            <div
+                                                key={u.identificador}
                                                 className="user-suggestion-item"
                                                 onClick={() => {
                                                     setSearchQuery(u.usuario);
@@ -601,7 +601,7 @@ const Comunidad = () => {
                                     >
                                         Índice Acierto
                                     </button>
-                                    
+
                                     <div className="filter-separator-v"></div>
 
                                     <button
@@ -660,8 +660,8 @@ const Comunidad = () => {
                                 const isSettled = analisis.estado !== 'PENDIENTE';
 
                                 return (
-                                    <article 
-                                        key={analisis.identificador} 
+                                    <article
+                                        key={analisis.identificador}
                                         id={`analisis-${analisis.identificador}`}
                                         className={`analisis-card glass-card ${statusClass}`}
                                     >

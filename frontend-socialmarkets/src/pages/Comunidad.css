@@ -1,21 +1,21 @@
 .comunidad-container {
     padding: 1rem 2rem;
-    height: calc(100vh - 70px);
-    /* Ajustar según altura de Topbar */
+    flex: 1;
     display: flex;
     flex-direction: column;
     position: relative;
+    overflow: hidden; /* El scroll lo manejará el feed */
 }
 
 .comunidad-header {
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
 .header-top-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .comunidad-header h1 {
@@ -71,16 +71,18 @@
 }
 
 .filters-panel.show {
-    max-height: 500px; /* Aumentado un poco por si acaso */
+    max-height: 500px;
+    /* Aumentado un poco por si acaso */
     opacity: 1;
     padding: 2rem;
     margin-bottom: 2.5rem;
     border: 1px solid rgba(255, 255, 255, 0.08);
-    overflow: visible; /* Importante para que el desplegable no se corte */
+    overflow: visible;
+    /* Importante para que el desplegable no se corte */
 }
 
 .search-bar-modern {
-    position: relative; /* Necesario para el desplegable absoluto */
+    position: relative;
     background: rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 16px;
@@ -88,10 +90,10 @@
     align-items: center;
     padding: 0 1.5rem;
     gap: 15px;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
     transition: all 0.3s ease;
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
-    z-index: 1001; /* Por encima de los filtros */
+    z-index: 1001;
 }
 
 .search-bar-modern:focus-within {
@@ -1889,6 +1891,7 @@
 .user-suggestion-item:hover .sugg-name {
     color: #818cf8;
 }
+
 .loader-input-search {
     width: 18px;
     height: 18px;
@@ -1923,4 +1926,3 @@
     border-top: 1px solid rgba(255, 255, 255, 0.05);
     margin-top: 2rem;
 }
-

@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-    FiTrendingUp, FiTarget, FiClock, FiPlus, FiArrowUpRight, FiActivity, FiXCircle, FiCheckCircle, FiCalendar 
+import {
+    FiTrendingUp, FiTarget, FiClock, FiPlus, FiArrowUpRight, FiActivity, FiXCircle, FiCheckCircle, FiCalendar
 } from 'react-icons/fi';
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
@@ -50,7 +50,7 @@ const Home = () => {
                 // Primera carga de precios
                 const activosParaPrecio = resumenRes.data.recientes
                     ?.filter(a => a.estado === 'PENDIENTE') || [];
-                
+
                 if (activosParaPrecio.length > 0) {
                     await fetchPrices(activosParaPrecio);
                 }
@@ -122,7 +122,7 @@ const Home = () => {
                 <Topbar user={user} />
                 <TickerTape />
                 <main className="main-content">
-                    
+
                     <header className="dashboard-header animate-in">
                         <div className="header-info">
                             <h1 className="text-neon-glow">Panel de Control</h1>
@@ -135,7 +135,7 @@ const Home = () => {
                     </header>
 
                     <div className="stats-grid-modern">
-                        <div className="stat-card animate-card" style={{"--delay": "0.1s"}}>
+                        <div className="stat-card animate-card" style={{ "--delay": "0.1s" }}>
                             <div className="card-header-v2">
                                 <div className="icon-box target"><FiTarget /></div>
                                 <span className="label">Eficiencia</span>
@@ -148,7 +148,7 @@ const Home = () => {
                             </div>
                         </div>
 
-                        <div className="stat-card animate-card" style={{"--delay": "0.2s"}}>
+                        <div className="stat-card animate-card" style={{ "--delay": "0.2s" }}>
                             <div className="card-header-v2">
                                 <div className="icon-box total"><FiTrendingUp /></div>
                                 <span className="label">Proyecciones Totales</span>
@@ -161,7 +161,7 @@ const Home = () => {
                             </div>
                         </div>
 
-                        <div className="stat-card animate-card" style={{"--delay": "0.3s"}}>
+                        <div className="stat-card animate-card" style={{ "--delay": "0.3s" }}>
                             <div className="card-header-v2">
                                 <div className="icon-box active"><FiActivity /></div>
                                 <span className="label">Análisis en Curso</span>
@@ -180,16 +180,16 @@ const Home = () => {
                         <div className="section-title-bar">
                             <h3><FiClock /> Actividad Reciente</h3>
                         </div>
-                        
+
                         <div className="activity-feed-modern">
                             {(resumen?.recientes || []).map((a) => {
                                 const isPending = a.estado === 'PENDIENTE';
                                 const precioActual = preciosVivos[a.activo.nombre.toUpperCase()];
                                 const precioComparar = isPending ? precioActual : a.precioCierre;
-                                
+
                                 const isBullish = a.precioObjetivo > a.precioEntrada;
                                 const perf = precioComparar ? (
-                                    isBullish 
+                                    isBullish
                                         ? calculatePerformance(a.precioEntrada, precioComparar)
                                         : calculatePerformance(precioComparar, a.precioEntrada)
                                 ) : 0;
@@ -215,17 +215,17 @@ const Home = () => {
                                                     </span>
                                                 </div>
                                             </div>
-                                            
+
                                             <div className="prices-row-dash">
                                                 <div className="price-item-dash">
                                                     <label>Entrada</label>
                                                     <span>${a.precioEntrada?.toLocaleString()}</span>
                                                 </div>
-                                                
+
                                                 <div className="price-item-dash highlight">
                                                     <label>{isPending ? 'Actual' : 'Cierre'}</label>
                                                     <span className="live-val">
-                                                        {isPending 
+                                                        {isPending
                                                             ? (precioActual ? `$${precioActual.toLocaleString()}` : '---')
                                                             : `$${a.precioCierre?.toLocaleString()}`}
                                                     </span>
@@ -255,7 +255,7 @@ const Home = () => {
                                     </div>
                                 );
                             })}
-                            
+
                             {(!resumen?.recientes || resumen?.recientes.length === 0) && (
                                 <div className="no-activity-message">
                                     Todavía no has publicado ningún análisis.
