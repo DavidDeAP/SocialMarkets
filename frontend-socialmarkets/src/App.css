@@ -256,6 +256,16 @@ button:active {
   box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
 }
 
+.loader.small {
+  width: 20px;
+  height: 20px;
+}
+
+.loader.small::before,
+.loader.small::after {
+  border-width: 2px;
+}
+
 .loading-text {
   font-weight: 700;
   letter-spacing: 2px;

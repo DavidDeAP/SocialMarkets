@@ -102,7 +102,7 @@ const Registro = () => {
                     className="btn-gradient"
                     style={{ margin: '1rem auto 0', width: '100%' }}
                 >
-                    {cargando ? <span className="loader"></span> : 'Crear Cuenta'}
+                    {cargando ? <span className="loader small"></span> : 'Crear Cuenta'}
                 </motion.button>
 
                 <p className="auth-footer">
