@@ -98,3 +98,38 @@
 .nav-item.active .nav-icon {
   color: #818cf8;
 }
+
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 1rem;
+}
+
+.nav-item-icon-only {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  color: #94a3b8;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.nav-item-icon-only:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  transform: rotate(45deg);
+}
+
+.nav-item-icon-only.active {
+  background: rgba(99, 102, 241, 0.2);
+  color: #818cf8;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.nav-item-icon-only .nav-icon {
+  font-size: 1.2rem;
+}

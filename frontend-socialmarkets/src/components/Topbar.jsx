@@ -389,10 +389,17 @@ const Topbar = ({ user }) => {
                     {menuAbierto && (
                         <div className="dropdown-menu modern-dropdown">
                             <div className="dropdown-items-list">
-                                <button onClick={irAMiPerfil} className="dropdown-item">
+                                <button onClick={() => { irAMiPerfil(); setMenuAbierto(false); }} className="dropdown-item">
                                     <div className="item-icon-box"><FiUser /></div>
                                     <div className="item-text">
                                         <span className="item-title">Mi Perfil</span>
+                                    </div>
+                                </button>
+
+                                <button onClick={() => { navigate('/ajustes'); setMenuAbierto(false); }} className="dropdown-item">
+                                    <div className="item-icon-box"><FiSettings /></div>
+                                    <div className="item-text">
+                                        <span className="item-title">Ajustes</span>
                                     </div>
                                 </button>
                                 

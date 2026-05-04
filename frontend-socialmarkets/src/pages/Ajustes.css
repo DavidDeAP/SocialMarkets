@@ -1,0 +1,31 @@
+.ajustes-header {
+  margin-bottom: 2.5rem;
+}
+
+.ajustes-container {
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  background: var(--glass);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-white);
+  border-radius: 24px;
+}
+
+.placeholder-ajustes {
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.placeholder-ajustes h3 {
+  margin-top: 1.5rem;
+  color: white;
+  font-size: 1.5rem;
+}
+
+.placeholder-ajustes p {
+  margin-top: 0.5rem;
+  max-width: 300px;
+}
