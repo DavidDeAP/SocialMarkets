@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
 import api from '../services/api';
-import { FiFileText, FiRss, FiZap, FiTrendingUp } from 'react-icons/fi';
+import { FiFileText, FiRss, FiTrendingUp } from 'react-icons/fi';
 import './Noticias.css';
 
 const Noticias = () => {
@@ -71,7 +71,7 @@ const Noticias = () => {
             <div className="main-wrapper">
                 <Topbar user={user} />
                 <main className="main-content news-page">
-                    
+
                     <div className="ticker-wrapper animate-in">
                         <div ref={tickerContainer}></div>
                     </div>
@@ -80,13 +80,8 @@ const Noticias = () => {
                         <div className="header-info">
                             <h1 className="text-neon-glow">Centro de Noticias</h1>
                             <p className="welcome-user">
-                                <FiZap className="icon-pulse" style={{ color: '#facc15' }} /> 
-                                Análisis fundamental en tiempo real para tus proyecciones
+                                Análisis fundamental para tus proyecciones
                             </p>
-                        </div>
-                        <div className="news-status-badge">
-                            <span className="live-dot"></span>
-                            MERCADO ABIERTO
                         </div>
                     </header>
 
