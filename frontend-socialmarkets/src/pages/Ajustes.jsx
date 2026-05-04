@@ -292,16 +292,31 @@ const Ajustes = () => {
                                         <button className="btn-delete-account" onClick={() => setConfirmandoBorrado(true)}>
                                             <FiTrash2 /> Borrar Cuenta
                                         </button>
+                                    ) : timerIniciado && segundosRestantes === 0 ? (
+                                        <div className="delete-processing-wrapper">
+                                            <div className="spinner-danger"></div>
+                                            <span>Eliminando cuenta permanentemente...</span>
+                                        </div>
                                     ) : segundosRestantes > 0 ? (
                                         <div className="delete-countdown-wrapper">
-                                            <span className="countdown-text">Borrando en {segundosRestantes}s...</span>
-                                            <button className="btn-cancel-delete" onClick={cancelarBorrado}>
-                                                <FiRotateCcw /> Cancelar
-                                            </button>
+                                            <div className="countdown-circle">
+                                                <svg>
+                                                    <circle r="18" cx="20" cy="20"></circle>
+                                                </svg>
+                                                <span className="countdown-number">{segundosRestantes}</span>
+                                            </div>
+                                            <div className="countdown-info">
+                                                <span className="countdown-text">Borrando datos...</span>
+                                                <button className="btn-cancel-delete" onClick={cancelarBorrado}>
+                                                    <FiRotateCcw /> Cancelar ahora
+                                                </button>
+                                            </div>
                                         </div>
                                     ) : (
-                                        <div className="delete-confirm-wrapper">
-                                            <span className="confirm-warning">¿Estás seguro? Esta acción es irreversible.</span>
+                                        <div className="delete-confirm-wrapper animate-in">
+                                            <span className="confirm-warning">
+                                                <FiAlertTriangle /> ¿Estás seguro? Esta acción es irreversible.
+                                            </span>
                                             <div className="confirm-actions">
                                                 <button className="btn-confirm-delete" onClick={iniciarCuentaAtras}>
                                                     Sí, eliminar definitivamente
