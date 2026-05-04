@@ -69,7 +69,7 @@ const Ajustes = () => {
 
             await api.put('/usuarios/cambiar-password', params);
 
-            setNotificacion({ mostrar: true, mensaje: 'Contraseña actualizada correctamente', tipo: 'success' });
+            setNotificacion({ mostrar: true, mensaje: 'Contraseña actualizada correctamente', tipo: 'exito' });
             setPassActual('');
             setPassNueva('');
             setPassRepetida('');
@@ -81,6 +81,7 @@ const Ajustes = () => {
             });
         } finally {
             setCambiandoPass(false);
+            setTimeout(() => setNotificacion(p => ({ ...p, mostrar: false })), 2000);
         }
     };
 
@@ -137,7 +138,7 @@ const Ajustes = () => {
         } catch (err) {
             setNotificacion({ mostrar: true, mensaje: 'Error al actualizar', tipo: 'error' });
         } finally {
-            setTimeout(() => setNotificacion(p => ({ ...p, mostrar: false })), 3000);
+            setTimeout(() => setNotificacion(p => ({ ...p, mostrar: false })), 2000);
         }
     };
 
@@ -330,7 +331,6 @@ const Ajustes = () => {
                                                     <label>Contraseña Actual</label>
                                                     <input
                                                         type="password"
-                                                        placeholder="••••••••"
                                                         value={passActual}
                                                         onChange={(e) => setPassActual(e.target.value)}
                                                         required
@@ -340,7 +340,6 @@ const Ajustes = () => {
                                                     <label>Nueva Contraseña</label>
                                                     <input
                                                         type="password"
-                                                        placeholder="Nueva clave"
                                                         value={passNueva}
                                                         onChange={(e) => setPassNueva(e.target.value)}
                                                         required
@@ -350,7 +349,6 @@ const Ajustes = () => {
                                                     <label>Repetir Nueva Contraseña</label>
                                                     <input
                                                         type="password"
-                                                        placeholder="Repite clave"
                                                         value={passRepetida}
                                                         onChange={(e) => setPassRepetida(e.target.value)}
                                                         required
