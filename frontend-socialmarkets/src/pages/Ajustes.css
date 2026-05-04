@@ -210,3 +210,42 @@ input:checked + .slider:before {
     grid-template-columns: 1fr;
   }
 }
+
+/* Logout Section */
+.section-header.danger {
+  color: #ef4444;
+}
+
+.danger-text {
+  color: #ef4444 !important;
+}
+
+.btn-logout-modern {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  padding: 0.8rem 1.6rem;
+  border-radius: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 0 !important;
+}
+
+.btn-logout-modern:hover {
+  background: #ef4444;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+}
+
+.btn-logout-modern svg {
+  font-size: 1.1rem;
+}
+
+.logout-card:hover {
+  border-color: rgba(239, 68, 68, 0.4) !important;
+}

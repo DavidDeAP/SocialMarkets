@@ -4,7 +4,7 @@ import Topbar from '../components/Topbar';
 import TickerTape from '../components/TickerTape';
 import api from '../services/api';
 import { useSettings } from '../context/SettingsContext';
-import { FiMonitor, FiEye, FiEyeOff, FiLock, FiUnlock, FiSliders, FiCheckCircle, FiXCircle } from 'react-icons/fi';
+import { FiMonitor, FiEye, FiEyeOff, FiLock, FiUnlock, FiSliders, FiCheckCircle, FiXCircle, FiLogOut } from 'react-icons/fi';
 import './Ajustes.css';
 
 const Ajustes = () => {
@@ -35,6 +35,11 @@ const Ajustes = () => {
         };
         fetchUser();
     }, []);
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+    };
 
     const guardarPrivacidad = async (nuevosDatos) => {
         try {
@@ -219,6 +224,25 @@ const Ajustes = () => {
                                     </div>
                                 </div>
                             )}
+                        </div>
+
+                        {/* SECCIÓN CUENTA / SESIÓN */}
+                        <div className="ajustes-section logout-section animate-in-up" style={{ animationDelay: '0.3s' }}>
+                            <div className="section-header danger">
+                                <FiLogOut />
+                                <h3>Cuenta</h3>
+                            </div>
+                            <div className="ajuste-card logout-card glass-card">
+                                <div className="ajuste-info">
+                                    <div className="ajuste-label danger-text">Cerrar Sesión</div>
+                                    <p className="ajuste-description">Finaliza tu sesión actual.</p>
+                                </div>
+                                <div className="ajuste-action">
+                                    <button className="btn-logout-modern" onClick={handleLogout}>
+                                        <FiLogOut /> Cerrar Sesión
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
                     </div>
