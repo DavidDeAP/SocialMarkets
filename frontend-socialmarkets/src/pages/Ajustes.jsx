@@ -37,15 +37,15 @@ const Ajustes = () => {
                         </div>
                     </header>
 
-                    <div className="ajustes-grid animate-in-up">
-                        <div className="ajustes-section glass-card">
+                    <div className="ajustes-container animate-in-up">
+                        <div className="ajustes-section">
                             <div className="section-header">
                                 <FiMonitor />
                                 <h3>Interfaz y Pantalla</h3>
                             </div>
                             
-                            <div className="ajustes-list">
-                                <div className="ajuste-item">
+                            <div className="ajustes-grid">
+                                <div className="ajuste-card glass-card">
                                     <div className="ajuste-info">
                                         <div className="ajuste-label">
                                             <span>Cinta de Activos (Ticker)</span>
@@ -65,14 +65,8 @@ const Ajustes = () => {
                                     </div>
                                 </div>
                                 
-                                {/* Aquí se pueden añadir más ajustes en el futuro */}
+                                {/* Más tarjetas de ajuste aquí */}
                             </div>
-                        </div>
-
-                        <div className="ajustes-section glass-card info-section">
-                            <h3>Sobre la Terminal</h3>
-                            <p>SocialMarkets v1.0.4 - Alpha</p>
-                            <p className="text-muted">Personalizaciones guardadas localmente en este navegador.</p>
                         </div>
                     </div>
                 </main>
