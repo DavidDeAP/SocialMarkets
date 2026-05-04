@@ -45,7 +45,10 @@ const Sidebar = () => {
                     <FiAward className="nav-icon" /> Clasificación
                 </button>
                 
-                <button className="nav-item">
+                <button 
+                    className={`nav-item ${isActive('/noticias')}`}
+                    onClick={() => navigate('/noticias')}
+                >
                     <FiFileText className="nav-icon" /> Noticias
                 </button>
             </nav>

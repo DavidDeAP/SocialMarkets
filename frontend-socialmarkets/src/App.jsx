@@ -7,6 +7,7 @@ import Perfil from './pages/Perfil';
 import Comunidad from './pages/Comunidad';
 import Clasificacion from './pages/Clasificacion';
 import Mercados from './pages/Mercados';
+import Noticias from './pages/Noticias';
 import './App.css';
 
 const PrivateRoute = ({ children }) => {
@@ -62,6 +63,7 @@ function App() {
           <Route path="/perfil/:username" element={<PrivateRoute><Perfil /></PrivateRoute>} />
           <Route path="/clasificacion" element={<PrivateRoute><Clasificacion /></PrivateRoute>} />
           <Route path="/mercados" element={<PrivateRoute><Mercados /></PrivateRoute>} />
+          <Route path="/noticias" element={<PrivateRoute><Noticias /></PrivateRoute>} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>
