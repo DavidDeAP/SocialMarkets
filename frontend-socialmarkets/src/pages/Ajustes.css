@@ -301,23 +301,28 @@ input:checked + .slider:before {
 }
 
 .btn-save-pass {
-  background: linear-gradient(135deg, var(--neon-blue), #00a8ff);
+  background: linear-gradient(135deg, #00f3ff, #0077ff);
   color: #0d111c;
   border: none;
   padding: 1rem 2rem;
   border-radius: 12px;
   font-weight: 800;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
   transition: all 0.3s ease;
   width: 100%;
-  max-width: 300px;
+  max-width: 280px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 20px rgba(0, 243, 255, 0.25);
+}
+
+.btn-save-pass svg {
+  font-size: 1.3rem; /* Icono más grande */
 }
 
 .btn-save-pass:hover:not(:disabled) {
@@ -329,6 +334,50 @@ input:checked + .slider:before {
 .btn-save-pass:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.btn-toggle-pass {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.8rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 1rem;
+  transition: all 0.3s ease;
+}
+
+.btn-toggle-pass:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--neon-blue);
+  transform: translateX(5px);
+}
+
+.password-form-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.btn-cancel-pass {
+  background: rgba(239, 68, 68, 0.05);
+  color: #94a3b8;
+  border: 1px solid rgba(239, 68, 68, 0.1);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0.6rem 1.5rem;
+  border-radius: 12px;
+}
+
+.btn-cancel-pass:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.3);
 }
 
 .delete-account-card {

@@ -46,10 +46,11 @@ const Ajustes = () => {
     const [passNueva, setPassNueva] = useState('');
     const [passRepetida, setPassRepetida] = useState('');
     const [cambiandoPass, setCambiandoPass] = useState(false);
+    const [mostrarFormPass, setMostrarFormPass] = useState(false);
 
     const handleCambiarPassword = async (e) => {
         e.preventDefault();
-        
+
         if (passNueva !== passRepetida) {
             setNotificacion({ mostrar: true, mensaje: 'Las nuevas contraseñas no coinciden', tipo: 'error' });
             return;
@@ -67,16 +68,16 @@ const Ajustes = () => {
             params.append('nueva', passNueva);
 
             await api.put('/usuarios/cambiar-password', params);
-            
+
             setNotificacion({ mostrar: true, mensaje: 'Contraseña actualizada correctamente', tipo: 'success' });
             setPassActual('');
             setPassNueva('');
             setPassRepetida('');
         } catch (err) {
-            setNotificacion({ 
-                mostrar: true, 
-                mensaje: err.response?.data || 'Error al cambiar la contraseña', 
-                tipo: 'error' 
+            setNotificacion({
+                mostrar: true,
+                mensaje: err.response?.data || 'Error al cambiar la contraseña',
+                tipo: 'error'
             });
         } finally {
             setCambiandoPass(false);
@@ -315,46 +316,57 @@ const Ajustes = () => {
                             {/* CAMBIAR CONTRASEÑA */}
                             <div className="ajuste-card password-card glass-card">
                                 <div className="ajuste-info full-width">
-                                    <div className="ajuste-label"><FiKey /> Cambiar Contraseña</div>
-                                    <p className="ajuste-description">Actualiza tu clave de acceso al terminal de forma segura.</p>
-                                    
-                                    <form className="password-form" onSubmit={handleCambiarPassword}>
-                                        <div className="password-grid">
-                                            <div className="input-group-modern">
-                                                <label>Contraseña Actual</label>
-                                                <input 
-                                                    type="password" 
-                                                    placeholder="••••••••" 
-                                                    value={passActual}
-                                                    onChange={(e) => setPassActual(e.target.value)}
-                                                    required
-                                                />
-                                            </div>
-                                            <div className="input-group-modern">
-                                                <label>Nueva Contraseña</label>
-                                                <input 
-                                                    type="password" 
-                                                    placeholder="Nueva clave" 
-                                                    value={passNueva}
-                                                    onChange={(e) => setPassNueva(e.target.value)}
-                                                    required
-                                                />
-                                            </div>
-                                            <div className="input-group-modern">
-                                                <label>Repetir Nueva Contraseña</label>
-                                                <input 
-                                                    type="password" 
-                                                    placeholder="Repite clave" 
-                                                    value={passRepetida}
-                                                    onChange={(e) => setPassRepetida(e.target.value)}
-                                                    required
-                                                />
-                                            </div>
-                                        </div>
-                                        <button type="submit" className="btn-save-pass" disabled={cambiandoPass}>
-                                            {cambiandoPass ? 'Actualizando...' : <><FiSave /> Guardar Nueva Contraseña</>}
+                                    <div className="ajuste-label"><FiKey /> Seguridad de Acceso</div>
+                                    <p className="ajuste-description">Gestiona tu contraseña.</p>
+
+                                    {!mostrarFormPass ? (
+                                        <button className="btn-toggle-pass" onClick={() => setMostrarFormPass(true)}>
+                                            <FiKey /> Cambiar Contraseña
                                         </button>
-                                    </form>
+                                    ) : (
+                                        <form className="password-form animate-fade-in" onSubmit={handleCambiarPassword}>
+                                            <div className="password-grid">
+                                                <div className="input-group-modern">
+                                                    <label>Contraseña Actual</label>
+                                                    <input
+                                                        type="password"
+                                                        placeholder="••••••••"
+                                                        value={passActual}
+                                                        onChange={(e) => setPassActual(e.target.value)}
+                                                        required
+                                                    />
+                                                </div>
+                                                <div className="input-group-modern">
+                                                    <label>Nueva Contraseña</label>
+                                                    <input
+                                                        type="password"
+                                                        placeholder="Nueva clave"
+                                                        value={passNueva}
+                                                        onChange={(e) => setPassNueva(e.target.value)}
+                                                        required
+                                                    />
+                                                </div>
+                                                <div className="input-group-modern">
+                                                    <label>Repetir Nueva Contraseña</label>
+                                                    <input
+                                                        type="password"
+                                                        placeholder="Repite clave"
+                                                        value={passRepetida}
+                                                        onChange={(e) => setPassRepetida(e.target.value)}
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="password-form-actions">
+                                                <button type="submit" className="btn-save-pass" disabled={cambiandoPass}>
+                                                    {cambiandoPass ? 'Actualizando...' : <><FiSave /> Guardar</>}
+                                                </button>
+                                                <button type="button" className="btn-cancel-pass" onClick={() => setMostrarFormPass(false)}>
+                                                    Cancelar
+                                                </button>
+                                            </div>
+                                        </form>
+                                    )}
                                 </div>
                             </div>
 
