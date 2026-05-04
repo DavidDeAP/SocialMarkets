@@ -98,7 +98,7 @@ public class UsuarioController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
+    
     @PutMapping("/privacidad")
     public ResponseEntity<?> actualizarPrivacidad(
             Principal principal,
@@ -210,6 +210,20 @@ public class UsuarioController {
             return ResponseEntity.ok("Cuenta eliminada con éxito");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error al eliminar la cuenta: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/cambiar-password")
+    public ResponseEntity<?> cambiarPassword(
+            Principal principal,
+            @RequestParam("actual") String actual,
+            @RequestParam("nueva") String nueva) {
+        try {
+            if (principal == null) return ResponseEntity.status(401).body("No autorizado");
+            usuarioService.cambiarPassword(principal.getName(), actual, nueva);
+            return ResponseEntity.ok("Contraseña actualizada con éxito");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }

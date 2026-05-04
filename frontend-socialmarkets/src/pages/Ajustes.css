@@ -250,6 +250,87 @@ input:checked + .slider:before {
   border-color: rgba(239, 68, 68, 0.4) !important;
 }
 
+/* Password Change Styles */
+.password-card {
+  margin-bottom: 1.2rem;
+}
+
+.ajuste-info.full-width {
+  width: 100%;
+}
+
+.password-form {
+  margin-top: 1.5rem;
+}
+
+.password-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.input-group-modern {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-group-modern label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.input-group-modern input {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.input-group-modern input:focus {
+  border-color: var(--neon-blue);
+  background: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
+}
+
+.btn-save-pass {
+  background: linear-gradient(135deg, var(--neon-blue), #00a8ff);
+  color: #0d111c;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  width: 100%;
+  max-width: 300px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-save-pass:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 243, 255, 0.3);
+  filter: brightness(1.1);
+}
+
+.btn-save-pass:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .delete-account-card {
   margin-top: 1.5rem;
   background: rgba(239, 68, 68, 0.05) !important;

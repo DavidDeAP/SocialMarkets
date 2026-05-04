@@ -187,11 +187,11 @@ const Clasificacion = () => {
                                                     <span>{(u.indiceAcierto || 0).toFixed(1)}%</span>
                                                 </div>
                                                 <div className="p-stat">
-                                                    <span>Preds.</span>
+                                                    <span>Predicciones</span>
                                                     <span>{u.numeroPredicciones}</span>
                                                 </div>
                                                 <div className="p-stat">
-                                                    <span>Acerts.</span>
+                                                    <span>Acertadas</span>
                                                     <span>{u.resumenProyecciones?.acertadas || 0}</span>
                                                 </div>
                                             </div>
@@ -224,8 +224,8 @@ const Clasificacion = () => {
                                                         <span className="r-name">{u.usuario}</span>
                                                     </div>
                                                     <div className="r-stat-val acierto">{(u.indiceAcierto || 0).toFixed(1)}%</div>
-                                                    <div className="r-stat-val">{u.numeroPredicciones} <small style={{ color: '#888', fontSize: '0.8rem' }}>Preds.</small></div>
-                                                    <div className="r-stat-val">{u.resumenProyecciones?.acertadas || 0} <small style={{ color: '#888', fontSize: '0.8rem' }}>Acerts.</small></div>
+                                                    <div className="r-stat-val">{u.numeroPredicciones} <small style={{ color: '#888', fontSize: '0.8rem' }}>Predicciones</small></div>
+                                                    <div className="r-stat-val">{u.resumenProyecciones?.acertadas || 0} <small style={{ color: '#888', fontSize: '0.8rem' }}>Acertadas</small></div>
                                                 </div>
                                             ))}
                                         </motion.div>

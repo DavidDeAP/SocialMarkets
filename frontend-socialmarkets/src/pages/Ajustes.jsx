@@ -4,7 +4,7 @@ import Topbar from '../components/Topbar';
 import TickerTape from '../components/TickerTape';
 import api from '../services/api';
 import { useSettings } from '../context/SettingsContext';
-import { FiMonitor, FiEye, FiEyeOff, FiLock, FiUnlock, FiSliders, FiCheckCircle, FiXCircle, FiLogOut, FiTrash2, FiAlertTriangle, FiRotateCcw } from 'react-icons/fi';
+import { FiMonitor, FiEye, FiEyeOff, FiLock, FiUnlock, FiSliders, FiCheckCircle, FiXCircle, FiLogOut, FiTrash2, FiAlertTriangle, FiRotateCcw, FiKey, FiSave } from 'react-icons/fi';
 import './Ajustes.css';
 
 const Ajustes = () => {
@@ -39,6 +39,48 @@ const Ajustes = () => {
     const handleLogout = () => {
         localStorage.removeItem('token');
         window.location.href = '/login';
+    };
+
+    // Estados para cambio de contraseña
+    const [passActual, setPassActual] = useState('');
+    const [passNueva, setPassNueva] = useState('');
+    const [passRepetida, setPassRepetida] = useState('');
+    const [cambiandoPass, setCambiandoPass] = useState(false);
+
+    const handleCambiarPassword = async (e) => {
+        e.preventDefault();
+        
+        if (passNueva !== passRepetida) {
+            setNotificacion({ mostrar: true, mensaje: 'Las nuevas contraseñas no coinciden', tipo: 'error' });
+            return;
+        }
+
+        if (passNueva.length < 6) {
+            setNotificacion({ mostrar: true, mensaje: 'La contraseña debe tener al menos 6 caracteres', tipo: 'error' });
+            return;
+        }
+
+        setCambiandoPass(true);
+        try {
+            const params = new URLSearchParams();
+            params.append('actual', passActual);
+            params.append('nueva', passNueva);
+
+            await api.put('/usuarios/cambiar-password', params);
+            
+            setNotificacion({ mostrar: true, mensaje: 'Contraseña actualizada correctamente', tipo: 'success' });
+            setPassActual('');
+            setPassNueva('');
+            setPassRepetida('');
+        } catch (err) {
+            setNotificacion({ 
+                mostrar: true, 
+                mensaje: err.response?.data || 'Error al cambiar la contraseña', 
+                tipo: 'error' 
+            });
+        } finally {
+            setCambiandoPass(false);
+        }
     };
 
     const [confirmandoBorrado, setConfirmandoBorrado] = useState(false);
@@ -269,6 +311,53 @@ const Ajustes = () => {
                                 <FiLogOut />
                                 <h3>Cuenta</h3>
                             </div>
+
+                            {/* CAMBIAR CONTRASEÑA */}
+                            <div className="ajuste-card password-card glass-card">
+                                <div className="ajuste-info full-width">
+                                    <div className="ajuste-label"><FiKey /> Cambiar Contraseña</div>
+                                    <p className="ajuste-description">Actualiza tu clave de acceso al terminal de forma segura.</p>
+                                    
+                                    <form className="password-form" onSubmit={handleCambiarPassword}>
+                                        <div className="password-grid">
+                                            <div className="input-group-modern">
+                                                <label>Contraseña Actual</label>
+                                                <input 
+                                                    type="password" 
+                                                    placeholder="••••••••" 
+                                                    value={passActual}
+                                                    onChange={(e) => setPassActual(e.target.value)}
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="input-group-modern">
+                                                <label>Nueva Contraseña</label>
+                                                <input 
+                                                    type="password" 
+                                                    placeholder="Nueva clave" 
+                                                    value={passNueva}
+                                                    onChange={(e) => setPassNueva(e.target.value)}
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="input-group-modern">
+                                                <label>Repetir Nueva Contraseña</label>
+                                                <input 
+                                                    type="password" 
+                                                    placeholder="Repite clave" 
+                                                    value={passRepetida}
+                                                    onChange={(e) => setPassRepetida(e.target.value)}
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+                                        <button type="submit" className="btn-save-pass" disabled={cambiandoPass}>
+                                            {cambiandoPass ? 'Actualizando...' : <><FiSave /> Guardar Nueva Contraseña</>}
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+
                             <div className="ajuste-card logout-card glass-card">
                                 <div className="ajuste-info">
                                     <div className="ajuste-label danger-text">Cerrar Sesión</div>

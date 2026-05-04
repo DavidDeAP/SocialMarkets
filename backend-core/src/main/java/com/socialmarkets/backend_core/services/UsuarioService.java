@@ -178,4 +178,17 @@ public class UsuarioService {
         // El CascadeType.ALL en Usuario.java se encarga de Analisis y Notificaciones
         usuarioRepository.delete(usuario);
     }
+
+    @Transactional
+    public void cambiarPassword(String username, String passActual, String passNueva) {
+        Usuario usuario = usuarioRepository.findByUsuario(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if (passwordEncoder.matches(passActual, usuario.getHashClave())) {
+            usuario.setHashClave(passwordEncoder.encode(passNueva));
+            usuarioRepository.save(usuario);
+        } else {
+            throw new RuntimeException("La contraseña actual es incorrecta");
+        }
+    }
 }
