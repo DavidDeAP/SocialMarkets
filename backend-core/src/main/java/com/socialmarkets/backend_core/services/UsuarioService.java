@@ -74,6 +74,19 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
+    public Usuario actualizarPrivacidad(String username, String privacidad, boolean ocultarSeguidores, boolean ocultarPredicciones, boolean ocultarIndice, boolean ocultarPublicaciones) {
+        Usuario usuario = usuarioRepository.findByUsuario(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        usuario.setPrivacidadPerfil(privacidad);
+        usuario.setOcultarSeguidores(ocultarSeguidores);
+        usuario.setOcultarPredicciones(ocultarPredicciones);
+        usuario.setOcultarIndiceAcierto(ocultarIndice);
+        usuario.setOcultarPublicaciones(ocultarPublicaciones);
+
+        return usuarioRepository.save(usuario);
+    }
+
     public List<Usuario> obtenerTodos() {
         return usuarioRepository.findAll();
     }

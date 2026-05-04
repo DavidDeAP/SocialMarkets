@@ -100,6 +100,30 @@ public class UsuarioController {
         }
     }
 
+    @PutMapping("/privacidad")
+    public ResponseEntity<?> actualizarPrivacidad(
+            Principal principal,
+            @RequestParam("privacidad") String privacidad,
+            @RequestParam("ocultarSeguidores") boolean ocultarSeguidores,
+            @RequestParam("ocultarPredicciones") boolean ocultarPredicciones,
+            @RequestParam("ocultarIndice") boolean ocultarIndice,
+            @RequestParam("ocultarPublicaciones") boolean ocultarPublicaciones) {
+        try {
+            if (principal == null) return ResponseEntity.status(401).body("No autorizado");
+            Usuario u = usuarioService.actualizarPrivacidad(
+                principal.getName(), 
+                privacidad, 
+                ocultarSeguidores, 
+                ocultarPredicciones, 
+                ocultarIndice, 
+                ocultarPublicaciones
+            );
+            return ResponseEntity.ok(u);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @Autowired
     private JwtUtils jwtUtils;
 

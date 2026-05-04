@@ -116,6 +116,22 @@ public class Usuario {
     @Column(name = "notificar_publicaciones")
     private Boolean notificarPublicaciones = true;
 
+    // PRIVACIDAD
+    @Column(name = "privacidad_perfil")
+    private String privacidadPerfil = "PUBLICO"; // PUBLICO, PRIVADO, PERSONALIZADO
+
+    @Column(name = "ocultar_seguidores")
+    private Boolean ocultarSeguidores = false;
+
+    @Column(name = "ocultar_predicciones")
+    private Boolean ocultarPredicciones = false;
+
+    @Column(name = "ocultar_indice_acierto")
+    private Boolean ocultarIndiceAcierto = false;
+
+    @Column(name = "ocultar_publicaciones")
+    private Boolean ocultarPublicaciones = false;
+
     @JsonProperty("resumenProyecciones")
     public Map<String, Integer> getResumenProyecciones() {
         return Map.of(

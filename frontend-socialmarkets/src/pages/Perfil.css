@@ -663,3 +663,26 @@
   color: white;
   font-weight: 700;
 }
+
+.private-profile-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5rem 2rem;
+  text-align: center;
+  color: #94a3b8;
+  margin-top: 2rem;
+  border-radius: 24px;
+}
+
+.private-profile-placeholder h3 {
+  color: white;
+  margin: 1.5rem 0 0.5rem 0;
+  font-size: 1.5rem;
+}
+
+.private-profile-placeholder svg {
+  color: var(--accent);
+  filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.4));
+}
