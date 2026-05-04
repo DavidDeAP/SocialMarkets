@@ -1,11 +1,13 @@
 import { useEffect, useRef } from 'react';
+import { useSettings } from '../context/SettingsContext';
 import './TickerTape.css';
 
 const TickerTape = () => {
     const container = useRef();
+    const { showTicker } = useSettings();
 
     useEffect(() => {
-        if (container.current) {
+        if (showTicker && container.current) {
             container.current.innerHTML = '';
             const script = document.createElement("script");
             script.src = "https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js";
@@ -27,7 +29,9 @@ const TickerTape = () => {
             });
             container.current.appendChild(script);
         }
-    }, []);
+    }, [showTicker]);
+
+    if (!showTicker) return null;
 
     return (
         <div className="global-ticker-wrapper">

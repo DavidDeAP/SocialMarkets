@@ -9,6 +9,7 @@ import Clasificacion from './pages/Clasificacion';
 import Mercados from './pages/Mercados';
 import Noticias from './pages/Noticias';
 import Ajustes from './pages/Ajustes';
+import { SettingsProvider } from './context/SettingsContext';
 import './App.css';
 
 const PrivateRoute = ({ children }) => {
@@ -53,23 +54,25 @@ function App() {
   }, []);
 
   return (
-    <Router>
-      <div className="App">
-        <Routes>
-          <Route path="/" element={<Navigate to="/home" />} />
-          <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-          <Route path="/registro" element={<PublicRoute><Registro /></PublicRoute>} />
-          <Route path="/home" element={<PrivateRoute><Home /></PrivateRoute>} />
-          <Route path="/comunidad" element={<PrivateRoute><Comunidad /></PrivateRoute>} />
-          <Route path="/perfil/:username" element={<PrivateRoute><Perfil /></PrivateRoute>} />
-          <Route path="/clasificacion" element={<PrivateRoute><Clasificacion /></PrivateRoute>} />
-          <Route path="/mercados" element={<PrivateRoute><Mercados /></PrivateRoute>} />
-          <Route path="/noticias" element={<PrivateRoute><Noticias /></PrivateRoute>} />
-          <Route path="/ajustes" element={<PrivateRoute><Ajustes /></PrivateRoute>} />
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </div>
-    </Router>
+    <SettingsProvider>
+      <Router>
+        <div className="App">
+          <Routes>
+            <Route path="/" element={<Navigate to="/home" />} />
+            <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+            <Route path="/registro" element={<PublicRoute><Registro /></PublicRoute>} />
+            <Route path="/home" element={<PrivateRoute><Home /></PrivateRoute>} />
+            <Route path="/comunidad" element={<PrivateRoute><Comunidad /></PrivateRoute>} />
+            <Route path="/perfil/:username" element={<PrivateRoute><Perfil /></PrivateRoute>} />
+            <Route path="/clasificacion" element={<PrivateRoute><Clasificacion /></PrivateRoute>} />
+            <Route path="/mercados" element={<PrivateRoute><Mercados /></PrivateRoute>} />
+            <Route path="/noticias" element={<PrivateRoute><Noticias /></PrivateRoute>} />
+            <Route path="/ajustes" element={<PrivateRoute><Ajustes /></PrivateRoute>} />
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </div>
+      </Router>
+    </SettingsProvider>
   );
 }
 
