@@ -6,7 +6,7 @@ import {
     FiCalendar, FiUsers, FiTrendingUp, FiTarget, 
     FiTrash2, FiUserPlus, FiUserMinus, FiHeart,
     FiArrowUpRight, FiArrowDownRight, FiActivity,
-    FiChevronLeft, FiChevronRight, FiMessageSquare, FiLock
+    FiChevronLeft, FiChevronRight, FiMessageSquare, FiLock, FiEyeOff
 } from 'react-icons/fi';
 
 import Sidebar from '../components/Sidebar';
@@ -440,25 +440,30 @@ const Perfil = () => {
 
                         {/* ESTADÍSTICAS */}
                         <div className="stats-dashboard-grid">
-                            {shouldShow('FOLLOWERS') && (
-                                <div className="stat-card">
-                                    <div className="stat-icon followers"><FiUsers /></div>
-                                    <div className="stat-data">
-                                        <span className="stat-value">{userProfile.seguidores || 0}</span>
-                                        <span className="stat-label">Seguidores</span>
-                                    </div>
+                            <div className={`stat-card ${!shouldShow('FOLLOWERS') ? 'is-private' : ''}`}>
+                                <div className="stat-icon followers"><FiUsers /></div>
+                                <div className="stat-data">
+                                    <span className="stat-value">
+                                        {shouldShow('FOLLOWERS') ? (userProfile.seguidores || 0) : "?"}
+                                    </span>
+                                    <span className="stat-label">Seguidores</span>
                                 </div>
-                            )}
-
-                            {shouldShow('PREDICTIONS') && (
-                                <div className="stat-card predictions-hover-box">
-                                    <div className="stat-icon predictions"><FiTrendingUp /></div>
-                                    <div className="stat-data">
-                                        <span className="stat-value">{userProfile.numeroPredicciones || 0}</span>
-                                        <span className="stat-label">Predicciones</span>
+                                {!shouldShow('FOLLOWERS') && (
+                                    <div className="private-overlay">
+                                        <div className="custom-tooltip">Seguidores Privados</div>
                                     </div>
+                                )}
+                            </div>
 
-                                    {/* Popup de estadísticas en vivo */}
+                            <div className={`stat-card predictions-hover-box ${!shouldShow('PREDICTIONS') ? 'is-private' : ''}`}>
+                                <div className="stat-icon predictions"><FiTrendingUp /></div>
+                                <div className="stat-data">
+                                    <span className="stat-value">
+                                        {shouldShow('PREDICTIONS') ? (userProfile.numeroPredicciones || 0) : "?"}
+                                    </span>
+                                    <span className="stat-label">Predicciones</span>
+                                </div>
+                                {shouldShow('PREDICTIONS') ? (
                                     <div className="stat-popup detailed">
                                         <div className="popup-group">
                                             <label className="group-label">En Vivo ({statsPreds.activas})</label>
@@ -474,26 +479,33 @@ const Perfil = () => {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            )}
+                                ) : (
+                                    <div className="private-overlay">
+                                        <div className="custom-tooltip">Predicciones Ocultas</div>
+                                    </div>
+                                )}
+                            </div>
 
-                            {shouldShow('SUCCESS_RATE') && (
-                                <div className="stat-card highlight success-hover-box">
-                                    <div className="stat-icon success"><FiTarget /></div>
-                                    <div className="stat-data">
-                                        <div className="success-header">
-                                            <span className="stat-value">{(userProfile.indiceAcierto || 0).toFixed(1)}%</span>
-                                            <span className="stat-label">Índice de Acierto</span>
-                                        </div>
+                            <div className={`stat-card highlight success-hover-box ${!shouldShow('SUCCESS_RATE') ? 'is-private' : ''}`}>
+                                <div className="stat-icon success"><FiTarget /></div>
+                                <div className="stat-data">
+                                    <div className="success-header">
+                                        <span className="stat-value">
+                                            {shouldShow('SUCCESS_RATE') ? `${(userProfile.indiceAcierto || 0).toFixed(1)}%` : "?%"}
+                                        </span>
+                                        <span className="stat-label">Éxito</span>
+                                    </div>
+                                    {shouldShow('SUCCESS_RATE') && (
                                         <div className="success-progress-bar">
                                             <div 
                                                 className="progress-fill" 
                                                 style={{ width: `${userProfile.indiceAcierto || 0}%` }}
                                             ></div>
                                         </div>
-                                    </div>
+                                    )}
+                                </div>
 
-                                    {/* Popup de estadísticas históricas */}
+                                {shouldShow('SUCCESS_RATE') ? (
                                     <div className="stat-popup">
                                         <div className="popup-group">
                                             <label className="group-label">Historial Total</label>
@@ -509,8 +521,12 @@ const Perfil = () => {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            )}
+                                ) : (
+                                    <div className="private-overlay">
+                                        <div className="custom-tooltip">Rendimiento Privado</div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
                         {editando && (
