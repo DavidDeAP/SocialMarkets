@@ -55,7 +55,7 @@ const FAQ = () => {
         {
             id: 5,
             icon: <FiMonitor />,
-            question: "¿Puedo personalizar mi terminal?",
+            question: "¿Puedo personalizar mi panel?",
             answer: "¡Por supuesto! En la sección de Ajustes puedes ocultar el Ticker de precios superior o cambiar tus preferencias de privacidad para ocultar tus estadísticas a otros usuarios si lo deseas.",
             category: "Interfaz"
         },
@@ -72,7 +72,7 @@ const FAQ = () => {
         setActiveId(activeId === id ? null : id);
     };
 
-    const filteredFaqs = faqData.filter(faq => 
+    const filteredFaqs = faqData.filter(faq =>
         faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
         faq.answer.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -87,13 +87,13 @@ const FAQ = () => {
                     <header className="faq-header animate-in">
                         <div className="header-info">
                             <h1 className="text-neon-glow">Centro de Ayuda</h1>
-                            <p className="welcome-user">Resuelve tus dudas sobre la terminal y la comunidad</p>
+                            <p className="welcome-user">Resuelve tus dudas sobre el panel y la comunidad</p>
                         </div>
                         <div className="faq-search-wrapper">
                             <FiSearch className="search-icon-faq" />
-                            <input 
-                                type="text" 
-                                placeholder="Busca una pregunta..." 
+                            <input
+                                type="text"
+                                placeholder="Busca una pregunta..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="faq-search-input"
@@ -104,8 +104,8 @@ const FAQ = () => {
                     <div className="faq-container animate-in-up">
                         <div className="faq-grid">
                             {filteredFaqs.map((faq) => (
-                                <div 
-                                    key={faq.id} 
+                                <div
+                                    key={faq.id}
                                     className={`faq-item glass-card ${activeId === faq.id ? 'active' : ''}`}
                                     onClick={() => toggleAccordion(faq.id)}
                                 >
@@ -133,14 +133,7 @@ const FAQ = () => {
                                 <span>Prueba con palabras clave como "acierto", "perfil" o "analista".</span>
                             </div>
                         )}
-                        
-                        <footer className="faq-footer glass-card">
-                            <div className="footer-content">
-                                <h3>¿Todavía tienes dudas?</h3>
-                                <p>Si no has encontrado lo que buscabas, puedes contactar con nuestro equipo de soporte.</p>
-                                <button className="btn-contact-support">Contactar Soporte</button>
-                            </div>
-                        </footer>
+
                     </div>
                 </main>
             </div>
