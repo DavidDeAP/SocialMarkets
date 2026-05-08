@@ -8,6 +8,7 @@ import Comunidad from './pages/Comunidad';
 import Clasificacion from './pages/Clasificacion';
 import Mercados from './pages/Mercados';
 import Noticias from './pages/Noticias';
+import FAQ from './pages/FAQ';
 import Ajustes from './pages/Ajustes';
 import { SettingsProvider } from './context/SettingsContext';
 import './App.css';
@@ -67,6 +68,7 @@ function App() {
             <Route path="/clasificacion" element={<PrivateRoute><Clasificacion /></PrivateRoute>} />
             <Route path="/mercados" element={<PrivateRoute><Mercados /></PrivateRoute>} />
             <Route path="/noticias" element={<PrivateRoute><Noticias /></PrivateRoute>} />
+            <Route path="/faq" element={<PrivateRoute><FAQ /></PrivateRoute>} />
             <Route path="/ajustes" element={<PrivateRoute><Ajustes /></PrivateRoute>} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>

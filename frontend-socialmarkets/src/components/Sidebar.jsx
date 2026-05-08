@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FiGrid, FiTrendingUp, FiUsers, FiAward, FiFileText, FiSettings } from 'react-icons/fi';
+import { FiGrid, FiTrendingUp, FiUsers, FiAward, FiFileText, FiSettings, FiHelpCircle } from 'react-icons/fi';
 import logoApp from '../assets/logo.png';
 import './Sidebar.css';
 
@@ -50,6 +50,12 @@ const Sidebar = () => {
                     onClick={() => navigate('/noticias')}
                 >
                     <FiFileText className="nav-icon" /> Noticias
+                </button>
+                <button 
+                    className={`nav-item ${isActive('/faq')}`}
+                    onClick={() => navigate('/faq')}
+                >
+                    <FiHelpCircle className="nav-icon" /> FAQ
                 </button>
             </nav>
 
