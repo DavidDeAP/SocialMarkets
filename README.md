@@ -103,7 +103,7 @@ Ubicado en la carpeta `frontend-socialmarkets/`.
 ## 👤 Autor
 
 - **David de Antonio Palomar** — *Desarrollador*
-- **Ramiro Martín Morro** — *Desarrollador*
+- **Ramiro Martín Morro** — *Tutor*
 
 ---
 
