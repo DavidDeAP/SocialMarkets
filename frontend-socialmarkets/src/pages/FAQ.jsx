@@ -3,7 +3,7 @@ import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
 import TickerTape from '../components/TickerTape';
 import api from '../services/api';
-import { FiChevronDown, FiHelpCircle, FiSearch, FiMessageSquare, FiTrendingUp, FiShield, FiUserCheck } from 'react-icons/fi';
+import { FiChevronDown, FiHelpCircle, FiSearch, FiMessageSquare, FiTrendingUp, FiAward, FiMonitor, FiUsers } from 'react-icons/fi';
 import './FAQ.css';
 
 const FAQ = () => {
@@ -28,43 +28,43 @@ const FAQ = () => {
             id: 1,
             icon: <FiHelpCircle />,
             question: "¿Qué es SocialMarkets?",
-            answer: "SocialMarkets es una plataforma de validación financiera donde los analistas pueden compartir sus predicciones y el sistema rastrea su precisión automáticamente. Nuestro objetivo es aportar transparencia al mundo de las inversiones.",
+            answer: "SocialMarkets es una plataforma de validación financiera diseñada para que los usuarios compartan sus tesis de inversión y demuestren su habilidad. El sistema rastrea cada análisis para generar estadísticas de rendimiento reales.",
             category: "General"
         },
         {
             id: 2,
             icon: <FiTrendingUp />,
             question: "¿Cómo se calcula el índice de acierto?",
-            answer: "El índice se calcula basándose en la diferencia porcentual entre el precio de entrada y el precio objetivo (Target) en el tiempo establecido. Si el activo alcanza el target, se cuenta como acierto. Si cae por debajo del Stop Loss, se cuenta como error.",
-            category: "Analistas"
+            answer: "El índice de acierto es el porcentaje de tus predicciones que han finalizado con éxito (alcanzando el precio objetivo) sobre el total de análisis que has publicado.",
+            category: "Estadísticas"
         },
         {
             id: 3,
-            icon: <FiMessageSquare />,
-            question: "¿Cómo puedo publicar mi primer análisis?",
-            answer: "Solo tienes que ir a la sección de 'Comunidad' y hacer clic en 'Nuevo Análisis'. Deberás seleccionar un activo, un precio objetivo, un stop loss y una breve explicación de tu tesis.",
+            icon: <FiAward />,
+            question: "¿Cómo funciona la Clasificación?",
+            answer: "La sección de Clasificación ordena a los usuarios basándose en su precisión y actividad. Cuanto mayor sea tu índice de acierto y más análisis validados tengas, más arriba aparecerás en el ranking global.",
             category: "Comunidad"
         },
         {
             id: 4,
-            icon: <FiUserCheck />,
-            question: "¿Cómo consigo la verificación de analista?",
-            answer: "La verificación (check azul) se otorga a usuarios que mantienen un índice de acierto superior al 65% tras al menos 10 análisis publicados, o a profesionales que validen su titulación a través de soporte.",
-            category: "Analistas"
-        },
-        {
-            id: 5,
-            icon: <FiShield />,
-            question: "¿Son los datos del mercado en tiempo real?",
-            answer: "Utilizamos la tecnología de TradingView para los gráficos. Los datos son en tiempo real para la mayoría de activos, aunque algunos mercados secundarios pueden tener un ligero retraso de 15 minutos por limitaciones de la API.",
+            icon: <FiSearch />,
+            question: "¿Puedo buscar analistas específicos?",
+            answer: "Sí, puedes usar la barra de búsqueda en la parte superior de la pantalla para encontrar a cualquier usuario por su nombre y ver su historial completo de análisis.",
             category: "General"
         },
         {
+            id: 5,
+            icon: <FiMonitor />,
+            question: "¿Puedo personalizar mi terminal?",
+            answer: "¡Por supuesto! En la sección de Ajustes puedes ocultar el Ticker de precios superior o cambiar tus preferencias de privacidad para ocultar tus estadísticas a otros usuarios si lo deseas.",
+            category: "Interfaz"
+        },
+        {
             id: 6,
-            icon: <FiUsers />,
-            question: "¿Puedo seguir a otros inversores?",
-            answer: "¡Sí! Al entrar en el perfil de cualquier usuario verás un botón de 'Seguir'. Recibirás notificaciones cada vez que publiquen un nuevo análisis para que no te pierdas ninguna oportunidad.",
-            category: "Comunidad"
+            icon: <FiMessageSquare />,
+            question: "¿Qué debo incluir en un nuevo análisis?",
+            answer: "Para que tu análisis sea válido, debes seleccionar un activo, definir un precio objetivo (Target) y explicar los motivos técnicos o fundamentales de tu predicción.",
+            category: "Analistas"
         }
     ];
 
@@ -148,7 +148,5 @@ const FAQ = () => {
     );
 };
 
-// Icono extra necesario
-import { FiUsers } from 'react-icons/fi';
 
 export default FAQ;
