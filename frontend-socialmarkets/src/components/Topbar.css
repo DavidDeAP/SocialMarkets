@@ -14,7 +14,6 @@
 
 .search-container {
   position: relative;
-  /* Para el dropdown absoluto */
   background: rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 12px;
@@ -26,7 +25,6 @@
   transition: all 0.3s ease;
 }
 
-/* Sugerencias en Topbar */
 .topbar-suggestions-dropdown {
   position: absolute;
   top: calc(100% + 10px);
@@ -178,13 +176,14 @@
 }
 
 @keyframes dropdownSlideIn {
-  from { 
-    opacity: 0; 
-    transform: translateY(15px) scale(0.92); 
+  from {
+    opacity: 0;
+    transform: translateY(15px) scale(0.92);
   }
-  to { 
-    opacity: 1; 
-    transform: translateY(0) scale(1); 
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -377,8 +376,15 @@
 }
 
 @keyframes slideDownNoti {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .settings-item {
@@ -477,7 +483,7 @@
   top: 50%;
   right: 18px;
   transform: translateY(-50%) scale(0.8);
-  background: transparent !important; /* Evitar el azul global */
+  background: transparent !important;
   color: #ff4d4d;
   border: none;
   display: flex;
@@ -489,7 +495,7 @@
   transition: all 0.2s ease;
   z-index: 10;
   padding: 5px;
-  margin: 0 !important; /* Quitar margen global de botones */
+  margin: 0 !important;
   box-shadow: none !important;
   outline: none !important;
 }

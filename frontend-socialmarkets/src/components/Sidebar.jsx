@@ -3,15 +3,19 @@ import { FiGrid, FiTrendingUp, FiUsers, FiAward, FiFileText, FiSettings, FiHelpC
 import logoApp from '../assets/logo.png';
 import './Sidebar.css';
 
+/**
+ * Menú lateral de navegación principal de la aplicación
+ */
 const Sidebar = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Función para saber si el botón debe estar "activo" visualmente
+    // Determina si una ruta es la que el usuario está viendo ahora mismo para resaltarla
     const isActive = (path) => location.pathname === path ? 'active' : '';
 
     return (
         <aside className="sidebar">
+            {/* Cabecera con el logo y nombre de la marca */}
             <div className="sidebar-header" onClick={() => navigate('/home')} style={{ cursor: 'pointer' }}>
                 <img src={logoApp} alt="Logo" className="sidebar-logo-large" />
                 <div className="brand-text">
@@ -20,6 +24,7 @@ const Sidebar = () => {
                 </div>
             </div>
 
+            {/* Lista de botones de navegación */}
             <nav className="sidebar-nav">
                 <button className={`nav-item ${isActive('/home')}`} onClick={() => navigate('/home')}>
                     <FiGrid className="nav-icon" /> Panel
@@ -59,6 +64,7 @@ const Sidebar = () => {
                 </button>
             </nav>
 
+            {/* Pie del menú con acceso a los ajustes */}
             <div className="sidebar-footer">
                 <button 
                     className={`nav-item-icon-only ${isActive('/ajustes')}`}
@@ -72,4 +78,4 @@ const Sidebar = () => {
     );
 };
 
-export default Sidebar;
+export default Sidebar;

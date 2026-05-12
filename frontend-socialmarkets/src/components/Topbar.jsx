@@ -6,6 +6,9 @@ import './Topbar.css';
 
 const API_BASE_URL = 'http://localhost:8080';
 
+/**
+ * Barra superior de la aplicación que contiene el buscador de usuarios, notificaciones y menú de perfil
+ */
 const Topbar = ({ user }) => {
     const [menuAbierto, setMenuAbierto] = useState(false);
     const [panelNotisAbierto, setPanelNotisAbierto] = useState(false);
@@ -22,17 +25,17 @@ const Topbar = ({ user }) => {
         setUserState(user);
     }, [user]);
 
+    // Cambia si el usuario quiere recibir avisos de nuevos seguidores o publicaciones
     const toggleNotiPref = async (tipo) => {
         if (!userState) return;
 
-        // Si es null o undefined, asumimos true (por defecto)
         const currentSeg = userState.notificarSeguidores !== false;
         const currentPub = userState.notificarPublicaciones !== false;
 
         const nuevoSeg = tipo === 'seguidores' ? !currentSeg : currentSeg;
         const nuevoPub = tipo === 'publicaciones' ? !currentPub : currentPub;
 
-        // Actualización optimista
+        // Actualización optimista para que la interfaz responda al instante
         setUserState(prev => ({
             ...prev,
             notificarSeguidores: nuevoSeg,
@@ -44,8 +47,7 @@ const Topbar = ({ user }) => {
             setUserState(res.data);
         } catch (err) {
             console.error("Error actualizando preferencias:", err);
-            // Revertimos en caso de error
-            setUserState(user);
+            setUserState(user); // Revertimos si falla la conexión
         }
     };
 
@@ -64,7 +66,7 @@ const Topbar = ({ user }) => {
         return `${API_BASE_URL}${user.imagen}`;
     };
 
-    // Polling de notificaciones no leídas
+    // Comprueba periódicamente si hay nuevas notificaciones para encender el puntito rojo
     useEffect(() => {
         if (!user?.identificador) return;
 
@@ -78,7 +80,7 @@ const Topbar = ({ user }) => {
         };
 
         checkNuevas();
-        const interval = setInterval(checkNuevas, 30000);
+        const interval = setInterval(checkNuevas, 30000); // Consulta cada 30 segundos
         return () => clearInterval(interval);
     }, [user?.identificador]);
 
@@ -178,13 +180,14 @@ const Topbar = ({ user }) => {
         }
     };
 
+    // Lógica del buscador global de analistas con sugerencias en tiempo real
     useEffect(() => {
         const fetchUsuarios = async () => {
             if (searchQuery.length >= 2) {
                 setBuscando(true);
                 try {
                     const res = await api.get(`/usuarios/buscar?q=${searchQuery}`);
-                    setSugerencias(res.data.slice(0, 5));
+                    setSugerencias(res.data.slice(0, 5)); // Mostramos máximo 5 resultados
                 } catch (err) {
                     console.error("Error en búsqueda topbar:", err);
                 } finally {
@@ -195,7 +198,7 @@ const Topbar = ({ user }) => {
             }
         };
 
-        const timeoutId = setTimeout(fetchUsuarios, 300);
+        const timeoutId = setTimeout(fetchUsuarios, 300); // Esperamos 300ms antes de buscar
         return () => clearTimeout(timeoutId);
     }, [searchQuery]);
 

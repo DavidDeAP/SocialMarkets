@@ -1,5 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 
+/**
+ * Componente que muestra un gráfico avanzado de TradingView
+ */
 const TradingViewChart = ({ symbol, exchange }) => {
     const containerId = "tv_chart_main_container";
     const widgetRef = useRef(null);
@@ -10,7 +13,7 @@ const TradingViewChart = ({ symbol, exchange }) => {
                 
                 let formattedSymbol = symbol;
                 
-                // Mapeo de Símbolos Yahoo -> TradingView (Los índices de Yahoo usan ^)
+                // Mapeo manual de símbolos para que coincidan las etiquetas de Yahoo con las de TradingView
                 const symbolMapping = {
                     '^GSPC': 'SPX',
                     '^IBEX': 'IBEX35',
@@ -23,6 +26,7 @@ const TradingViewChart = ({ symbol, exchange }) => {
                     'SI=F': 'SILVER'
                 };
 
+                // Lógica para formatear el símbolo (ej: añadir el mercado como NASDAQ: o BINANCE:)
                 if (symbolMapping[symbol]) {
                     formattedSymbol = symbolMapping[symbol];
                 } else if (!symbol.includes(':')) {
@@ -39,11 +43,12 @@ const TradingViewChart = ({ symbol, exchange }) => {
                     }
                 }
 
+                // Si el símbolo es el mismo que ya está cargado, no hacemos nada para evitar parpadeos
                 if (widgetRef.current && widgetRef.current.options?.symbol === formattedSymbol) {
                     return;
                 }
 
-                // Configuración de SOLO LECTURA (Visualización)
+                // Configuración visual del widget (colores, idioma, herramientas)
                 widgetRef.current = new window.TradingView.widget({
                     "autosize": true,
                     "symbol": formattedSymbol,
@@ -55,7 +60,7 @@ const TradingViewChart = ({ symbol, exchange }) => {
                     "toolbar_bg": "#0f172a",
                     "enable_publishing": false,
                     "withdateranges": true,
-                    "hide_side_toolbar": true, // Oculta barra de herramientas de dibujo
+                    "hide_side_toolbar": true, // Ocultamos herramientas de dibujo para que el gráfico esté limpio
                     "allow_symbol_change": false,
                     "container_id": containerId,
                     "save_image": false,
@@ -71,6 +76,7 @@ const TradingViewChart = ({ symbol, exchange }) => {
             }
         };
 
+        // Carga dinámica del SDK de TradingView si no está ya en el documento
         if (!document.getElementById('tradingview-sdk')) {
             const script = document.createElement("script");
             script.id = 'tradingview-sdk';
@@ -84,7 +90,7 @@ const TradingViewChart = ({ symbol, exchange }) => {
             return () => clearTimeout(timer);
         }
 
-    }, [symbol, exchange]);
+    }, [symbol, exchange]); // Recarga el gráfico si el usuario cambia de activo
 
     return (
         <div id={containerId} style={{ height: "100%", width: "100%" }} />
