@@ -47,7 +47,7 @@
 .ajuste-label {
   display: flex;
   align-items: center;
-  gap: 15px; /* Aquí aumentamos el espacio */
+  gap: 15px; 
   font-weight: 600;
   font-size: 1.05rem;
   color: white;
@@ -75,7 +75,6 @@
   transform: translateY(-2px);
 }
 
-/* PRIVACY MODES */
 .privacy-modes-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -138,7 +137,6 @@
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* SWITCH TOGGLE STYLES */
 .switch {
   position: relative;
   display: inline-block;
@@ -211,7 +209,6 @@ input:checked + .slider:before {
   }
 }
 
-/* Logout Section */
 .section-header.danger {
   color: #ef4444;
 }
@@ -250,7 +247,6 @@ input:checked + .slider:before {
   border-color: rgba(239, 68, 68, 0.4) !important;
 }
 
-/* Password Change Styles */
 .password-card {
   margin-bottom: 1.2rem;
 }
@@ -322,7 +318,7 @@ input:checked + .slider:before {
 }
 
 .btn-save-pass svg {
-  font-size: 1.3rem; /* Icono más grande */
+  font-size: 1.3rem; 
 }
 
 .btn-save-pass:hover:not(:disabled) {
@@ -391,7 +387,6 @@ input:checked + .slider:before {
   border-color: rgba(239, 68, 68, 0.3) !important;
 }
 
-/* Delete Account Styles */
 .btn-delete-account {
   background: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.2);
@@ -488,7 +483,7 @@ input:checked + .slider:before {
   fill: none;
   stroke: #ef4444;
   stroke-width: 3;
-  stroke-dasharray: 113; /* 2 * PI * r (18) */
+  stroke-dasharray: 113; 
   stroke-linecap: round;
   animation: countdown-stroke 3s linear forwards;
 }

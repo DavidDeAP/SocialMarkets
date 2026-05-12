@@ -7,18 +7,22 @@ import { useSettings } from '../context/SettingsContext';
 import { FiMonitor, FiEye, FiEyeOff, FiLock, FiUnlock, FiSliders, FiCheckCircle, FiXCircle, FiLogOut, FiTrash2, FiAlertTriangle, FiRotateCcw, FiKey, FiSave } from 'react-icons/fi';
 import './Ajustes.css';
 
+/**
+ * Página principal de configuración donde el usuario gestiona su terminal, privacidad y cuenta
+ */
 const Ajustes = () => {
     const [user, setUser] = useState(null);
-    const { showTicker, setShowTicker } = useSettings();
+    const { showTicker, setShowTicker } = useSettings(); // Ajuste local de la interfaz
     const [notificacion, setNotificacion] = useState({ mostrar: false, mensaje: '', tipo: '' });
 
-    // Estados de privacidad (Backend)
+    // Estados para controlar qué partes del perfil son visibles para otros usuarios
     const [privacidad, setPrivacidad] = useState('PUBLICO');
     const [ocultarSeguidores, setOcultarSeguidores] = useState(false);
     const [ocultarPredicciones, setOcultarPredicciones] = useState(false);
     const [ocultarIndice, setOcultarIndice] = useState(false);
     const [ocultarPublicaciones, setOcultarPublicaciones] = useState(false);
 
+    // Al cargar la página, traemos los ajustes actuales del usuario desde el servidor
     useEffect(() => {
         const fetchUser = async () => {
             try {
@@ -36,12 +40,13 @@ const Ajustes = () => {
         fetchUser();
     }, []);
 
+    // Función para salir de la aplicación borrando el token de seguridad
     const handleLogout = () => {
         localStorage.removeItem('token');
         window.location.href = '/login';
     };
 
-    // Estados para cambio de contraseña
+    // Gestión del cambio de contraseña
     const [passActual, setPassActual] = useState('');
     const [passNueva, setPassNueva] = useState('');
     const [passRepetida, setPassRepetida] = useState('');
@@ -85,6 +90,7 @@ const Ajustes = () => {
         }
     };
 
+    // Lógica para borrar la cuenta con una cuenta atrás de seguridad
     const [confirmandoBorrado, setConfirmandoBorrado] = useState(false);
     const [segundosRestantes, setSegundosRestantes] = useState(0);
     const [timerIniciado, setTimerIniciado] = useState(false);
@@ -100,6 +106,7 @@ const Ajustes = () => {
         setTimerIniciado(false);
     };
 
+    // Efecto que maneja el reloj de la cuenta atrás antes de borrar la cuenta definitivamente
     useEffect(() => {
         let interval = null;
         if (segundosRestantes > 0 && timerIniciado) {
@@ -122,6 +129,7 @@ const Ajustes = () => {
         return () => { if (interval) clearInterval(interval); };
     }, [segundosRestantes, timerIniciado]);
 
+    // Envía los cambios de privacidad al servidor
     const guardarPrivacidad = async (nuevosDatos) => {
         try {
             const params = new URLSearchParams({
@@ -149,6 +157,7 @@ const Ajustes = () => {
                 <Topbar user={user} />
                 <TickerTape />
                 <main className="main-content">
+                    {/* Avisos flotantes de éxito o error */}
                     {notificacion.mostrar && (
                         <div className={`notification-toast ${notificacion.tipo}`}>
                             {notificacion.tipo === 'exito' ? <FiCheckCircle /> : <FiXCircle />}
@@ -165,7 +174,7 @@ const Ajustes = () => {
 
                     <div className="ajustes-container animate-in-up">
 
-                        {/* SECCIÓN INTERFAZ */}
+                        {/* SECCIÓN INTERFAZ: Controla cómo se ve la aplicación */}
                         <div className="ajustes-section">
                             <div className="section-header">
                                 <FiMonitor />
@@ -194,7 +203,7 @@ const Ajustes = () => {
                             </div>
                         </div>
 
-                        {/* SECCIÓN PRIVACIDAD */}
+                        {/* SECCIÓN PRIVACIDAD: Elige quién puede ver tus datos */}
                         <div className="ajustes-section">
                             <div className="section-header">
                                 <FiLock />
@@ -236,6 +245,7 @@ const Ajustes = () => {
                                 </button>
                             </div>
 
+                            {/* Opciones detalladas solo si el modo es Personalizado */}
                             {privacidad === 'PERSONALIZADO' && (
                                 <div className="custom-privacy-options animate-fade-in">
                                     <div className="ajustes-grid">
@@ -307,14 +317,14 @@ const Ajustes = () => {
                             )}
                         </div>
 
-                        {/* SECCIÓN CUENTA / SESIÓN */}
+                        {/* SECCIÓN CUENTA Y SEGURIDAD */}
                         <div className="ajustes-section logout-section animate-in-up" style={{ animationDelay: '0.3s' }}>
                             <div className="section-header danger">
                                 <FiLogOut />
                                 <h3>Cuenta</h3>
                             </div>
 
-                            {/* CAMBIAR CONTRASEÑA */}
+                            {/* Formulario para cambiar la clave de acceso */}
                             <div className="ajuste-card password-card glass-card">
                                 <div className="ajuste-info full-width">
                                     <div className="ajuste-label"><FiKey /> Seguridad de Acceso</div>
@@ -368,6 +378,7 @@ const Ajustes = () => {
                                 </div>
                             </div>
 
+                            {/* Botón para salir de la cuenta */}
                             <div className="ajuste-card logout-card glass-card">
                                 <div className="ajuste-info">
                                     <div className="ajuste-label danger-text">Cerrar Sesión</div>
@@ -380,7 +391,7 @@ const Ajustes = () => {
                                 </div>
                             </div>
 
-                            {/* BORRAR CUENTA */}
+                            {/* Zona de peligro: Eliminación de cuenta */}
                             <div className="ajuste-card delete-account-card glass-card">
                                 <div className="ajuste-info">
                                     <div className="ajuste-label danger-text">Borrar Cuenta</div>
