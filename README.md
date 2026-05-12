@@ -53,35 +53,80 @@ Ubicado en la carpeta `frontend-socialmarkets/`.
 
 ## 🚀 Guía de Instalación y Ejecución
 
-### 1. Requisitos Previos
-- **JDK 25** instalado.
-- **Node.js 20+** y **npm**.
-- **PostgreSQL 16** (u otra versión compatible) en ejecución.
-- **Maven 3.x**.
+Sigue estos pasos detallados para poner en marcha el proyecto en tu entorno local.
 
-### 2. Configuración del Backend
-1. Navega a `backend-core/`.
-2. Configura el archivo `src/main/resources/application.properties` con tus credenciales:
-   - Base de datos (URL, usuario, contraseña).
-   - AWS S3 (Access Key, Secret Key, Bucket).
-   - Secreto para JWT.
-3. Ejecuta el servidor:
+### 1️⃣ Requisitos Previos
+Antes de empezar, asegúrate de tener instalado lo siguiente:
+- **Java JDK 25**: Necesario para el backend de Spring Boot.
+- **Node.js (v20 o superior)** y **npm**: Para gestionar y ejecutar el frontend.
+- **PostgreSQL (v16)**: Base de datos relacional en ejecución.
+- **Git**: Para clonar el repositorio.
+- **IDE Recomendado**: IntelliJ IDEA para el backend y VS Code para el frontend.
+
+---
+
+### 2️⃣ Clonar el Proyecto
+Abre una terminal y clona el repositorio completo:
+```bash
+git clone https://github.com/DavidDeAP/SocialMarkets.git
+cd SocialMarkets
+```
+
+---
+
+### 3️⃣ Configuración del Backend (Java/Spring)
+1. **Preparar la Base de Datos**:
+   - Accede a tu cliente de PostgreSQL (pgAdmin, DBeaver o psql).
+   - Crea una nueva base de datos llamada `socialmarkets`.
+2. **Configurar Propiedades**:
+   - Navega a `backend-core/src/main/resources/`.
+   - Abre `application.properties` y ajusta los siguientes valores:
+     ```properties
+     # Conexión a DB
+     spring.datasource.url=jdbc:postgresql://localhost:5432/socialmarkets
+     spring.datasource.username=tu_usuario
+     spring.datasource.password=tu_contraseña
+
+     # Configuración de AWS S3 (Para imágenes)
+     aws.s3.accessKey=TU_ACCESS_KEY
+     aws.s3.secretKey=TU_SECRET_KEY
+     aws.s3.bucketName=TU_BUCKET_NAME
+
+     # Seguridad JWT
+     jwt.secret=tu_clave_secreta_muy_larga_y_segura
+     ```
+3. **Ejecutar el Servidor**:
+   Desde la carpeta `backend-core/`, ejecuta:
    ```bash
    mvn spring-boot:run
    ```
-   *La API correrá en `http://localhost:8080`*
+   > [!TIP]
+   > El servidor estará disponible en `http://localhost:8080`. Puedes verificar la conexión accediendo a `http://localhost:8080/api/usuarios/publico/admin` (si ya tienes datos iniciales).
 
-### 3. Configuración del Frontend
-1. Navega a `frontend-socialmarkets/`.
-2. Instala las dependencias:
+---
+
+### 4️⃣ Configuración del Frontend (React/Vite)
+1. **Entrar en la carpeta del frontend**:
+   ```bash
+   cd frontend-socialmarkets
+   ```
+2. **Instalar Dependencias**:
    ```bash
    npm install
    ```
-3. Inicia el modo desarrollo:
+3. **Lanzar la Aplicación**:
    ```bash
    npm run dev
    ```
-   *Accede desde `http://localhost:5173`*
+4. **Acceso Web**:
+   Abre tu navegador y entra en: `http://localhost:5173`
+
+---
+
+### 💡 Notas Adicionales
+- **Cuentas de Prueba**: Una vez arrancado, puedes registrarte como nuevo usuario desde la pantalla de registro para empezar a publicar tus primeros análisis.
+- **TradingView**: Los gráficos cargan automáticamente vía CDN, por lo que no requieren configuración adicional, pero sí conexión a internet.
+- **Seguridad**: Asegúrate de que el backend esté corriendo antes de intentar iniciar sesión en el frontend, ya que las peticiones a la API fallarán en caso contrario.
 
 ---
 
