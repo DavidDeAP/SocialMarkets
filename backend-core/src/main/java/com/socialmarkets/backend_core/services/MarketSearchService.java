@@ -20,7 +20,7 @@ public class MarketSearchService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    // Mapeo manual para asegurar que los activos más populares siempre aparezcan con nombres amigables
+    // Mapeo manual para asegurar que los activos más populares siempre aparezcan con nombres reconocibles
     private static final Map<String, Map<String, String>> TOP_ASSETS = new HashMap<>();
 
     static {

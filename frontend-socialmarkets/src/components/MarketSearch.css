@@ -67,8 +67,15 @@
 }
 
 @keyframes pulseLoader {
-    from { opacity: 0.3; transform: scale(0.8); }
-    to { opacity: 1; transform: scale(1.2); }
+    from {
+        opacity: 0.3;
+        transform: scale(0.8);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1.2);
+    }
 }
 
 /* Panel de Resultados */
@@ -83,8 +90,10 @@
     border-top: none;
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
-    max-height: 400px; /* Altura máxima para permitir scroll */
-    overflow-y: auto;  /* Habilita el scroll vertical */
+    max-height: 400px;
+    /* Altura máxima para permitir scroll */
+    overflow-y: auto;
+    /* Habilita el scroll vertical */
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
     animation: slideDown 0.3s ease-out;
 }
@@ -108,8 +117,15 @@
 }
 
 @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .search-results-header {
@@ -123,7 +139,6 @@
     font-weight: 700;
 }
 
-/* Item de Resultado Premium */
 .search-result-item-premium {
     display: flex;
     justify-content: space-between;
@@ -166,11 +181,25 @@
 }
 
 /* Colores por tipo */
-.result-type-icon.equity { color: #3b82f6; }
-.result-type-icon.crypto { color: #10b981; }
-.result-type-icon.currency { color: #f59e0b; }
-.result-type-icon.etf { color: #8b5cf6; }
-.result-type-icon.index { color: #ff4d4d; }
+.result-type-icon.equity {
+    color: #3b82f6;
+}
+
+.result-type-icon.crypto {
+    color: #10b981;
+}
+
+.result-type-icon.currency {
+    color: #f59e0b;
+}
+
+.result-type-icon.etf {
+    color: #8b5cf6;
+}
+
+.result-type-icon.index {
+    color: #ff4d4d;
+}
 
 .result-text-group {
     display: flex;

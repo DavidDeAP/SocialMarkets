@@ -3,13 +3,17 @@ import { FiSearch, FiActivity, FiGlobe, FiBriefcase, FiDollarSign, FiZap, FiPieC
 import api from '../services/api';
 import './MarketSearch.css';
 
+/**
+ * Componente de búsqueda para encontrar activos financieros
+ */
 const MarketSearch = ({ onSelect }) => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [showResults, setShowResults] = useState(false);
-    const searchRef = useRef(null);
+    const searchRef = useRef(null); // Referencia para detectar clicks fuera del buscador
 
+    // Efecto para cerrar los resultados si el usuario hace click en cualquier otro sitio de la pantalla
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (searchRef.current && !searchRef.current.contains(event.target)) {
@@ -20,6 +24,7 @@ const MarketSearch = ({ onSelect }) => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    // Lógica de búsqueda que espera un poco antes de disparar la petición para no saturar el servidor
     useEffect(() => {
         if (query.trim().length < 2) {
             setResults([]);
@@ -29,7 +34,7 @@ const MarketSearch = ({ onSelect }) => {
         const timer = setTimeout(async () => {
             setIsLoading(true);
             try {
-                // Usamos nuestro propio backend para evitar problemas de CORS y mejorar la precisión
+                // Consultamos a nuestro backend, que es quien habla con las APIs de mercado
                 const response = await api.get(`/mercados/buscar?q=${encodeURIComponent(query)}`);
                 setResults(response.data);
                 setShowResults(true);
@@ -39,17 +44,19 @@ const MarketSearch = ({ onSelect }) => {
             } finally {
                 setIsLoading(false);
             }
-        }, 350);
+        }, 350); // Espera 350ms después de que el usuario deje de escribir
 
         return () => clearTimeout(timer);
     }, [query]);
 
+    // Al seleccionar un activo de la lista
     const handleSelect = (item) => {
-        onSelect(item);
+        onSelect(item); // Notificamos al componente padre
         setQuery(item.symbol);
         setShowResults(false);
     };
 
+    // Devuelve un icono visual diferente según si es cripto, acción, índice, etc.
     const getTypeIcon = (type) => {
         const t = type?.toUpperCase();
         if (t === 'CRYPTO') return <FiActivity className="icon-crypto" />;
@@ -62,6 +69,7 @@ const MarketSearch = ({ onSelect }) => {
 
     return (
         <div className="market-search-container" ref={searchRef}>
+            {/* Barra de entrada de texto */}
             <div className={`search-input-group ${showResults && results.length > 0 ? 'has-results' : ''}`}>
                 <FiSearch className="search-icon-main" />
                 <input
@@ -74,6 +82,7 @@ const MarketSearch = ({ onSelect }) => {
                     }}
                     onFocus={() => setShowResults(true)}
                 />
+                {/* Animación de carga */}
                 {isLoading && (
                     <div className="search-loader-container">
                         <div className="loader-dot"></div>
@@ -81,12 +90,13 @@ const MarketSearch = ({ onSelect }) => {
                 )}
             </div>
 
+            {/* Panel desplegable con los resultados encontrados */}
             {showResults && results.length > 0 && (
                 <div className="search-results-panel modern-scroll">
                     <div className="search-results-header">Activos Encontrados</div>
                     {results.map((item, index) => (
-                        <div 
-                            key={`${item.symbol}-${index}`} 
+                        <div
+                            key={`${item.symbol}-${index}`}
                             className="search-result-item-premium"
                             onClick={() => handleSelect(item)}
                         >
@@ -102,6 +112,7 @@ const MarketSearch = ({ onSelect }) => {
                                     <span className="result-full-name">{item.name}</span>
                                 </div>
                             </div>
+                            {/* Etiqueta descriptiva del tipo de activo */}
                             <div className="result-type-tag">
                                 {item.typeDisp}
                             </div>

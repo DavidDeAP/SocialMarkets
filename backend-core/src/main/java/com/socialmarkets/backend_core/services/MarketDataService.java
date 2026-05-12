@@ -24,7 +24,7 @@ public class MarketDataService {
     private final Map<String, Long> cacheTimestamps = new ConcurrentHashMap<>();
     private static final long CACHE_DURATION = 10000; // El precio se considera "fresco" durante 10 segundos
 
-    // Obtiene el precio de mercado actual para un símbolo (ej: BTC-USD, AAPL)
+    // Obtiene el precio de mercado actual para un símbolo
     public Double obtenerPrecioActual(String symbol) {
         long now = System.currentTimeMillis();
         
