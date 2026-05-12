@@ -6,11 +6,16 @@ import api from '../services/api';
 import { FiChevronDown, FiHelpCircle, FiSearch, FiMessageSquare, FiTrendingUp, FiAward, FiMonitor, FiUsers } from 'react-icons/fi';
 import './FAQ.css';
 
+/**
+ * Página de Preguntas Frecuentes (FAQ) para ayudar a los usuarios a entender la plataforma
+ */
 const FAQ = () => {
+    // Almacenamos los datos del usuario y qué pregunta está abierta actualmente
     const [user, setUser] = useState(null);
     const [activeId, setActiveId] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
 
+    // Obtenemos el perfil del usuario al cargar la página
     useEffect(() => {
         const fetchUser = async () => {
             try {
@@ -23,6 +28,7 @@ const FAQ = () => {
         fetchUser();
     }, []);
 
+    // Listado de preguntas y respuestas organizadas por categorías
     const faqData = [
         {
             id: 1,
@@ -68,10 +74,12 @@ const FAQ = () => {
         }
     ];
 
+    // Función para abrir o cerrar una pregunta (efecto acordeón)
     const toggleAccordion = (id) => {
         setActiveId(activeId === id ? null : id);
     };
 
+    // Filtramos las preguntas según lo que el usuario escriba en el buscador
     const filteredFaqs = faqData.filter(faq =>
         faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
         faq.answer.toLowerCase().includes(searchTerm.toLowerCase())
@@ -84,6 +92,7 @@ const FAQ = () => {
                 <Topbar user={user} />
                 <TickerTape />
                 <main className="main-content">
+                    {/* Cabecera de la página con buscador integrado */}
                     <header className="faq-header animate-in">
                         <div className="header-info">
                             <h1 className="text-neon-glow">Centro de Ayuda</h1>
@@ -101,6 +110,7 @@ const FAQ = () => {
                         </div>
                     </header>
 
+                    {/* Contenedor de las preguntas frecuentes */}
                     <div className="faq-container animate-in-up">
                         <div className="faq-grid">
                             {filteredFaqs.map((faq) => (
@@ -109,6 +119,7 @@ const FAQ = () => {
                                     className={`faq-item glass-card ${activeId === faq.id ? 'active' : ''}`}
                                     onClick={() => toggleAccordion(faq.id)}
                                 >
+                                    {/* Título de la pregunta y flecha indicadora */}
                                     <div className="faq-question">
                                         <div className="faq-icon-title">
                                             <span className="faq-icon">{faq.icon}</span>
@@ -116,6 +127,7 @@ const FAQ = () => {
                                         </div>
                                         <FiChevronDown className="faq-arrow" />
                                     </div>
+                                    {/* Contenido de la respuesta (se muestra al hacer click) */}
                                     <div className="faq-answer">
                                         <div className="answer-content">
                                             <p>{faq.answer}</p>
@@ -126,6 +138,7 @@ const FAQ = () => {
                             ))}
                         </div>
 
+                        {/* Mensaje que aparece si la búsqueda no encuentra resultados */}
                         {filteredFaqs.length === 0 && (
                             <div className="no-results-faq glass-card">
                                 <FiHelpCircle className="no-results-icon" />
@@ -140,6 +153,5 @@ const FAQ = () => {
         </div>
     );
 };
-
 
 export default FAQ;
