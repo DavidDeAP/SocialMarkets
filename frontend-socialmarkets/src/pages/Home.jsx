@@ -9,19 +9,24 @@ import TickerTape from '../components/TickerTape';
 import api from '../services/api';
 import './Home.css';
 
+/**
+ * Página de inicio que muestra el resumen de actividad del usuario
+ */
 const Home = () => {
+    // Estados para almacenar datos del usuario, resumen de análisis y precios en vivo
     const [user, setUser] = useState(null);
     const [resumen, setResumen] = useState(null);
     const [preciosVivos, setPreciosVivos] = useState({});
     const [cargando, setCargando] = useState(true);
     const navigate = useNavigate();
 
-    // Helper para calcular rendimiento
+    // Función auxiliar para calcular el porcentaje de rendimiento entre dos precios
     const calculatePerformance = (entry, current) => {
         if (!entry || !current) return 0;
         return (((current - entry) / entry) * 100).toFixed(2);
     };
 
+    // Función para obtener los precios actuales de mercado desde el backend
     const fetchPrices = useCallback(async (activos) => {
         if (!activos || activos.length === 0) return;
         try {
@@ -37,6 +42,7 @@ const Home = () => {
         }
     }, []);
 
+    // Efecto principal para cargar los datos del perfil y el resumen de análisis al entrar
     useEffect(() => {
         const fetchDatos = async () => {
             try {
@@ -47,7 +53,7 @@ const Home = () => {
                 setUser(perfilRes.data);
                 setResumen(resumenRes.data);
 
-                // Primera carga de precios
+                // Iniciamos la carga de precios para los análisis que aún están pendientes
                 const activosParaPrecio = resumenRes.data.recientes
                     ?.filter(a => a.estado === 'PENDIENTE') || [];
 
@@ -63,7 +69,7 @@ const Home = () => {
         };
         fetchDatos();
 
-        // Polling de precios cada 30 segundos
+        // Actualizamos los precios automáticamente cada 30 segundos
         const interval = setInterval(() => {
             if (resumen?.recientes) {
                 const activosParaPrecio = resumen.recientes.filter(a => a.estado === 'PENDIENTE');
@@ -74,6 +80,7 @@ const Home = () => {
         return () => clearInterval(interval);
     }, [navigate, fetchPrices, resumen?.recientes]);
 
+    // Cálculo dinámico de cuántos análisis actuales van ganando o perdiendo
     const calculateLiveStats = () => {
         if (!resumen || !resumen.activos) return { wins: 0, losses: 0 };
         let wins = 0;
@@ -83,14 +90,9 @@ const Home = () => {
             if (precioActual) {
                 const isBullish = a.precioObjetivo > a.precioEntrada;
                 const perf = parseFloat(calculatePerformance(a.precioEntrada, precioActual));
-                if ((isBullish && perf >= 0) || (!isBullish && perf >= 0)) {
-                    // En mi sistema, el rendimiento es relativo a la direccion.
-                    // Pero para simplificar, si el precio actual favorece la direccion:
-                    if (isBullish ? precioActual >= a.precioEntrada : precioActual <= a.precioEntrada) {
-                        wins++;
-                    } else {
-                        losses++;
-                    }
+                // Lógica simplificada para determinar si la posición favorece al analista
+                if (isBullish ? precioActual >= a.precioEntrada : precioActual <= a.precioEntrada) {
+                    wins++;
                 } else {
                     losses++;
                 }
@@ -101,6 +103,7 @@ const Home = () => {
 
     const liveStats = calculateLiveStats();
 
+    // Pantalla de carga inicial
     if (cargando) return (
         <div className="loading-container">
             <div className="loader"></div>
@@ -113,7 +116,6 @@ const Home = () => {
     const indiceAcierto = (user.indiceAcierto || 0).toFixed(1);
     const proyeccionesActivas = resumen?.activos?.length || 0;
     const proyeccionesTotales = resumen?.total || 0;
-    const aumentoMes = resumen?.aumentoMes || 0;
 
     return (
         <div className="dashboard-layout">
@@ -123,6 +125,7 @@ const Home = () => {
                 <TickerTape />
                 <main className="main-content">
 
+                    {/* Cabecera del panel con botón para crear nuevos análisis */}
                     <header className="dashboard-header animate-in">
                         <div className="header-info">
                             <h1 className="text-neon-glow">Panel de Control</h1>
@@ -134,6 +137,7 @@ const Home = () => {
                         </button>
                     </header>
 
+                    {/* Fila de tarjetas con estadísticas clave (Eficiencia, Totales y Activos) */}
                     <div className="stats-grid-modern">
                         <div className="stat-card animate-card" style={{ "--delay": "0.1s" }}>
                             <div className="card-header-v2">
@@ -176,6 +180,7 @@ const Home = () => {
                         </div>
                     </div>
 
+                    {/* Feed de actividad con los últimos análisis publicados por el usuario */}
                     <section className="table-section-modern animate-in-up">
                         <div className="section-title-bar">
                             <h3><FiClock /> Actividad Reciente</h3>
@@ -238,6 +243,7 @@ const Home = () => {
                                             </div>
                                         </div>
 
+                                        {/* Indicador de rendimiento porcentual y estado actual del análisis */}
                                         <div className="activity-performance-section">
                                             <div className={`perf-value-dash ${parseFloat(perf) >= 0 ? 'plus' : 'minus'}`}>
                                                 {parseFloat(perf) >= 0 ? '+' : ''}{perf}%
@@ -256,6 +262,7 @@ const Home = () => {
                                 );
                             })}
 
+                            {/* Mensaje mostrado si no hay publicaciones recientes */}
                             {(!resumen?.recientes || resumen?.recientes.length === 0) && (
                                 <div className="no-activity-message">
                                     Todavía no has publicado ningún análisis.
