@@ -10,15 +10,18 @@ import TickerTape from '../components/TickerTape';
 import api from '../services/api';
 import './Clasificacion.css';
 
+/**
+ * Página de clasificación que muestra a los mejores analistas basados en su éxito y actividad
+ */
 const Clasificacion = () => {
     const [ranking, setRanking] = useState([]);
-    const [filtro, setFiltro] = useState('indice'); // 'indice', 'predicciones', 'acertadas'
+    const [filtro, setFiltro] = useState('indice'); // Puede ser por acierto, cantidad de predicciones o totales acertadas
     const [user, setUser] = useState(null);
     const [cargando, setCargando] = useState(true);
     const [cargandoFiltro, setCargandoFiltro] = useState(false);
     const navigate = useNavigate();
 
-    // Carga inicial (Perfil + Primer Ranking)
+    // Al entrar a la página, cargamos los datos del usuario logueado y el primer listado del ranking
     useEffect(() => {
         const fetchInitialData = async () => {
             try {
@@ -39,14 +42,14 @@ const Clasificacion = () => {
         fetchInitialData();
     }, [navigate]);
 
-    // Carga al cambiar filtro
+    // Cada vez que el usuario cambia el filtro, pedimos los nuevos datos al servidor
     useEffect(() => {
-        if (cargando) return; // Evitar ejecutar si estamos en la carga inicial
+        if (cargando) return; 
 
         const fetchFilteredData = async () => {
             try {
                 setCargandoFiltro(true);
-                // Scroll hacia arriba para que el usuario vea el podio actualizado
+                // Subimos la pantalla suavemente para que se vea el podio actualizado
                 window.scrollTo({ top: 0, behavior: 'smooth' });
 
                 const res = await api.get(`/usuarios/ranking?filtro=${filtro}`);
@@ -60,6 +63,7 @@ const Clasificacion = () => {
         fetchFilteredData();
     }, [filtro]);
 
+    // Devuelve la clase CSS correspondiente según la posición en el podio
     const getPodiumClass = (index) => {
         if (index === 0) return 'first';
         if (index === 1) return 'second';
@@ -67,6 +71,7 @@ const Clasificacion = () => {
         return '';
     };
 
+    // Devuelve el icono o emoji decorativo para los 3 primeros
     const getCrownIcon = (index) => {
         if (index === 0) return '👑';
         if (index === 1) return '🥈';
@@ -74,12 +79,14 @@ const Clasificacion = () => {
         return null;
     };
 
+    // Traduce el código del filtro a un nombre legible para el cargador
     const getFiltroNombre = () => {
         if (filtro === 'indice') return 'Índice de Acierto';
         if (filtro === 'predicciones') return 'Más Predicciones';
         return 'Más Acertadas';
     };
 
+    // Pantalla de carga inicial mientras se traen los primeros datos
     if (cargando) {
         return (
             <div className="loading-container">
@@ -89,6 +96,7 @@ const Clasificacion = () => {
         );
     }
 
+    // Dividimos la lista: los 3 primeros van al podio visual y el resto a la tabla inferior
     const podium = ranking.slice(0, 3);
     const restOfRanking = ranking.slice(3);
 
@@ -109,6 +117,7 @@ const Clasificacion = () => {
                             <p className="ranking-subtitle">Los analistas más precisos de la comunidad de SocialMarkets</p>
                         </header>
 
+                        {/* Botones para cambiar el criterio de ordenación del ranking */}
                         <div className="ranking-filters">
                             <button
                                 className={`filter-btn ${filtro === 'indice' ? 'active' : ''}`}
@@ -134,7 +143,7 @@ const Clasificacion = () => {
                         </div>
 
                         <div className="ranking-content-wrapper">
-                            {/* Overlay de Carga Localizado */}
+                            {/* Pantalla de carga semi-transparente que aparece al cambiar de filtro */}
                             <AnimatePresence>
                                 {cargandoFiltro && (
                                     <motion.div
@@ -152,6 +161,7 @@ const Clasificacion = () => {
                             </AnimatePresence>
 
                             <div className={`ranking-data-view ${cargandoFiltro ? 'blur-content' : ''}`}>
+                                {/* El Podio: visualización destacada de los 3 mejores analistas */}
                                 <div className="podium-container">
                                     {podium.map((u, index) => (
                                         <motion.div
@@ -199,6 +209,7 @@ const Clasificacion = () => {
                                     ))}
                                 </div>
 
+                                {/* Tabla inferior: lista detallada a partir del cuarto puesto */}
                                 <div className="ranking-list">
                                     <AnimatePresence mode='wait'>
                                         <motion.div
