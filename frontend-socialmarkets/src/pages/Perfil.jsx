@@ -18,6 +18,7 @@ import './Comunidad.css'; // Reutilizamos estilos de la comunidad para los posts
 
 const Perfil = () => {
     const { username } = useParams();
+    // Estados para el perfil, seguimiento y edición de datos personales
     const [user, setUser] = useState(null);
     const [isFollowing, setIsFollowing] = useState(false);
     const [userProfile, setUserProfile] = useState(null);
@@ -30,7 +31,7 @@ const Perfil = () => {
     const [previewUrl, setPreviewUrl] = useState(null);
     const [editando, setEditando] = useState(false);
 
-    // Estados para el feed de análisis del usuario
+    // Estados para gestionar el muro de publicaciones del analista
     const [listaAnalisis, setListaAnalisis] = useState([]);
     const [cargandoFeed, setCargandoFeed] = useState(true);
     const [preciosVivos, setPreciosVivos] = useState({});
@@ -44,6 +45,7 @@ const Perfil = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        // Función para traer toda la información del perfil y verificar si lo seguimos
         const cargarTodo = async () => {
             setCargando(true);
 
@@ -61,6 +63,7 @@ const Perfil = () => {
                 setUserProfile(perfilRes.data);
                 setTempBio(perfilRes.data.biografia || '');
 
+                // Si no es nuestro propio perfil, comprobamos si ya seguimos a este usuario
                 if (meRes.data.usuario !== username) {
                     try {
                         const resSigue = await api.get(`/usuarios/${username}/siguiendo`);
@@ -90,6 +93,7 @@ const Perfil = () => {
     const [hasMore, setHasMore] = useState(true);
     const [cargandoMas, setCargandoMas] = useState(false);
 
+    // Carga paginada de los análisis publicados por el usuario
     const fetchAnalisisUsuario = async (reset = false) => {
         if (!reset && (!hasMore || cargandoMas)) return;
 
@@ -144,7 +148,7 @@ const Perfil = () => {
         };
     }, [hasMore, cargandoMas, cargandoFeed, pagina, username]);
 
-    // Polling de precios para los análisis del perfil
+    // Sistema de actualización de precios en vivo para los análisis mostrados en el perfil
     useEffect(() => {
         if (listaAnalisis.length === 0) return;
 
@@ -180,7 +184,7 @@ const Perfil = () => {
         };
 
         actualizarPreciosFeed();
-        const interval = setInterval(actualizarPreciosFeed, 10000);
+        const interval = setInterval(actualizarPreciosFeed, 10000); // Actualizar cada 10 segundos
         return () => clearInterval(interval);
     }, [listaAnalisis]);
 
@@ -237,14 +241,15 @@ const Perfil = () => {
         setLightbox(prev => ({ ...prev, currentIndex: (prev.currentIndex - 1 + prev.images.length) % prev.images.length }));
     };
 
+    // Función para seguir o dejar de seguir a otro analista
     const handleFollow = async () => {
         try {
             const response = await api.post(`/usuarios/${username}/follow`);
-            const siguiendo = response.data; // El backend devuelve true o false
+            const siguiendo = response.data; // El backend devuelve el nuevo estado
 
             setIsFollowing(siguiendo);
 
-            // Actualizamos visualmente el número de seguidores sin recargar
+            // Actualizamos visualmente el número de seguidores en el perfil actual
             setUserProfile(prev => ({
                 ...prev,
                 seguidores: siguiendo ? prev.seguidores + 1 : prev.seguidores - 1
@@ -265,7 +270,7 @@ const Perfil = () => {
 
     const esMiPerfil = user.usuario === userProfile.usuario;
 
-    // Lógica de Privacidad
+    // Lógica para determinar si mostrar u ocultar ciertas partes del perfil según la configuración de privacidad
     const shouldShow = (type) => {
         if (esMiPerfil) return true;
         const privacidad = userProfile.privacidadPerfil || 'PUBLICO';
@@ -277,12 +282,14 @@ const Perfil = () => {
             if (type === 'SUCCESS_RATE') return !userProfile.ocultarIndiceAcierto;
             if (type === 'POSTS') return !userProfile.ocultarPublicaciones;
         }
-        return true; // PUBLICO por defecto
+        return true; // Si es público, mostramos todo
     };
 
     // --- FUNCIONES DE ACCIÓN ---
+    // Cambiar la foto de perfil al hacer click sobre el avatar (solo en modo edición)
     const handleFotoClick = () => { if (editando && esMiPerfil) fileInputRef.current.click(); };
 
+    // Manejar la selección de un nuevo archivo de imagen
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -292,14 +299,15 @@ const Perfil = () => {
         }
     };
 
-    // NUEVA FUNCIÓN: Maneja la eliminación visual y prepara el estado para el backend
+    // Marcar la foto actual para ser eliminada
     const handleEliminarFoto = (e) => {
-        e.stopPropagation(); // Evita que se dispare el click del contenedor (abrir archivo)
+        e.stopPropagation(); // Evitamos que se abra el explorador de archivos
         setTempFoto(null);
         setPreviewUrl(null);
         setBorrarFoto(true);
     };
 
+    // Enviar los nuevos datos del perfil (bio y foto) al servidor
     const guardarCambios = async () => {
         const formData = new FormData();
         formData.append('biografia', tempBio);
@@ -307,7 +315,7 @@ const Perfil = () => {
         if (tempFoto) {
             formData.append('foto', tempFoto);
         } else if (borrarFoto) {
-            formData.append('eliminarFoto', 'true'); // Enviamos la señal al backend
+            formData.append('eliminarFoto', 'true');
         }
 
         try {
@@ -326,6 +334,7 @@ const Perfil = () => {
         }
     };
 
+    // Volver al estado anterior si el usuario cancela la edición
     const descartarCambios = () => {
         setTempBio(userProfile.biografia || '');
         setTempFoto(null);
@@ -364,6 +373,7 @@ const Perfil = () => {
                     )}
 
                     <div className="profile-glass-card">
+                        {/* Cabecera del perfil con el avatar, nombre y biografía */}
                         <div className="profile-hero">
                             <div className={`profile-avatar-container ${editando ? 'mode-edit' : ''}`} onClick={handleFotoClick}>
                                 <img
@@ -439,6 +449,7 @@ const Perfil = () => {
                         </div>
 
                         {/* ESTADÍSTICAS */}
+                        {/* Panel de estadísticas del analista (Seguidores, Predicciones y Éxito) */}
                         <div className="stats-dashboard-grid">
                             <div className={`stat-card ${!shouldShow('FOLLOWERS') ? 'is-private' : ''}`}>
                                 <div className="stat-icon followers"><FiUsers /></div>
@@ -538,11 +549,12 @@ const Perfil = () => {
                     </div>
 
                     {/* FEED DE ANÁLISIS DEL USUARIO */}
-                    <div className="profile-feed-section">
-                        <div className="section-title-row">
-                            <FiBarChart2 />
-                            <h2>Historial de Análisis</h2>
-                        </div>
+                        {/* Muro de análisis históricos publicados por este usuario */}
+                        <div className="profile-feed-section">
+                            <div className="section-title-row">
+                                <FiBarChart2 />
+                                <h2>Historial de Análisis</h2>
+                            </div>
 
                         {shouldShow('POSTS') ? (
                             <div className="feed-analisis profile-mode">
@@ -722,7 +734,7 @@ const Perfil = () => {
                 </main>
             </div>
 
-            {/* LIGHTBOX COMPONENT */}
+            {/* Visor de imágenes a pantalla completa */}
             {lightbox.isOpen && (
                 <div className="lightbox-overlay" onClick={closeLightbox}>
                     <button className="lightbox-close" onClick={closeLightbox}><FiXCircle /></button>

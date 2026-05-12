@@ -53,7 +53,7 @@
   background: rgba(252, 129, 129, 0.1);
   border-color: rgba(252, 129, 129, 0.3);
   color: #fc8181;
-  /* Efecto de elevación */
+  
   transform: translateY(-2px);
 }
 
@@ -61,7 +61,7 @@
   transform: translateY(1px) scale(0.98);
 }
 
-/* Hero Section: Avatar + Info */
+
 .profile-hero {
   display: flex;
   gap: 3rem;
@@ -167,7 +167,7 @@
   height: 100%;
   background: rgba(0, 0, 0, 0.4);
   border-radius: 50%;
-  /* Mantener el círculo */
+  
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -182,7 +182,7 @@
   opacity: 1;
 }
 
-/* Info del analista */
+
 .profile-main-info {
   flex: 1;
 }
@@ -229,7 +229,7 @@
   min-height: 100px;
 }
 
-/* Dashboard de Estadísticas */
+
 .stats-dashboard-grid {
   display: flex;
   justify-content: center;
@@ -294,7 +294,7 @@
   font-weight: 600;
 }
 
-/* Especial para el índice de acierto */
+
 .stat-card.highlight {
   grid-column: span 1;
   min-width: 280px;
@@ -321,7 +321,7 @@
   box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
 }
 
-/* Botones */
+
 .btn-edit-profile {
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(10px);
@@ -370,7 +370,7 @@
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Toasts de notificación */
+
 .notification-toast {
   position: fixed;
   top: 20px;
@@ -422,7 +422,7 @@
   transform: translateY(-3px) scale(1.02);
   box-shadow: 0 8px 25px rgba(139, 92, 246, 0.5);
   background: linear-gradient(135deg, #7c3aed, #4f46e5);
-  /* Un poco más oscuro al hacer hover */
+  
 }
 
 .btn-follow.is-following:hover svg {
@@ -518,7 +518,7 @@
   }
 }
 
-/* --- SECCIÓN DEL FEED EN EL PERFIL --- */
+
 .profile-feed-section {
   margin-top: 3rem;
   animation: fadeIn 0.8s ease-out;
@@ -546,23 +546,23 @@
   color: var(--accent);
 }
 
-/* Ajuste del feed para que no tenga scroll interno en el perfil si no es necesario */
+
 .feed-analisis.profile-mode {
   overflow-y: visible;
   padding-bottom: 4rem;
 }
 
-/* POPUP DE ESTADÍSTICAS EN EL CARD DE PREDICCIONES */
+
 .predictions-hover-box,
 .success-hover-box {
   position: relative;
-  overflow: visible !important; /* Para que el popup no se corte */
+  overflow: visible !important; 
   cursor: help;
 }
 
 .stat-popup {
   position: absolute;
-  bottom: 110%; /* Aparece arriba del card */
+  bottom: 110%; 
   left: 50%;
   transform: translateX(-50%) translateY(10px);
   background: rgba(15, 23, 42, 0.95);
@@ -607,7 +607,7 @@
   margin: 2px 0;
 }
 
-/* Triangulito del popup */
+
 .stat-popup::after {
   content: '';
   position: absolute;
@@ -643,7 +643,7 @@
 .popup-item .dot.success { background: #10b981; box-shadow: 0 0 8px rgba(16, 185, 129, 0.5); }
 .popup-item .dot.danger { background: #ef4444; box-shadow: 0 0 8px rgba(239, 68, 68, 0.5); }
 
-/* Animación pulse para las que están en vivo */
+
 .dot.pulse {
   animation: dotPulse 2s infinite;
 }
@@ -687,7 +687,7 @@
   filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.4));
 }
 
-/* ESTADOS PRIVADOS (BLUR) */
+
 .stat-card.is-private {
   position: relative;
   cursor: help;
