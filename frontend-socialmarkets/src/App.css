@@ -154,7 +154,7 @@ button:active {
   background: transparent;
 }
 
-/* Estilos semi-neón para títulos */
+
 .text-neon-glow {
   background: linear-gradient(135deg, #6366f1 0%, #3b82f6 50%, #2dd4bf 100%) !important;
   -webkit-background-clip: text !important;
@@ -205,7 +205,7 @@ button:active {
   border-left: 5px solid #7f1d1d;
 }
 
-/* Modern Global Loader Styles */
+
 .loading-container {
   height: 100vh;
   width: 100vw;
@@ -301,7 +301,7 @@ button:active {
   }
 }
 
-/* Placeholders de avatar pequeños para listas y búsquedas */
+
 .avatar-placeholder-small {
   width: 38px;
   height: 38px;
@@ -320,6 +320,6 @@ button:active {
 
 
 .acierto-val {
-  color: #00ff88; /* Verde brillante para resaltar el acierto */
+  color: #00ff88; 
   font-weight: 700;
 }
