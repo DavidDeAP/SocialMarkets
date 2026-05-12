@@ -21,6 +21,9 @@ import com.socialmarkets.backend_core.security.JwtUtils;
 import com.socialmarkets.backend_core.services.S3Service;
 import com.socialmarkets.backend_core.services.UsuarioService;
 
+/**
+ * Controlador principal para la gestión de usuarios: registro, login, perfil y comunidad
+ */
 @RestController
 @RequestMapping("/api/usuarios")
 @CrossOrigin(origins = "http://localhost:5173")
@@ -30,31 +33,27 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @Autowired
-    private S3Service s3Service; // Servicio de AWS S3
+    private S3Service s3Service; // Servicio para manejar imágenes en la nube (AWS S3)
 
- // POST para recibir Imagen + Datos
+    // Registra un nuevo usuario en la plataforma, permitiendo subir una foto de perfil
     @PostMapping(value = "/registrar", consumes = {"multipart/form-data"})
     public ResponseEntity<?> registrar(
-            @RequestPart("usuario") Usuario usuario, // Spring lo convierte de JSON a Objeto automáticamente
+            @RequestPart("usuario") Usuario usuario,
             @RequestPart(value = "foto", required = false) MultipartFile foto) {
         try {
-
-            // Si hay foto, la subimos
             if (foto != null && !foto.isEmpty()) {
                 String urlImagen = s3Service.subirArchivo(foto);
                 usuario.setImagen(urlImagen);
             }
-
-            // Guardamos en la DB
             Usuario nuevoUsuario = usuarioService.registrarUsuario(usuario);
             return ResponseEntity.ok(nuevoUsuario);
-            
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
     
+    // Permite al usuario actualizar su biografía y su foto de perfil
     @PutMapping(value = "/actualizar", consumes = {"multipart/form-data"})
     public ResponseEntity<?> actualizarPerfil(
             Principal principal,
@@ -65,7 +64,6 @@ public class UsuarioController {
             if (principal == null) return ResponseEntity.status(401).body("No autorizado");
 
             boolean eliminarFoto = Boolean.parseBoolean(eliminarFotoStr);
-
             String urlImagen = null;
             if (foto != null && !foto.isEmpty()) {
                 urlImagen = s3Service.subirArchivo(foto);
@@ -77,14 +75,13 @@ public class UsuarioController {
                 urlImagen, 
                 eliminarFoto
             );
-            
             return ResponseEntity.ok(usuarioActualizado);
-            
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
     
+    // Configura qué tipo de notificaciones quiere recibir el usuario
     @PutMapping("/preferencias-notificaciones")
     public ResponseEntity<?> actualizarPreferencias(
             Principal principal,
@@ -99,6 +96,7 @@ public class UsuarioController {
         }
     }
     
+    // Ajusta las opciones de privacidad del perfil (qué información es pública)
     @PutMapping("/privacidad")
     public ResponseEntity<?> actualizarPrivacidad(
             Principal principal,
@@ -126,25 +124,27 @@ public class UsuarioController {
     @Autowired
     private JwtUtils jwtUtils;
 
+    // Autentica al usuario y le devuelve un token JWT (su "llave" de acceso)
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestParam("usuario") String user, @RequestParam("password") String pass) {
         try {
             String token = usuarioService.autenticar(user, pass, jwtUtils);
-            return ResponseEntity.ok(token); // Enviamos el "carnet" al frontend
+            return ResponseEntity.ok(token);
         } catch (Exception e) {
             return ResponseEntity.status(401).body("Credenciales inválidas");
         }
     }
 
+    // Devuelve la lista de todos los usuarios (útil para administración o depuración)
     @GetMapping
     public ResponseEntity<List<Usuario>> listarUsuarios() {
         return ResponseEntity.ok(usuarioService.obtenerTodos());
     }
     
+    // Obtiene los datos del usuario que tiene la sesión iniciada actualmente
     @GetMapping("/perfil")
     public ResponseEntity<?> obtenerPerfil(java.security.Principal principal) {
         try {
-            // principal.getName() devuelve el usuario que el JwtFilter guardó en la memoria
             Usuario usuario = usuarioService.obtenerPorNombre(principal.getName());
             return ResponseEntity.ok(usuario);
         } catch (Exception e) {
@@ -152,21 +152,21 @@ public class UsuarioController {
         }
     }
     
+    // Obtiene la información pública de otro usuario para mostrar su perfil
     @GetMapping("/publico/{nombreUsuario}")
     public ResponseEntity<?> obtenerPerfilPublico(@PathVariable String nombreUsuario) {
         try {
             Usuario usuario = usuarioService.obtenerPorNombre(nombreUsuario);
-            // Devuelve el usuario encontrado por nombre
             return ResponseEntity.ok(usuario);
         } catch (Exception e) {
             return ResponseEntity.status(404).body("Usuario no encontrado");
         }
     }
     
+    // Permite seguir o dejar de seguir a otro usuario
     @PostMapping("/{username}/follow")
     public ResponseEntity<?> seguirUsuario(Principal principal, @PathVariable String username) {
         if (principal == null) return ResponseEntity.status(401).body("No autorizado");
-        
         try {
             boolean siguiendo = usuarioService.toggleSeguimiento(principal.getName(), username);
             return ResponseEntity.ok(siguiendo);
@@ -175,6 +175,7 @@ public class UsuarioController {
         }
     }
     
+    // Comprueba si el usuario actual sigue a otro usuario concreto
     @GetMapping("/{username}/siguiendo")
     public ResponseEntity<Boolean> comprobarSeguimiento(Principal principal, @PathVariable String username) {
         if (principal == null) return ResponseEntity.ok(false);
@@ -182,6 +183,7 @@ public class UsuarioController {
         return ResponseEntity.ok(sigue);
     }
     
+    // Busca un usuario por su identificador numérico
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerUsuarioPorId(@PathVariable Long id) {
         try {
@@ -192,16 +194,19 @@ public class UsuarioController {
         }
     }
 
+    // Busca usuarios que coincidan con un texto (para el buscador de la barra superior)
     @GetMapping("/buscar")
     public ResponseEntity<List<Usuario>> buscarUsuarios(@RequestParam("q") String query) {
         return ResponseEntity.ok(usuarioService.buscarPorNombre(query));
     }
 
+    // Obtiene el ranking de mejores analistas (por índice de acierto o volumen)
     @GetMapping("/ranking")
     public ResponseEntity<List<Usuario>> obtenerRanking(@RequestParam(value = "filtro", defaultValue = "indice") String filtro) {
         return ResponseEntity.ok(usuarioService.obtenerRanking(filtro));
     }
 
+    // Elimina permanentemente la cuenta del usuario autenticado
     @PostMapping("/eliminar")
     public ResponseEntity<?> eliminarCuenta(Principal principal) {
         try {
@@ -213,6 +218,7 @@ public class UsuarioController {
         }
     }
 
+    // Cambia la contraseña del usuario tras verificar la contraseña actual
     @PutMapping("/cambiar-password")
     public ResponseEntity<?> cambiarPassword(
             Principal principal,
@@ -226,4 +232,6 @@ public class UsuarioController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+}
+   }
 }

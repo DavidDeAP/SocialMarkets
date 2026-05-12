@@ -12,14 +12,18 @@ import java.security.Principal;
 import com.socialmarkets.backend_core.entities.Analisis;
 import com.socialmarkets.backend_core.services.AnalisisService;
 
+/**
+ * Controlador para gestionar las publicaciones de análisis de los usuarios
+ */
 @RestController
 @RequestMapping("/api/analisis")
-@CrossOrigin(origins = "*") // Permitimos todo para pruebas locales
+@CrossOrigin(origins = "*") 
 public class AnalisisController {
 
     @Autowired
     private AnalisisService analisisService;
 
+    // Crea un nuevo análisis, permitiendo adjuntar imágenes de gráficos
     @PostMapping(value = "/crear", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> crear(
             Principal principal,
@@ -36,7 +40,7 @@ public class AnalisisController {
         }
     }
 
-    // GET: http://localhost:8080/api/analisis?page=0&size=5
+    // Lista todos los análisis de la comunidad
     @GetMapping
     public ResponseEntity<?> listarAnalisis(
             @RequestParam(defaultValue = "0") int page,
@@ -45,12 +49,13 @@ public class AnalisisController {
         return ResponseEntity.ok(analisisService.obtenerTodosPaginados(page, size, orden));
     }
 
-    // GET: http://localhost:8080/api/analisis/estado/{estado}
+    // Filtra análisis por su estado
     @GetMapping("/estado/{estado}")
     public ResponseEntity<List<Analisis>> obtenerAnalisisPorEstado(@PathVariable String estado) {
         return ResponseEntity.ok(analisisService.obtenerPorEstado(estado));
     }
 
+    // Obtiene los análisis publicados por un usuario concreto
     @GetMapping("/usuario/{username}")
     public ResponseEntity<?> obtenerAnalisisPorUsuario(
             @PathVariable String username,
@@ -59,12 +64,13 @@ public class AnalisisController {
         return ResponseEntity.ok(analisisService.obtenerPorUsuarioPaginado(username, page, size));
     }
 
+    // Proporciona datos resumidos para el panel principal del usuario
     @GetMapping("/resumen")
     public ResponseEntity<java.util.Map<String, Object>> obtenerResumen(java.security.Principal principal) {
         return ResponseEntity.ok(analisisService.obtenerResumenDashboard(principal.getName()));
     }
 
-    // GET: http://localhost:8080/api/analisis/{id}
+    // Busca un análisis específico por su ID único
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerAnalisisPorId(@PathVariable Long id) {
         try {
@@ -75,7 +81,7 @@ public class AnalisisController {
         }
     }
 
-    // POST: http://localhost:8080/api/analisis/{id}/votar
+    // Permite a los usuarios dar o quitar un voto a un análisis
     @PostMapping("/{id}/votar")
     public ResponseEntity<?> votarAnalisis(@PathVariable Long id, Principal principal) {
         try {

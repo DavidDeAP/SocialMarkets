@@ -15,6 +15,10 @@ import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+/**
+ * Este controlador actúa como un puente para obtener datos financieros reales de Yahoo Finance
+ * sin tener problemas de CORS en el navegador.
+ */
 @RestController
 @RequestMapping("/api/market")
 @CrossOrigin(origins = "*")
@@ -23,8 +27,9 @@ public class MarketDataController {
     private final RestTemplate restTemplate = new RestTemplate();
     private final Map<String, String> priceCache = new ConcurrentHashMap<>();
     private final Map<String, Long> cacheTimestamps = new ConcurrentHashMap<>();
-    private static final long CACHE_DURATION = 8000; // 8 segundos para que el front de 10s siempre pille dato fresco
+    private static final long CACHE_DURATION = 8000; // Cache de 8 segundos para no saturar la API externa
 
+    // Busca activos por nombre o ticker (ej: "Apple" o "AAPL")
     @GetMapping("/search")
     public ResponseEntity<?> searchAssets(@RequestParam String q) {
         try {
@@ -38,6 +43,7 @@ public class MarketDataController {
         }
     }
 
+    // Obtiene el precio actual de un único activo
     @GetMapping("/price")
     public ResponseEntity<?> getPrice(@RequestParam String symbol) {
         String data = fetchSinglePrice(symbol);
@@ -47,11 +53,11 @@ public class MarketDataController {
         return ResponseEntity.status(500).body("{\"error\": \"No se pudo obtener el precio\"}");
     }
 
+    // Obtiene los precios de varios activos a la vez de forma eficiente y en paralelo
     @GetMapping("/prices")
     public ResponseEntity<?> getPrices(@RequestParam String symbols) {
         String[] symbolArray = symbols.split(",");
         
-        // Ejecutar peticiones en paralelo para que sea rápido
         List<CompletableFuture<Map<String, Object>>> futures = Arrays.stream(symbolArray)
             .map(String::trim)
             .filter(s -> !s.isEmpty())
@@ -60,7 +66,6 @@ public class MarketDataController {
                 Map<String, Object> result = new HashMap<>();
                 if (json != null) {
                     try {
-                        // Mapeo mínimo para que el front lo entienda (formato quoteResponse)
                         com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
                         com.fasterxml.jackson.databind.JsonNode root = mapper.readTree(json);
                         com.fasterxml.jackson.databind.JsonNode meta = root.path("chart").path("result").get(0).path("meta");
@@ -89,6 +94,7 @@ public class MarketDataController {
         return ResponseEntity.ok(response);
     }
 
+    // Método interno que hace la petición real a Yahoo Finance o devuelve el dato de la caché
     private String fetchSinglePrice(String symbol) {
         long now = System.currentTimeMillis();
         if (priceCache.containsKey(symbol) && (now - cacheTimestamps.get(symbol)) < CACHE_DURATION) {

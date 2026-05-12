@@ -10,9 +10,13 @@ import com.socialmarkets.backend_core.entities.Usuario;
 import com.socialmarkets.backend_core.services.NotificacionService;
 import com.socialmarkets.backend_core.services.UsuarioService;
 
+/**
+ * Este controlador gestiona las notificaciones que reciben los usuarios
+ * (likes, seguidores, cambios en predicciones, etc.)
+ */
 @RestController
 @RequestMapping("/api/notificaciones")
-@CrossOrigin(origins = "*") // Permitimos todo para pruebas locales
+@CrossOrigin(origins = "*") 
 public class NotificacionController {
 
     @Autowired
@@ -21,7 +25,7 @@ public class NotificacionController {
     @Autowired
     private UsuarioService usuarioService;
 
-    // POST: http://localhost:8080/api/notificaciones/crear
+    // Crea manualmente una notificación para un usuario
     @PostMapping("/crear")
     public ResponseEntity<?> crearNotificacion(
             @RequestParam Long usuarioId, 
@@ -41,7 +45,7 @@ public class NotificacionController {
         }
     }
 
-    // GET: http://localhost:8080/api/notificaciones/ultimas10/{usuarioId}?page=0&size=5
+    // Obtiene las últimas notificaciones de un usuario de forma paginada
     @GetMapping("/ultimas10/{usuarioId}")
     public ResponseEntity<?> obtenerUltimas10(
             @PathVariable Long usuarioId,
@@ -55,7 +59,7 @@ public class NotificacionController {
         }
     }
 
-    // GET: http://localhost:8080/api/notificaciones/noleidas/{usuarioId}
+    // Devuelve solo las notificaciones que el usuario aún no ha visto
     @GetMapping("/noleidas/{usuarioId}")
     public ResponseEntity<?> obtenerNoLeidas(@PathVariable Long usuarioId) {
         try {
@@ -67,7 +71,7 @@ public class NotificacionController {
         }
     }
 
-    // PUT: http://localhost:8080/api/notificaciones/{id}/leida
+    // Marca una notificación específica como vista (leída)
     @PutMapping("/{id}/leida")
     public ResponseEntity<?> marcarComoLeida(@PathVariable Long id) {
         try {
@@ -78,6 +82,7 @@ public class NotificacionController {
         }
     }
 
+    // Marca todas las notificaciones de un usuario como leídas de golpe
     @PutMapping("/leertodas/{usuarioId}")
     public ResponseEntity<?> marcarTodasComoLeidas(@PathVariable Long usuarioId) {
         try {
@@ -89,7 +94,7 @@ public class NotificacionController {
         }
     }
 
-    // DELETE: http://localhost:8080/api/notificaciones/{id}
+    // Borra definitivamente una notificación
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarNotificacion(@PathVariable Long id) {
         try {

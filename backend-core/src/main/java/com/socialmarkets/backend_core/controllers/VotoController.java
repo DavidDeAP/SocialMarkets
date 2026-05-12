@@ -7,15 +7,18 @@ import org.springframework.web.bind.annotation.*;
 import com.socialmarkets.backend_core.entities.Voto;
 import com.socialmarkets.backend_core.services.VotoService;
 
+/**
+ * Controlador para gestionar los votos o "likes" en las publicaciones
+ */
 @RestController
 @RequestMapping("/api/votos")
-@CrossOrigin(origins = "*") // Permitimos todo para pruebas locales
+@CrossOrigin(origins = "*") 
 public class VotoController {
 
     @Autowired
     private VotoService votoService;
 
-    // POST: http://localhost:8080/api/votos/emitir
+    // Registra un nuevo voto en un análisis
     @PostMapping("/emitir")
     public ResponseEntity<?> emitirVoto(@RequestBody Voto voto) {
         try {
