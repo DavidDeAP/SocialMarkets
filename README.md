@@ -53,7 +53,7 @@ Ubicado en la carpeta `frontend-socialmarkets/`.
 
 ## 🚀 Guía de Instalación y Ejecución
 
-Sigue estos pasos detallados para poner en marcha el proyecto en tu entorno local.
+Pasos detallados para poner en marcha el proyecto en tu entorno local.
 
 ### 1️⃣ Requisitos Previos
 Antes de empezar, asegúrate de tener instalado lo siguiente:
@@ -100,7 +100,6 @@ cd SocialMarkets
    ```bash
    mvn spring-boot:run
    ```
-   > [!TIP]
    > El servidor estará disponible en `http://localhost:8080`. Puedes verificar la conexión accediendo a `http://localhost:8080/api/usuarios/publico/admin` (si ya tienes datos iniciales).
 
 ---
@@ -132,8 +131,8 @@ cd SocialMarkets
 
 ## 👤 Autores
 
-- **David de Antonio Palomar** — *Desarrollador*
-- **Ramiro Martín Morro** — *Tutor*
+- **David de Antonio Palomar** — **Desarrollador**
+- **Ramiro Martín Morro** — **Tutor**
 
 ---
 
