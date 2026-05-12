@@ -7,11 +7,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
+/**
+ * Repositorio para gestionar las notificaciones de los usuarios
+ */
 public interface NotificacionRepository extends JpaRepository<Notificacion, Long> {
+    
+    // Recupera la lista de notificaciones pendientes de leer para un usuario
     List<Notificacion> findByUsuarioAndLeidaFalse(Usuario usuario);
     
-    // Para el panel con scroll infinito/paginado
+    // Obtiene las notificaciones de un usuario ordenadas por las más recientes (paginado)
     Page<Notificacion> findByUsuarioOrderByFechaDesc(Usuario usuario, Pageable pageable);
     
+    // Recupera rápidamente las 10 notificaciones más recientes de un usuario
     List<Notificacion> findTop10ByUsuarioOrderByFechaDesc(Usuario usuario);
 }

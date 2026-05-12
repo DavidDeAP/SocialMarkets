@@ -12,7 +12,6 @@ import com.socialmarkets.backend_core.services.UsuarioService;
 
 /**
  * Este controlador gestiona las notificaciones que reciben los usuarios
- * (likes, seguidores, cambios en predicciones, etc.)
  */
 @RestController
 @RequestMapping("/api/notificaciones")
