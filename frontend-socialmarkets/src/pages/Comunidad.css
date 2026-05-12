@@ -4,7 +4,7 @@
     display: flex;
     flex-direction: column;
     position: relative;
-    overflow: hidden; /* El scroll lo manejará el feed */
+    overflow: hidden; 
 }
 
 .comunidad-header {
@@ -57,7 +57,7 @@
     box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
 }
 
-/* Panel de Filtros Modernizado */
+
 .filters-panel {
     max-height: 0;
     overflow: hidden;
@@ -72,13 +72,13 @@
 
 .filters-panel.show {
     max-height: 500px;
-    /* Aumentado un poco por si acaso */
+    
     opacity: 1;
     padding: 2rem;
     margin-bottom: 2.5rem;
     border: 1px solid rgba(255, 255, 255, 0.08);
     overflow: visible;
-    /* Importante para que el desplegable no se corte */
+    
 }
 
 .search-bar-modern {
@@ -174,14 +174,14 @@
     box-shadow: 0 0 20px rgba(239, 68, 68, 0.15);
 }
 
-/* Espacio para el feed */
+
 .feed-analisis {
     flex: 1;
     overflow-y: auto;
     padding-top: 10px;
-    /* Espacio extra para que la animación hover no toque el título */
+    
     padding-bottom: 120px;
-    /* Más espacio para que no tape el botón */
+    
     display: flex;
     flex-direction: column;
     gap: 2rem;
@@ -227,7 +227,7 @@
     }
 }
 
-/* FAB (Floating Action Button) en la derecha */
+
 .action-bar-comunidad-fab {
     position: fixed;
     bottom: 2.5rem;
@@ -288,7 +288,7 @@
     filter: brightness(1.1);
 }
 
-/* Modal Estilos */
+
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -355,7 +355,7 @@
     box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
 }
 
-/* Formulario */
+
 .analisis-form {
     display: flex;
     flex-direction: column;
@@ -368,7 +368,7 @@
     gap: 1.5rem;
     align-items: flex-end;
     margin-bottom: 25px;
-    /* Espacio extra para el indicador absoluto */
+    
 }
 
 .form-group {
@@ -496,7 +496,7 @@
     font-size: 1rem;
 }
 
-/* Autocomplete Activos */
+
 .autocomplete-container {
     position: relative;
 }
@@ -639,7 +639,7 @@
 }
 
 
-/* Live Price Badge */
+
 .live-price-badge {
     display: flex;
     justify-content: space-between;
@@ -1020,7 +1020,7 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: #94a3b8;
     padding: 12px;
-    /* Ajustado para coincidir con el alto de los inputs */
+    
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1048,7 +1048,7 @@
     transform: scale(1.05) translateY(-2px);
 }
 
-/* Imágenes */
+
 .image-upload-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
@@ -1071,7 +1071,7 @@
     color: #8b5cf6;
     gap: 8px;
     padding: 0;
-    /* Quitamos padding para que el centrado sea puro respecto al borde */
+    
     margin: 0;
     box-sizing: border-box;
 }
@@ -1197,7 +1197,7 @@
     transform: scale(1.1) rotate(5deg);
 }
 
-/* Analisis Card */
+
 .analisis-card {
     background: rgba(30, 41, 59, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.05);
@@ -1214,7 +1214,7 @@
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-/* Estados de predicción */
+
 .analisis-card.status-winning {
     border-color: rgba(16, 185, 129, 0.5);
     background: rgba(16, 185, 129, 0.15);
@@ -1356,7 +1356,7 @@
     border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
-/* Market Info Row */
+
 .card-market-info-new {
     background: rgba(15, 23, 42, 0.4);
     border-radius: 16px;
@@ -1411,7 +1411,7 @@
     box-shadow: 0 0 15px rgba(239, 68, 68, 0.1);
 }
 
-/* Estilos para análisis completados */
+
 .analisis-card.settled {
     opacity: 0.9;
     background: rgba(15, 23, 42, 0.8);
@@ -1483,7 +1483,7 @@
     color: #f8fafc;
 }
 
-/* Card Content */
+
 .analysis-text {
     color: #f1f5f9;
     line-height: 1.7;
@@ -1517,9 +1517,9 @@
 
 .gallery-item {
     flex: 0 0 150px;
-    /* Ancho un poco más pequeño */
+    
     height: 90px;
-    /* Alto un poco más pequeño */
+    
     background: rgba(15, 23, 42, 0.6);
     border-radius: 12px;
     overflow: hidden;
@@ -1680,7 +1680,7 @@
     }
 }
 
-/* Lightbox Styles */
+
 .lightbox-overlay {
     position: fixed;
     top: 0;
@@ -1796,7 +1796,7 @@
     }
 }
 
-/* Responsividad para móviles */
+
 @media (max-width: 768px) {
     .lightbox-nav {
         width: 45px;
@@ -1820,7 +1820,7 @@
     }
 }
 
-/* Sugerencias de Usuarios en Búsqueda */
+
 .user-suggestions-dropdown {
     position: absolute;
     top: 100%;

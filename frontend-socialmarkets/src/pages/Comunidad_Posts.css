@@ -1,6 +1,4 @@
-/* ============================================================
-   NUEVO ESTILO DE POSTS (MODERN & PREMIUM)
-   ============================================================ */
+
 
 .feed-analisis {
     display: flex;
@@ -32,7 +30,7 @@
     }
 }
 
-/* Hover effect: Tilt & Glow */
+
 .analisis-card:hover {
     transform: translateY(-8px) scale(1.01);
     border-color: rgba(99, 102, 241, 0.4);
@@ -41,7 +39,7 @@
                 0 0 20px rgba(99, 102, 241, 0.1);
 }
 
-/* Highlight for when clicking a notification */
+
 .analisis-card.highlight-analysis {
     border-color: #6366f1;
     box-shadow: 0 0 30px rgba(99, 102, 241, 0.4);
@@ -54,7 +52,7 @@
     100% { transform: scale(1); box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); }
 }
 
-/* Status variants: Winning/Losing */
+
 .analisis-card.status-winning {
     border-left: 6px solid #10b981;
     background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(30, 41, 59, 0.4) 100%);
@@ -81,7 +79,7 @@
 .user-avatar-small {
     width: 56px;
     height: 56px;
-    border-radius: 18px; /* Squircle style */
+    border-radius: 18px; 
     object-fit: cover;
     border: 2px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
@@ -115,7 +113,7 @@
 
 .stat-item.acierto { color: #10b981; }
 
-/* Badges section */
+
 .card-badges {
     display: flex;
     gap: 10px;
@@ -137,7 +135,7 @@
 .sentiment-badge.bullish { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); }
 .sentiment-badge.bearish { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
 
-/* Main Market Section */
+
 .card-market-info-new {
     display: flex;
     flex-direction: column;
@@ -199,7 +197,7 @@
     position: relative;
 }
 
-/* Pulsing effect for live price */
+
 .price-live::after {
     content: '';
     position: absolute;
@@ -226,7 +224,7 @@
 .price-performance.status-winning { background: #10b981; color: #064e3b; }
 .price-performance.status-losing { background: #ef4444; color: #450a0a; }
 
-/* Content Section */
+
 .card-content {
     background: rgba(255, 255, 255, 0.02);
     padding: 1.5rem;
@@ -279,7 +277,7 @@
     font-weight: 600;
 }
 
-/* Prices Dashboard */
+
 .prices-dashboard {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -337,7 +335,7 @@
     color: #f1f5f9;
 }
 
-/* Lightbox Styles */
+
 .lightbox-overlay {
     position: fixed;
     top: 0;

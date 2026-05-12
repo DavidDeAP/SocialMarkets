@@ -12,12 +12,19 @@ import TickerTape from '../components/TickerTape';
 import api from '../services/api';
 import './Comunidad.css';
 
+/**
+ * Página principal de la comunidad donde se publican y visualizan análisis de mercado
+ */
 const Comunidad = () => {
+    // Almacena los precios en tiempo real de los activos que aparecen en el muro
     const [preciosVivos, setPreciosVivos] = useState({});
 
+    // Datos del usuario conectado y estados de carga
     const [user, setUser] = useState(null);
     const [cargando, setCargando] = useState(true);
     const [showModal, setShowModal] = useState(false);
+    
+    // Gestión de imágenes para las nuevas publicaciones
     const [imagenes, setImagenes] = useState([]);
     const [tipoAnalisis, setTipoAnalisis] = useState('TECNICO');
     const [toast, setToast] = useState({ mostrar: false, mensaje: '', tipo: '' });
@@ -31,21 +38,21 @@ const Comunidad = () => {
     const [cargandoFeed, setCargandoFeed] = useState(true);
     const [selectedFiles, setSelectedFiles] = useState([]);
 
-    // Estados de filtrado avanzado
+    // Estados de filtrado avanzado para el buscador y el muro
     const [filtrosSeleccionados, setFiltrosSeleccionados] = useState(['likes']);
     const [searchQuery, setSearchQuery] = useState('');
     const [showFilters, setShowFilters] = useState(false);
     const [sugerenciasUsuarios, setSugerenciasUsuarios] = useState([]);
     const [buscandoUsuarios, setBuscandoUsuarios] = useState(false);
 
-    // Estado para el Lightbox de imágenes
+    // Estado para controlar el visor de imágenes a pantalla completa
     const [lightbox, setLightbox] = useState({
         isOpen: false,
         images: [],
         currentIndex: 0
     });
 
-    // Autocompletado de Activos
+    // Estados para el buscador predictivo de activos financieros
     const [busquedaActivos, setBusquedaActivos] = useState([]);
     const [mostrarSugerencias, setMostrarSugerencias] = useState(false);
     const [cargandoSugerencias, setCargandoSugerencias] = useState(false);
@@ -100,6 +107,7 @@ const Comunidad = () => {
         return () => clearTimeout(timeoutId);
     }, [searchQuery]);
 
+    // Función que conecta con el backend para buscar activos financieros en tiempo real
     const buscarActivos = async (query) => {
         if (query.length < 2) return;
         setCargandoSugerencias(true);
@@ -130,6 +138,7 @@ const Comunidad = () => {
         }
     };
 
+    // Obtener el precio actual de un activo para mostrarlo en el formulario de creación
     const fetchPrecioActual = async (symbol) => {
         try {
             const respuesta = await api.get(`/market/price?symbol=${symbol}`);
@@ -187,6 +196,7 @@ const Comunidad = () => {
         return () => clearInterval(timerId);
     }, [activoSeleccionado]);
 
+    // Al elegir un activo de la lista de sugerencias del buscador
     const handleSeleccionarActivo = (item) => {
         setActivo(`${item.symbol} - ${item.shortname}`);
         setPrecioActual({ loading: true }); // Estado de carga inmediato
@@ -194,6 +204,7 @@ const Comunidad = () => {
         setMostrarSugerencias(false);
     };
 
+    // Traducir los códigos técnicos de tipo de activo a nombres legibles en español
     const getTipoLegible = (type) => {
         const types = {
             'EQUITY': 'Acción',
@@ -212,6 +223,7 @@ const Comunidad = () => {
     const [hasMore, setHasMore] = useState(true);
     const [cargandoMas, setCargandoMas] = useState(false);
 
+    // Traer los análisis del servidor respetando los filtros y la paginación del muro
     const fetchAnalisis = async (reset = false) => {
         if (!reset && (!hasMore || cargandoMas)) return;
 
@@ -248,6 +260,7 @@ const Comunidad = () => {
         }
     };
 
+    // Cargar los datos del perfil del usuario conectado
     const fetchPerfil = async () => {
         try {
             const respuesta = await api.get('/usuarios/perfil');
@@ -269,7 +282,7 @@ const Comunidad = () => {
         fetchAnalisis(true);
     }, [filtrosSeleccionados]);
 
-    // Sentinel ref for Infinite Scroll
+    // Sistema de scroll infinito: detecta cuándo llegamos al final del muro para cargar más
     const observerTarget = useRef(null);
 
     useEffect(() => {
@@ -291,7 +304,7 @@ const Comunidad = () => {
         };
     }, [hasMore, cargandoMas, cargandoFeed, pagina]);
 
-    // Lógica para scroll automático cuando venimos de una notificación
+    // Si entramos a la página desde una notificación, buscamos el análisis concreto y hacemos scroll hasta él
     useEffect(() => {
         const queryParams = new URLSearchParams(location.search);
         const targetId = queryParams.get('analisis');
@@ -313,7 +326,7 @@ const Comunidad = () => {
         }
     }, [listaAnalisis, location.search]);
 
-    // Polling de precios para el feed (Cada 10 segundos)
+    // Sistema de actualización automática de precios para los activos del muro (cada 10 segundos)
     useEffect(() => {
         if (listaAnalisis.length === 0) return;
 
@@ -356,6 +369,7 @@ const Comunidad = () => {
     }, [listaAnalisis]);
 
 
+    // Pantalla de carga inicial mientras se traen los datos básicos
     if (cargando) return (
         <div className="loading-container">
             <div className="loader"></div>
@@ -363,6 +377,7 @@ const Comunidad = () => {
         </div>
     );
 
+    // Gestión de subida de imágenes para la nueva publicación (máximo 4)
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
         if (files.length + selectedFiles.length > 4) {
@@ -376,11 +391,13 @@ const Comunidad = () => {
         setImagenes([...imagenes, ...newPreviews]);
     };
 
+    // Eliminar una imagen de la lista de previsualización antes de publicar
     const removeImage = (index) => {
         setImagenes(imagenes.filter((_, i) => i !== index));
         setSelectedFiles(selectedFiles.filter((_, i) => i !== index));
     };
 
+    // Dar formato amigable a las fechas (ej: 12 may 2026, 14:15)
     const formatFecha = (fechaStr) => {
         if (!fechaStr) return '';
         const fecha = new Date(fechaStr);
@@ -393,6 +410,7 @@ const Comunidad = () => {
         });
     };
 
+    // Calcular el porcentaje de ganancia o pérdida respecto al precio de entrada
     const calculatePerformance = (entrada, actual) => {
         if (!entrada || !actual) return '0.00';
         const perf = ((actual - entrada) / entrada) * 100;
@@ -431,6 +449,7 @@ const Comunidad = () => {
         }));
     };
 
+    // Gestión de votos (likes) en los análisis de otros usuarios
     const handleVotar = async (analisisId) => {
         try {
             await api.post(`/analisis/${analisisId}/votar`);
@@ -452,6 +471,7 @@ const Comunidad = () => {
         }
     };
 
+    // Lógica para activar y desactivar los filtros de estado del muro
     const toggleFiltro = (id) => {
         setFiltrosSeleccionados(prev => {
             // Lógica de exclusión mutua: 'activos' vs ('acertados' o 'fallados')
@@ -477,6 +497,7 @@ const Comunidad = () => {
         });
     };
 
+    // Filtrado secundario (en local) para la búsqueda por texto sobre los análisis ya cargados
     const obtenerAnalisisFiltrados = () => {
         let filtrados = [...listaAnalisis];
 
@@ -627,6 +648,7 @@ const Comunidad = () => {
                         </div>
                     </header>
 
+                    {/* El muro de análisis (Feed) donde aparecen las publicaciones */}
                     <div className="feed-analisis">
                         {cargandoFeed ? (
                             <div className="loader-container-feed">
@@ -665,6 +687,7 @@ const Comunidad = () => {
                                         id={`analisis-${analisis.identificador}`}
                                         className={`analisis-card glass-card ${statusClass}`}
                                     >
+                                        {/* Cabecera con la foto, nombre y estadísticas del autor */}
                                         <div className="card-header">
                                             <div className="user-info-section clickable-profile" onClick={() => navigate(`/perfil/${analisis.usuario?.usuario}`)}>
                                                 <img
@@ -704,6 +727,7 @@ const Comunidad = () => {
                                             </div>
                                         </div>
 
+                                        {/* Información financiera del activo analizado (precios y vencimiento) */}
                                         <div className="card-market-info-new">
                                             <div className="market-header-compact">
                                                 <div className="header-left-tags">
@@ -755,6 +779,7 @@ const Comunidad = () => {
                                             </div>
                                         </div>
 
+                                        {/* Texto explicativo y galería de imágenes del análisis */}
                                         <div className="card-content">
                                             <p className="analysis-text">{analisis.contenido}</p>
 
@@ -773,6 +798,7 @@ const Comunidad = () => {
                                             )}
                                         </div>
 
+                                        {/* Pie de la tarjeta con botón de voto y fecha de publicación */}
                                         <div className="card-footer">
                                             <div className="footer-left">
                                                 <button
@@ -801,9 +827,11 @@ const Comunidad = () => {
                                 <p>Has llegado al final del feed</p>
                             </div>
                         )}
+                        {/* Marcador invisible para detectar automáticamente cuándo cargar más publicaciones */}
                         <div ref={observerTarget} style={{ height: '10px' }}></div>
                     </div>
 
+                    {/* Botones flotantes (FAB) para filtrar el muro o abrir el formulario de publicación */}
                     <div className="action-bar-comunidad-fab">
                         <button
                             className={`btn-fab-round filter ${showFilters ? 'active' : ''}`}
@@ -823,6 +851,7 @@ const Comunidad = () => {
                 </main>
             </div>
 
+            {/* Ventana modal para redactar y enviar un nuevo análisis a la comunidad */}
             {showModal && (
                 <div className="modal-overlay">
                     <div className="modal-content glass-card">
@@ -837,12 +866,13 @@ const Comunidad = () => {
                             e.preventDefault();
                             setIntentadoPublicar(true);
 
-                            // Validación de campos vacíos
+                            // Validamos que se haya seleccionado un activo real de la lista
                             if (!activoSeleccionado) {
                                 setToast({ mostrar: true, mensaje: "Por favor, selecciona un activo válido de la lista de sugerencias", tipo: "error" });
                                 setTimeout(() => setToast({ mostrar: false, mensaje: '', tipo: '' }), 5000);
                                 return;
                             }
+                            // Validamos que los campos obligatorios no estén vacíos
                             if (!precioObjetivo || !fechaVencimiento || !contenido) {
                                 setToast({ mostrar: true, mensaje: "Por favor, completa todos los campos (Precio Objetivo, Fecha y Contenido)", tipo: "error" });
                                 setTimeout(() => setToast({ mostrar: false, mensaje: '', tipo: '' }), 5000);
@@ -886,6 +916,7 @@ const Comunidad = () => {
 
                                 await api.post('/analisis/crear', formData);
 
+                                // Si todo va bien, mostramos mensaje de éxito y limpiamos el formulario
                                 setToast({ mostrar: true, mensaje: "Análisis publicado con éxito", tipo: "success" });
                                 setTimeout(() => setToast({ mostrar: false, mensaje: '', tipo: '' }), 5000);
 
@@ -912,6 +943,7 @@ const Comunidad = () => {
                                 setPublicando(false);
                             }
                         }}>
+                            {/* Selector de activo financiero con búsqueda predictiva */}
                             <div className="form-group autocomplete-container">
                                 <label>Activo (Busca por símbolo o nombre)</label>
                                 <div className="input-with-icon">
@@ -948,6 +980,7 @@ const Comunidad = () => {
                                 )}
                             </div>
 
+                            {/* Muestra la cotización en vivo del activo seleccionado */}
                             {(activoSeleccionado || precioActual) && (
                                 <div className="live-price-badge glass-card">
                                     {precioActual?.loading ? (
@@ -989,6 +1022,7 @@ const Comunidad = () => {
                                 </div>
                             )}
 
+                            {/* Selección de tipo de análisis y precio objetivo */}
                             <div className="form-row">
                                 <div className="form-group">
                                     <label>Tipo de Análisis</label>
@@ -1018,6 +1052,7 @@ const Comunidad = () => {
                                             className={intentadoPublicar && !precioObjetivo ? 'input-error' : ''}
                                         />
                                     </div>
+                                    {/* Indicador visual de si el análisis es alcista o bajista */}
                                     {precioObjetivo && precioActual?.price && (
                                         <div className={`sentiment-indicator ${parseFloat(precioObjetivo) >= precioActual.price ? 'bullish' : 'bearish'}`}>
                                             <div className="sentiment-text">
@@ -1056,6 +1091,7 @@ const Comunidad = () => {
                                 </div>
                             </div>
 
+                            {/* Campo de texto para explicar el razonamiento del análisis */}
                             <div className="form-group">
                                 <label>Contenido del Análisis</label>
                                 <textarea
@@ -1075,6 +1111,7 @@ const Comunidad = () => {
                                 </div>
                             </div>
 
+                            {/* Selector de imágenes adjuntas (máximo 4 permitidas) */}
                             <div className="form-group">
                                 <label>Imágenes (Máx. 4)</label>
                                 <div className="image-upload-container">
@@ -1118,6 +1155,7 @@ const Comunidad = () => {
                 </div>
             )}
 
+            {/* Notificaciones flotantes de éxito o error */}
             {toast.mostrar && (
                 <div className={`toast-comunidad-alert ${toast.tipo}`}>
                     {toast.tipo === 'error' ? <FiXCircle /> : <FiCheckCircle />}
@@ -1125,7 +1163,7 @@ const Comunidad = () => {
                 </div>
             )}
 
-            {/* Lightbox para imágenes */}
+            {/* Visor de imágenes a pantalla completa (Lightbox) */}
             {lightbox.isOpen && (
                 <div className="lightbox-overlay" onClick={closeLightbox}>
                     <button className="lightbox-close" onClick={closeLightbox}>
