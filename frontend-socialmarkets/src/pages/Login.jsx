@@ -39,7 +39,7 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         let nuevosErrores = {};
-        
+
         // Validación básica de campos vacíos antes de enviar
         if (!credenciales.usuario.trim()) nuevosErrores.usuario = true;
         if (!credenciales.hashClave.trim()) nuevosErrores.hashClave = true;
@@ -68,7 +68,7 @@ const Login = () => {
     };
 
     return (
-        <motion.div 
+        <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="container-auth"
@@ -97,10 +97,10 @@ const Login = () => {
                 <div className={`input-group-modern ${errores.hashClave || errorLogin ? 'error' : ''}`}>
                     <label><Lock size={16} /> Contraseña</label>
                     <div className="password-wrapper">
-                        <input 
-                            type={showPassword ? "text" : "password"} 
-                            name="hashClave" 
-                            onChange={handleInputChange} 
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            name="hashClave"
+                            onChange={handleInputChange}
                         />
                         <button type="button" className="toggle-pass" onClick={() => setShowPassword(!showPassword)}>
                             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -111,10 +111,10 @@ const Login = () => {
                 {/* Aviso de error si los datos son incorrectos */}
                 {errorLogin && <span className="error-text-main">Credenciales no válidas</span>}
 
-                <motion.button 
+                <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    type="submit" 
+                    type="submit"
                     className="btn-gradient"
                     style={{ margin: '1.5rem auto 0', width: '100%' }}
                 >
@@ -130,4 +130,3 @@ const Login = () => {
 };
 
 export default Login;
-Login;
