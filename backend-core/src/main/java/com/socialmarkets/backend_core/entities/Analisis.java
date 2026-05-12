@@ -25,6 +25,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Representa una publicación de análisis o predicción financiera realizada por un usuario
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -34,10 +37,10 @@ public class Analisis {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long identificador;
+    private Long identificador; // ID único del análisis
 
     @Column(columnDefinition = "TEXT")
-    private String contenido;
+    private String contenido; // El texto explicativo de la tesis de inversión
 
     @Column(name = "precio_entrada")
     private Double precioEntrada; // El precio en tiempo real que se asigna al hacer el post
@@ -52,22 +55,22 @@ public class Analisis {
     private LocalDateTime fechaVencimiento; // Fecha que pone el usuario para que se cumpla o no su análisis
     
     @Column(name = "fecha_creacion")
-    private LocalDateTime fechaCreacion;
+    private LocalDateTime fechaCreacion; // Cuándo se publicó el análisis
 
     @Column(name = "fecha_cierre")
-    private LocalDateTime fechaCierre;
+    private LocalDateTime fechaCierre; // Cuándo se determinó el resultado final
 
     @ElementCollection
     @CollectionTable(name = "analisis_imagenes", joinColumns = @JoinColumn(name = "id_analisis"))
     @Column(name = "url_imagen")
     @Size(max = 4, message = "No puedes subir más de 4 imágenes")
-    private List<String> imagenes;
+    private List<String> imagenes; // Capturas de pantalla de los gráficos
 
     @Enumerated(EnumType.STRING)
-    private TipoAnalisis tipo;
+    private TipoAnalisis tipo; // Compra o Venta
 
     @Enumerated(EnumType.STRING)
-    private EstadoAnalisis estado;
+    private EstadoAnalisis estado; // Pendiente, Éxito o Fallo
 
     @ManyToOne
     @JoinColumn(name = "id_usuario")

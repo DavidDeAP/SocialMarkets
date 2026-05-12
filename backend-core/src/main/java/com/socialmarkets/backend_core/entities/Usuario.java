@@ -27,6 +27,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * Representa a un usuario de la plataforma
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -35,29 +38,29 @@ import lombok.ToString;
 @Table(name = "usuarios")
 public class Usuario {
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    private Long identificador;
+    private Long identificador; // ID único del usuario
 
     @Column(unique = true, nullable = false)
-    private String usuario;
+    private String usuario; // Nombre de usuario para login
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "hash_clave", nullable = false)
-    private String hashClave;
+    private String hashClave; // Contraseña encriptada
 
     @Column(name = "indice_acierto")
-    private Double indiceAcierto = 0.0;
+    private Double indiceAcierto = 0.0; // Porcentaje de éxito en predicciones
 
     @Column(columnDefinition = "TEXT")
     private String biografia;
 
-    private String imagen;
+    private String imagen; // URL de la foto de perfil en S3
 
     @JsonProperty("fechaCreacion")
     @Column(name = "fecha_registro")
-    private LocalDateTime fechaRegistro;
+    private LocalDateTime fechaRegistro; // Cuándo se unió a la plataforma
 
     @JsonIgnore
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
@@ -87,6 +90,7 @@ public class Usuario {
         return (analisis != null) ? analisis.size() : 0;
     }
 
+    // Según el número de predicciones se le dará un nivel al usuario
     @JsonProperty("nivel")
     public String getNivel() {
         int preds = getNumeroPredicciones();
@@ -108,7 +112,7 @@ public class Usuario {
     private Integer proyeccionesGanando = 0;
 
     @Column(name = "proyecciones_perdiendo")
-    private Integer proyeccionesPerdiendo = 0;
+    private Integer proyeccionesPerdiendo = 0; // Análisis que van en negativo actualmente
 
     @Column(name = "notificar_seguidores")
     private Boolean notificarSeguidores = true;
@@ -118,7 +122,7 @@ public class Usuario {
 
     // PRIVACIDAD
     @Column(name = "privacidad_perfil")
-    private String privacidadPerfil = "PUBLICO"; // PUBLICO, PRIVADO, PERSONALIZADO
+    private String privacidadPerfil = "PUBLICO"; // Configuración de visibilidad
 
     @Column(name = "ocultar_seguidores")
     private Boolean ocultarSeguidores = false;

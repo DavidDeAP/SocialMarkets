@@ -8,7 +8,7 @@ import com.socialmarkets.backend_core.entities.Voto;
 import com.socialmarkets.backend_core.services.VotoService;
 
 /**
- * Controlador para gestionar los votos o "likes" en las publicaciones
+ * Controlador para gestionar los votos en las publicaciones
  */
 @RestController
 @RequestMapping("/api/votos")
