@@ -26,6 +26,9 @@ import com.socialmarkets.backend_core.repositories.AnalisisRepository;
 import com.socialmarkets.backend_core.repositories.UsuarioRepository;
 import com.socialmarkets.backend_core.repositories.VotoRepository;
 
+/**
+ * Servicio principal para gestionar las publicaciones de análisis financieros de la comunidad
+ */
 @Service
 public class AnalisisService {
 
@@ -54,11 +57,13 @@ public class AnalisisService {
     @Autowired
     private NotificacionService notificacionService;
 
+    // Crea un nuevo análisis, gestiona las imágenes en S3 y notifica a los seguidores
     @Transactional
     public Analisis crearAnalisis(Analisis analisis, String username, MultipartFile[] imagenes) throws Exception {
         Usuario usuario = usuarioService.obtenerPorNombre(username);
         analisis.setUsuario(usuario);
 
+        // Si el activo no existe en nuestra BD, lo creamos automáticamente
         if (analisis.getActivo() != null && analisis.getActivo().getNombre() != null) {
             String nombreActivo = analisis.getActivo().getNombre().toUpperCase();
             try {
@@ -71,6 +76,7 @@ public class AnalisisService {
             }
         }
 
+        // Subida de imágenes a AWS S3 (máximo 4)
         if (imagenes != null && imagenes.length > 0) {
             List<String> urls = new ArrayList<>();
             for (MultipartFile img : imagenes) {
@@ -86,6 +92,7 @@ public class AnalisisService {
         
         Analisis guardado = analisisRepository.save(analisis);
 
+        // Notificación a los seguidores del autor
         if (usuario.getSeguidores() != null) {
             String textoNoti = "@" + usuario.getUsuario() + " ha publicado un nuevo análisis sobre " + guardado.getActivo().getNombre();
             String enlaceNoti = "/comunidad?analisis=" + guardado.getIdentificador();
@@ -105,6 +112,7 @@ public class AnalisisService {
         return analisisRepository.findAll(Sort.by(Sort.Direction.DESC, "fechaCreacion"));
     }
 
+    // Recupera todos los análisis del feed con soporte para paginación y orden por popularidad
     public Page<Analisis> obtenerTodosPaginados(int pagina, int tamano, String orden) {
         verificarAnalisisPendientes();
         Pageable pageable;
@@ -118,6 +126,7 @@ public class AnalisisService {
         return analisisRepository.findAll(pageable);
     }
 
+    // Comprueba los análisis PENDIENTES contra los precios reales para ver si han tenido éxito o han fallado
     @Transactional
     public void verificarAnalisisPendientes() {
         try {
@@ -134,21 +143,23 @@ public class AnalisisService {
                     if (precioActual != null) {
                         boolean isBullish = a.getPrecioObjetivo() > a.getPrecioEntrada();
                         
+                        // Si se toca el precio objetivo, marcamos como ACERTADO
                         if ((isBullish && precioActual >= a.getPrecioObjetivo()) || 
                             (!isBullish && precioActual <= a.getPrecioObjetivo())) {
-                        a.setEstado(EstadoAnalisis.ACERTADO);
-                        a.setPrecioCierre(precioActual);
+                            a.setEstado(EstadoAnalisis.ACERTADO);
+                            a.setPrecioCierre(precioActual);
+                            a.setFechaCierre(ahora);
+                            cerrado = true;
+                        }
+                    }
+
+                    // Si llega la fecha de vencimiento sin tocar el objetivo, marcamos como FALLIDO
+                    if (!cerrado && a.getFechaVencimiento().isBefore(ahora)) {
+                        a.setEstado(EstadoAnalisis.FALLIDO);
+                        a.setPrecioCierre(precioActual != null ? precioActual : a.getPrecioEntrada());
                         a.setFechaCierre(ahora);
                         cerrado = true;
                     }
-                }
-
-                if (!cerrado && a.getFechaVencimiento().isBefore(ahora)) {
-                    a.setEstado(EstadoAnalisis.FALLIDO);
-                    a.setPrecioCierre(precioActual != null ? precioActual : a.getPrecioEntrada());
-                    a.setFechaCierre(ahora);
-                    cerrado = true;
-                }
 
                     if (cerrado) {
                         analisisRepository.save(a);
@@ -231,13 +242,14 @@ public class AnalisisService {
         }
     }
 
+    // Genera los datos agregados para la pantalla de inicio del usuario
     public java.util.Map<String, Object> obtenerResumenDashboard(String username) {
         Usuario usuario = usuarioRepository.findByUsuario(username)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         
         List<Analisis> todos = analisisRepository.findByUsuario(usuario);
         
-        // Ordenar por fecha descendente para "Actividad Reciente"
+        // Obtenemos los 10 análisis más recientes para mostrar actividad
         List<Analisis> recientes = todos.stream()
                 .sorted((a, b) -> b.getFechaCreacion().compareTo(a.getFechaCreacion()))
                 .limit(10)
@@ -251,8 +263,9 @@ public class AnalisisService {
         resumen.put("total", todos.size());
         resumen.put("indiceAcierto", usuario.getIndiceAcierto());
         resumen.put("recientes", recientes);
-        resumen.put("activos", activos); // Mantenemos activos para el conteo live del header
+        resumen.put("activos", activos);
         
+        // Calculamos el rendimiento simulado del mes actual
         LocalDateTime inicioMes = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0);
         long acertadosMes = todos.stream()
                 .filter(a -> a.getEstado() == EstadoAnalisis.ACERTADO && a.getFechaCreacion().isAfter(inicioMes))
@@ -273,6 +286,7 @@ public class AnalisisService {
         return analisisRepository.findAllById(ids);
     }
 
+    // Añade o quita un voto (like) de un usuario a una publicación
     @Transactional
     public void alternarVoto(Long analisisId, String username) {
         Analisis analisis = obtenerPorId(analisisId);
@@ -281,12 +295,12 @@ public class AnalisisService {
         Optional<Voto> votoExistente = votoRepository.findByUsuarioAndAnalisis(usuario, analisis);
 
         if (votoExistente.isPresent()) {
-            votoRepository.delete(votoExistente.get());
+            votoRepository.delete(votoExistente.get()); // Si ya existía, lo quitamos (unlike)
         } else {
             Voto nuevoVoto = new Voto();
             nuevoVoto.setUsuario(usuario);
             nuevoVoto.setAnalisis(analisis);
-            votoRepository.save(nuevoVoto);
+            votoRepository.save(nuevoVoto); // Si no existía, lo añadimos (like)
         }
     }
 }

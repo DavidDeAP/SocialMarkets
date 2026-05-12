@@ -11,13 +11,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Servicio encargado de buscar activos (acciones, criptos, índices) mediante palabras clave
+ */
 @Service
 public class MarketSearchService {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    // Mapeo de emergencia para asegurar que los activos principales SIEMPRE salgan
+    // Mapeo manual para asegurar que los activos más populares siempre aparezcan con nombres amigables
     private static final Map<String, Map<String, String>> TOP_ASSETS = new HashMap<>();
 
     static {
@@ -47,18 +50,19 @@ public class MarketSearchService {
         TOP_ASSETS.put(key.toUpperCase(), data);
     }
 
+    // Método principal que combina resultados manuales (TOP_ASSETS) con resultados de Yahoo Finance
     public List<Map<String, Object>> search(String query) {
         List<Map<String, Object>> results = new ArrayList<>();
         String upperQuery = query.toUpperCase();
 
-        // 1. Añadimos primero los "Smart Mappings" si coinciden
+        // 1. Buscamos primero en nuestra lista manual de activos populares
         for (Map.Entry<String, Map<String, String>> entry : TOP_ASSETS.entrySet()) {
             if (entry.getKey().contains(upperQuery) || upperQuery.contains(entry.getKey())) {
                 results.add(new HashMap<>(entry.getValue()));
             }
         }
 
-        // 2. Consultamos a Yahoo Finance desde el backend (Sin problemas de CORS)
+        // 2. Realizamos la búsqueda en la API de Yahoo Finance para encontrar otros activos
         try {
             String url = "https://query1.finance.yahoo.com/v1/finance/search?q=" + query + "&quotesCount=20&newsCount=0";
             HttpHeaders headers = new HttpHeaders();
@@ -73,7 +77,7 @@ public class MarketSearchService {
                 
                 for (JsonNode q : quotes) {
                     String symbol = q.path("symbol").asText();
-                    // Evitar duplicados con los smart mappings
+                    // Evitamos duplicar si el activo ya estaba en nuestra lista manual
                     if (results.stream().anyMatch(r -> r.get("symbol").equals(symbol))) continue;
 
                     Map<String, Object> map = new HashMap<>();

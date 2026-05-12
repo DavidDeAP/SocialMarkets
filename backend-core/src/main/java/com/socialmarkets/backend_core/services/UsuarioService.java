@@ -13,6 +13,9 @@ import com.socialmarkets.backend_core.repositories.UsuarioRepository;
 import com.socialmarkets.backend_core.security.JwtUtils;
 import org.springframework.context.annotation.Lazy;
 
+/**
+ * Servicio encargado de gestionar toda la lógica relacionada con los usuarios (perfil, seguidores, ranking)
+ */
 @Service
 public class UsuarioService {
 
@@ -23,6 +26,7 @@ public class UsuarioService {
     @Lazy
     private AnalisisService analisisService;
 
+    // Verifica las credenciales de un usuario y devuelve un token JWT si son correctas
     public String autenticar(String nombreUsuario, String password, JwtUtils jwtUtils) {
         Usuario usuario = usuarioRepository.findByUsuario(nombreUsuario)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -37,6 +41,7 @@ public class UsuarioService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    // Registra a un nuevo usuario cifrando su contraseña
     public Usuario registrarUsuario(Usuario usuario) {
         if (usuarioRepository.existsByUsuario(usuario.getUsuario())) {
             throw new RuntimeException("El nombre de usuario ya existe");
@@ -96,6 +101,7 @@ public class UsuarioService {
                 .orElseThrow(() -> new RuntimeException("El usuario con ID " + id + " no existe"));
     }
     
+    // Busca un usuario por su nombre y actualiza sus estadísticas antes de devolverlo
     public Usuario obtenerPorNombre(String nombre) {
         Usuario usuario = usuarioRepository.findByUsuario(nombre)
                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -113,6 +119,7 @@ public class UsuarioService {
     @Autowired
     private NotificacionService notificacionService;
 
+    // Permite a un usuario seguir o dejar de seguir a otro
     @Transactional
     public boolean toggleSeguimiento(String nombreSeguidor, String nombreObjetivo) {
         if (nombreSeguidor.equals(nombreObjetivo)) {
@@ -125,12 +132,12 @@ public class UsuarioService {
         if (objetivo.getSeguidores().contains(seguidor)) {
             objetivo.getSeguidores().remove(seguidor);
             usuarioRepository.save(objetivo);
-            return false;
+            return false; // Indica que se ha dejado de seguir
         } else {
             objetivo.getSeguidores().add(seguidor);
             usuarioRepository.save(objetivo);
             
-            // Notificar al usuario objetivo (si tiene activadas las notis de seguidores)
+            // Notificar al usuario objetivo
             if (objetivo.getNotificarSeguidores() != null && objetivo.getNotificarSeguidores()) {
                 notificacionService.crearNotificacion(
                     objetivo, 
@@ -140,7 +147,7 @@ public class UsuarioService {
                 );
             }
             
-            return true;
+            return true; // Indica que se ha empezado a seguir
         }
     }
 
@@ -151,6 +158,7 @@ public class UsuarioService {
         return usuarios;
     }
 
+    // Obtiene el top 10 de usuarios basado en el criterio elegido (acierto, predicciones, etc.)
     public List<Usuario> obtenerRanking(String filtro) {
         List<Usuario> ranking;
         switch (filtro) {

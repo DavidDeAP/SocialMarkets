@@ -11,6 +11,9 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import java.io.IOException;
 import java.util.UUID;
 
+/**
+ * Servicio para gestionar la subida de archivos (imágenes) a la nube de Amazon (AWS S3)
+ */
 @Service
 public class S3Service {
 
@@ -23,19 +26,22 @@ public class S3Service {
     @Value("${aws.s3.region}")
     private String region;
 
+    // Sube un archivo a S3 y devuelve la URL pública para poder visualizarlo
     public String subirArchivo(MultipartFile archivo) throws IOException {
+        // Generamos un nombre único para el archivo para evitar que se sobrescriban
         String nombreArchivo = UUID.randomUUID().toString() + "_" + archivo.getOriginalFilename();
 
-        // Petición para subir a S3 SIN ACL
+        // Configuramos la petición de subida
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(nombreArchivo)
                 .contentType(archivo.getContentType())
-                // .acl("public-read")  me hacia que la peticion fuese rechazada
                 .build();
 
+        // Enviamos el archivo a AWS
         s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(archivo.getInputStream(), archivo.getSize()));
 
+        // Devolvemos la dirección web (URL) del archivo recién subido
         return String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, region, nombreArchivo);
     }
 }
