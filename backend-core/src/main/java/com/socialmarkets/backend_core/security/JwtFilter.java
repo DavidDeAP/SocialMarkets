@@ -12,6 +12,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * Filtro que se ejecuta en cada petición para verificar si el usuario tiene un token válido
+ */
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
@@ -22,16 +25,18 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         
+        // Buscamos el encabezado "Authorization" en la petición HTTP
         String authHeader = request.getHeader("Authorization");
 
+        // Si el encabezado existe y empieza por "Bearer ", extraemos el token
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
             
-            // Valida el token
+            // Si el token es válido, identificamos al usuario y lo "logueamos" en el contexto de Spring
             if (jwtUtils.validarToken(token)) {
                 String usuario = jwtUtils.getUsuarioDesdeToken(token);
                 
-                // Loguea al usuario
+                // Creamos un objeto de autenticación para que Spring sepa quién es el usuario
                 UsernamePasswordAuthenticationToken auth = 
                     new UsernamePasswordAuthenticationToken(usuario, null, new ArrayList<>());
                 
@@ -39,7 +44,7 @@ public class JwtFilter extends OncePerRequestFilter {
             }
         }
 
-        // Continua con la petición
+        // Dejamos que la petición siga su camino hacia el controlador correspondiente
         filterChain.doFilter(request, response);
     }
 }
