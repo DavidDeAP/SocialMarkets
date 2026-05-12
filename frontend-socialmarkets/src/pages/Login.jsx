@@ -5,15 +5,21 @@ import { User, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import axios from 'axios';
 import './Login.css';
 
+/**
+ * Página de inicio de sesión para acceder a la plataforma
+ */
 const Login = () => {
     const location = useLocation();
     const navigate = useNavigate();
+
+    // Estados para gestionar mensajes, errores y visibilidad de la contraseña
     const [mensaje, setMensaje] = useState('');
     const [errorLogin, setErrorLogin] = useState(false);
     const [errores, setErrores] = useState({});
     const [showPassword, setShowPassword] = useState(false);
     const [credenciales, setCredenciales] = useState({ usuario: '', hashClave: '' });
 
+    // Detectar si venimos del registro para mostrar un mensaje de éxito
     useEffect(() => {
         if (location.state?.mensajeExito) {
             setMensaje(location.state.mensajeExito);
@@ -22,15 +28,19 @@ const Login = () => {
         }
     }, [location]);
 
+    // Actualizar los campos del formulario mientras el usuario escribe
     const handleInputChange = (e) => {
         setErrorLogin(false);
         setErrores({ ...errores, [e.target.name]: false });
         setCredenciales({ ...credenciales, [e.target.name]: e.target.value });
     };
 
+    // Enviar las credenciales al servidor para validar el acceso
     const handleSubmit = async (e) => {
         e.preventDefault();
         let nuevosErrores = {};
+        
+        // Validación básica de campos vacíos antes de enviar
         if (!credenciales.usuario.trim()) nuevosErrores.usuario = true;
         if (!credenciales.hashClave.trim()) nuevosErrores.hashClave = true;
 
@@ -44,12 +54,15 @@ const Login = () => {
         params.append('password', credenciales.hashClave);
 
         try {
+            // Intentamos hacer login conectando con el backend
             const respuesta = await axios.post('http://localhost:8080/api/usuarios/login', params, {
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
             });
+            // Si es correcto, guardamos el token y vamos al panel principal
             localStorage.setItem('token', respuesta.data);
             navigate('/home');
         } catch (error) {
+            // Si falla, mostramos el error de credenciales no válidas
             setErrorLogin(true);
         }
     };
@@ -65,6 +78,7 @@ const Login = () => {
                 <p className="subtitle">Conecta, analiza e invierte mejor</p>
             </div>
 
+            {/* Panel de alertas para mensajes de éxito o bienvenida */}
             <AnimatePresence>
                 {mensaje && (
                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="alert-panel exito">
@@ -73,6 +87,7 @@ const Login = () => {
                 )}
             </AnimatePresence>
 
+            {/* Formulario de inicio de sesión */}
             <form className="form-auth" onSubmit={handleSubmit}>
                 <div className={`input-group-modern ${errores.usuario || errorLogin ? 'error' : ''}`}>
                     <label><User size={16} /> Usuario</label>
@@ -93,6 +108,7 @@ const Login = () => {
                     </div>
                 </div>
 
+                {/* Aviso de error si los datos son incorrectos */}
                 {errorLogin && <span className="error-text-main">Credenciales no válidas</span>}
 
                 <motion.button 
@@ -114,3 +130,4 @@ const Login = () => {
 };
 
 export default Login;
+Login;
