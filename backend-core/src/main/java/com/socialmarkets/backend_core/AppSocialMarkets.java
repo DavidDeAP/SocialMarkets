@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class AppSocialMarkets {
 
 	public static void main(String[] args) {
+		// Inicio de la aplicacion
 		SpringApplication.run(AppSocialMarkets.class, args);
 	}
 
