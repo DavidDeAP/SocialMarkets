@@ -1,4 +1,4 @@
-# 📊 SocialMarkets - Terminal Financiera Colaborativa
+# 📊 SocialMarkets - Aplicación Web Financiera Colaborativa
 
 ![Java](https://img.shields.io/badge/Java-25-007396?logo=openjdk&logoColor=white)
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.0.5-6DB33F?logo=springboot&logoColor=white)
@@ -7,7 +7,7 @@
 ![AWS](https://img.shields.io/badge/AWS-S3-FF9900?logo=amazonaws&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8.0-646CFF?logo=vite&logoColor=white)
 
-**SocialMarkets** es una plataforma colaborativa de análisis financiero diseñada para inversores y analistas. Permite compartir proyecciones de mercado, validar ideas mediante un sistema de votación y seguir el rendimiento de la comunidad a través de un ranking de éxito. La aplicación integra una terminal financiera avanzada con datos en tiempo real y gestión de perfiles profesionales.
+**SocialMarkets** es una plataforma web colaborativa de análisis financiero diseñada para inversores y analistas. Permite compartir proyecciones de mercado, validar ideas mediante un sistema de votación y seguir el rendimiento de la comunidad a través de un ranking de éxito. La app integra una terminal financiera avanzada con datos en tiempo real y gestión de perfiles profesionales.
 
 ---
 
