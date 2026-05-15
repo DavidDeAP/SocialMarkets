@@ -31,23 +31,26 @@ const Topbar = ({ user }) => {
 
         const currentSeg = userState.notificarSeguidores !== false;
         const currentPub = userState.notificarPublicaciones !== false;
+        const currentReac = userState.notificarReacciones !== false;
 
         const nuevoSeg = tipo === 'seguidores' ? !currentSeg : currentSeg;
         const nuevoPub = tipo === 'publicaciones' ? !currentPub : currentPub;
+        const nuevoReac = tipo === 'reacciones' ? !currentReac : currentReac;
 
         // Actualización optimista para que la interfaz responda al instante
         setUserState(prev => ({
             ...prev,
             notificarSeguidores: nuevoSeg,
-            notificarPublicaciones: nuevoPub
+            notificarPublicaciones: nuevoPub,
+            notificarReacciones: nuevoReac
         }));
 
         try {
-            const res = await api.put(`/usuarios/preferencias-notificaciones?seguidores=${nuevoSeg}&publicaciones=${nuevoPub}`);
+            const res = await api.put(`/usuarios/preferencias-notificaciones?seguidores=${nuevoSeg}&publicaciones=${nuevoPub}&reacciones=${nuevoReac}`);
             setUserState(res.data);
         } catch (err) {
             console.error("Error actualizando preferencias:", err);
-            setUserState(user); // Revertimos si falla la conexión
+            setUserState(userState); // Revertimos si falla la conexión
         }
     };
 
@@ -309,6 +312,15 @@ const Topbar = ({ user }) => {
                                         <button 
                                             className={`switch-toggle ${userState?.notificarPublicaciones !== false ? 'on' : 'off'}`}
                                             onClick={() => toggleNotiPref('publicaciones')}
+                                        >
+                                            <div className="switch-knob"></div>
+                                        </button>
+                                    </div>
+                                    <div className="settings-item">
+                                        <span>Reacciones</span>
+                                        <button 
+                                            className={`switch-toggle ${userState?.notificarReacciones !== false ? 'on' : 'off'}`}
+                                            onClick={() => toggleNotiPref('reacciones')}
                                         >
                                             <div className="switch-knob"></div>
                                         </button>

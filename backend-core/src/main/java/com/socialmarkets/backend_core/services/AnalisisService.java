@@ -98,7 +98,9 @@ public class AnalisisService {
             String enlaceNoti = "/comunidad?analisis=" + guardado.getIdentificador();
             
             for (Usuario seguidor : usuario.getSeguidores()) {
-                if (seguidor.getNotificarPublicaciones() != null && seguidor.getNotificarPublicaciones()) {
+                // Si es nulo, asumimos que sí quiere notificaciones por defecto
+                boolean quiereNotis = seguidor.getNotificarPublicaciones() == null || seguidor.getNotificarPublicaciones();
+                if (quiereNotis) {
                     notificacionService.crearNotificacion(seguidor, textoNoti, enlaceNoti, usuario);
                 }
             }
@@ -306,12 +308,16 @@ public class AnalisisService {
             Usuario autor = analisis.getUsuario();
             // Solo notificamos si el que da el like no es el propio autor
             if (autor != null && !autor.getUsuario().equals(username)) {
-                notificacionService.crearNotificacion(
-                    autor, 
-                    "@" + username + " ha reaccionado a tu análisis sobre " + analisis.getActivo().getNombre(),
-                    "/comunidad?analisis=" + analisis.getIdentificador(),
-                    usuario
-                );
+                // Si es nulo, asumimos que sí quiere notificaciones por defecto
+                boolean quiereNotis = autor.getNotificarReacciones() == null || autor.getNotificarReacciones();
+                if (quiereNotis) {
+                    notificacionService.crearNotificacion(
+                        autor, 
+                        "@" + username + " ha reaccionado a tu análisis sobre " + analisis.getActivo().getNombre(),
+                        "/comunidad?analisis=" + analisis.getIdentificador(),
+                        usuario
+                    );
+                }
             }
         }
     }

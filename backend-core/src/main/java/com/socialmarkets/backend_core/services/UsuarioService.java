@@ -69,12 +69,13 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
-    public Usuario actualizarPreferenciasNotificaciones(String username, boolean seguidores, boolean publicaciones) {
+    public Usuario actualizarPreferenciasNotificaciones(String username, boolean seguidores, boolean publicaciones, boolean reacciones) {
         Usuario usuario = usuarioRepository.findByUsuario(username)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         usuario.setNotificarSeguidores(seguidores);
         usuario.setNotificarPublicaciones(publicaciones);
+        usuario.setNotificarReacciones(reacciones);
 
         return usuarioRepository.save(usuario);
     }

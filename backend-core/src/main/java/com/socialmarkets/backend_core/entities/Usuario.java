@@ -120,6 +120,9 @@ public class Usuario {
     @Column(name = "notificar_publicaciones")
     private Boolean notificarPublicaciones = true;
 
+    @Column(name = "notificar_reacciones")
+    private Boolean notificarReacciones = true;
+
     // PRIVACIDAD
     @Column(name = "privacidad_perfil")
     private String privacidadPerfil = "PUBLICO"; // Configuración de visibilidad

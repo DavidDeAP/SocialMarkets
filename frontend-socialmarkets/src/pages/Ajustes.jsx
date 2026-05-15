@@ -4,7 +4,7 @@ import Topbar from '../components/Topbar';
 import TickerTape from '../components/TickerTape';
 import api from '../services/api';
 import { useSettings } from '../context/SettingsContext';
-import { FiMonitor, FiEye, FiEyeOff, FiLock, FiUnlock, FiSliders, FiCheckCircle, FiXCircle, FiLogOut, FiTrash2, FiAlertTriangle, FiRotateCcw, FiKey, FiSave } from 'react-icons/fi';
+import { FiMonitor, FiBell, FiEye, FiEyeOff, FiLock, FiUnlock, FiSliders, FiCheckCircle, FiXCircle, FiLogOut, FiTrash2, FiAlertTriangle, FiRotateCcw, FiKey, FiSave } from 'react-icons/fi';
 import './Ajustes.css';
 
 /**
@@ -22,17 +22,28 @@ const Ajustes = () => {
     const [ocultarIndice, setOcultarIndice] = useState(false);
     const [ocultarPublicaciones, setOcultarPublicaciones] = useState(false);
 
+    // Estados para notificaciones
+    const [notificarSeguidores, setNotificarSeguidores] = useState(true);
+    const [notificarPublicaciones, setNotificarPublicaciones] = useState(true);
+    const [notificarReacciones, setNotificarReacciones] = useState(true);
+
     // Al cargar la página, traemos los ajustes actuales del usuario desde el servidor
     useEffect(() => {
         const fetchUser = async () => {
             try {
                 const res = await api.get('/usuarios/perfil');
-                setUser(res.data);
-                setPrivacidad(res.data.privacidadPerfil || 'PUBLICO');
-                setOcultarSeguidores(res.data.ocultarSeguidores || false);
-                setOcultarPredicciones(res.data.ocultarPredicciones || false);
-                setOcultarIndice(res.data.ocultarIndiceAcierto || false);
-                setOcultarPublicaciones(res.data.ocultarPublicaciones || false);
+                const d = res.data;
+                setUser(d);
+                setPrivacidad(d.privacidadPerfil || 'PUBLICO');
+                setOcultarSeguidores(d.ocultarSeguidores || false);
+                setOcultarPredicciones(d.ocultarPredicciones || false);
+                setOcultarIndice(d.ocultarIndiceAcierto || false);
+                setOcultarPublicaciones(d.ocultarPublicaciones || false);
+                
+                // Cargar preferencias de notificación
+                setNotificarSeguidores(d.notificarSeguidores !== false);
+                setNotificarPublicaciones(d.notificarPublicaciones !== false);
+                setNotificarReacciones(d.notificarReacciones !== false);
             } catch (err) {
                 console.error("Error fetching user:", err);
             }
@@ -150,6 +161,21 @@ const Ajustes = () => {
         }
     };
 
+    const guardarNotificaciones = async (tipo, valor) => {
+        try {
+            const nSeg = tipo === 'seguidores' ? valor : notificarSeguidores;
+            const nPub = tipo === 'publicaciones' ? valor : notificarPublicaciones;
+            const nReac = tipo === 'reacciones' ? valor : notificarReacciones;
+
+            await api.put(`/usuarios/preferencias-notificaciones?seguidores=${nSeg}&publicaciones=${nPub}&reacciones=${nReac}`);
+            setNotificacion({ mostrar: true, mensaje: 'Preferencias de avisos actualizadas', tipo: 'exito' });
+        } catch (err) {
+            setNotificacion({ mostrar: true, mensaje: 'Error al actualizar avisos', tipo: 'error' });
+        } finally {
+            setTimeout(() => setNotificacion(p => ({ ...p, mostrar: false })), 2000);
+        }
+    };
+
     return (
         <div className="dashboard-layout">
             <Sidebar />
@@ -195,6 +221,72 @@ const Ajustes = () => {
                                                 type="checkbox"
                                                 checked={showTicker}
                                                 onChange={(e) => setShowTicker(e.target.checked)}
+                                            />
+                                            <span className="slider round"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* SECCIÓN NOTIFICACIONES: Controla qué avisos recibes */}
+                        <div className="ajustes-section">
+                            <div className="section-header">
+                                <FiBell />
+                                <h3>Notificaciones</h3>
+                            </div>
+                            <div className="ajustes-grid">
+                                <div className="ajuste-card glass-card">
+                                    <div className="ajuste-info">
+                                        <div className="ajuste-label">
+                                            <span>Nuevos Seguidores</span>
+                                        </div>
+                                        <p className="ajuste-description">Recibe un aviso cuando alguien comience a seguirte.</p>
+                                    </div>
+                                    <div className="ajuste-action">
+                                        <label className="switch">
+                                            <input
+                                                type="checkbox"
+                                                checked={notificarSeguidores}
+                                                onChange={(e) => { setNotificarSeguidores(e.target.checked); guardarNotificaciones('seguidores', e.target.checked); }}
+                                            />
+                                            <span className="slider round"></span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div className="ajuste-card glass-card">
+                                    <div className="ajuste-info">
+                                        <div className="ajuste-label">
+                                            <span>Nuevas Publicaciones</span>
+                                        </div>
+                                        <p className="ajuste-description">Recibe un aviso cuando un analista al que sigues publique algo.</p>
+                                    </div>
+                                    <div className="ajuste-action">
+                                        <label className="switch">
+                                            <input
+                                                type="checkbox"
+                                                checked={notificarPublicaciones}
+                                                onChange={(e) => { setNotificarPublicaciones(e.target.checked); guardarNotificaciones('publicaciones', e.target.checked); }}
+                                            />
+                                            <span className="slider round"></span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div className="ajuste-card glass-card">
+                                    <div className="ajuste-info">
+                                        <div className="ajuste-label">
+                                            <span>Reacciones (Likes)</span>
+                                        </div>
+                                        <p className="ajuste-description">Recibe un aviso cuando alguien reaccione a tus análisis.</p>
+                                    </div>
+                                    <div className="ajuste-action">
+                                        <label className="switch">
+                                            <input
+                                                type="checkbox"
+                                                checked={notificarReacciones}
+                                                onChange={(e) => { setNotificarReacciones(e.target.checked); guardarNotificaciones('reacciones', e.target.checked); }}
                                             />
                                             <span className="slider round"></span>
                                         </label>

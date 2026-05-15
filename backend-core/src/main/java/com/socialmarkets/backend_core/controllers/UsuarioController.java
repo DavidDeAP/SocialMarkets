@@ -86,10 +86,11 @@ public class UsuarioController {
     public ResponseEntity<?> actualizarPreferencias(
             Principal principal,
             @RequestParam("seguidores") boolean seguidores,
-            @RequestParam("publicaciones") boolean publicaciones) {
+            @RequestParam("publicaciones") boolean publicaciones,
+            @RequestParam("reacciones") boolean reacciones) {
         try {
             if (principal == null) return ResponseEntity.status(401).body("No autorizado");
-            Usuario u = usuarioService.actualizarPreferenciasNotificaciones(principal.getName(), seguidores, publicaciones);
+            Usuario u = usuarioService.actualizarPreferenciasNotificaciones(principal.getName(), seguidores, publicaciones, reacciones);
             return ResponseEntity.ok(u);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
