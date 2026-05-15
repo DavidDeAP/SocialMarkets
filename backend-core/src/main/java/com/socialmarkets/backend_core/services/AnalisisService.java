@@ -301,6 +301,18 @@ public class AnalisisService {
             nuevoVoto.setUsuario(usuario);
             nuevoVoto.setAnalisis(analisis);
             votoRepository.save(nuevoVoto); // Si no existía, lo añadimos (like)
+            
+            // Notificar al autor del análisis
+            Usuario autor = analisis.getUsuario();
+            // Solo notificamos si el que da el like no es el propio autor
+            if (autor != null && !autor.getUsuario().equals(username)) {
+                notificacionService.crearNotificacion(
+                    autor, 
+                    "@" + username + " ha reaccionado a tu análisis sobre " + analisis.getActivo().getNombre(),
+                    "/comunidad?analisis=" + analisis.getIdentificador(),
+                    usuario
+                );
+            }
         }
     }
 }

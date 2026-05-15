@@ -129,6 +129,11 @@ public class UsuarioService {
         Usuario seguidor = obtenerPorNombre(nombreSeguidor);
         Usuario objetivo = obtenerPorNombre(nombreObjetivo);
 
+        // Inicializar el set de seguidores si es null (evita NPE)
+        if (objetivo.getSeguidores() == null) {
+            objetivo.setSeguidores(new java.util.HashSet<>());
+        }
+
         if (objetivo.getSeguidores().contains(seguidor)) {
             objetivo.getSeguidores().remove(seguidor);
             usuarioRepository.save(objetivo);
@@ -137,8 +142,10 @@ public class UsuarioService {
             objetivo.getSeguidores().add(seguidor);
             usuarioRepository.save(objetivo);
             
-            // Notificar al usuario objetivo
-            if (objetivo.getNotificarSeguidores() != null && objetivo.getNotificarSeguidores()) {
+            // Notificar al usuario objetivo (si es nulo asumimos que sí quiere notificaciones por defecto)
+            boolean quiereNotis = objetivo.getNotificarSeguidores() == null || objetivo.getNotificarSeguidores();
+            
+            if (quiereNotis) {
                 notificacionService.crearNotificacion(
                     objetivo, 
                     "@" + nombreSeguidor + " te ha comenzado a seguir", 
