@@ -340,11 +340,15 @@ const Topbar = ({ user }) => {
                                                 >
                                                     <div className="noti-content-wrapper">
                                                         <div className="noti-avatar">
-                                                            {imagenUrl && (
+                                                            {imagenUrl ? (
                                                                 <img 
                                                                     src={imagenUrl.startsWith('http') ? imagenUrl : `${API_BASE_URL}${imagenUrl}`} 
                                                                     alt="Autor" 
                                                                 />
+                                                            ) : (
+                                                                <div className="avatar-placeholder-tiny">
+                                                                    {noti.autor?.usuario?.charAt(0).toUpperCase() || '?'}
+                                                                </div>
                                                             )}
                                                         </div>
                                                         <div className="noti-info">

@@ -376,11 +376,17 @@ const Perfil = () => {
                         {/* Cabecera del perfil con el avatar, nombre y biografía */}
                         <div className="profile-hero">
                             <div className={`profile-avatar-container ${editando ? 'mode-edit' : ''}`} onClick={handleFotoClick}>
-                                <img
-                                    src={previewUrl || (!borrarFoto && userProfile.imagen ? userProfile.imagen : defaultUser)}
-                                    alt="Avatar"
-                                    className="profile-avatar-img"
-                                />
+                                {previewUrl || (!borrarFoto && userProfile.imagen) ? (
+                                    <img
+                                        src={previewUrl || (userProfile.imagen.startsWith('http') ? userProfile.imagen : `http://localhost:8080${userProfile.imagen}`)}
+                                        alt="Avatar"
+                                        className="profile-avatar-img"
+                                    />
+                                ) : (
+                                    <div className="profile-avatar-placeholder">
+                                        {userProfile.usuario?.charAt(0).toUpperCase() || '?'}
+                                    </div>
+                                )}
                                 {editando && (
                                     <>
                                         <div className="avatar-overlay"><FiEdit2 /><span>Cambiar</span></div>
@@ -592,11 +598,17 @@ const Perfil = () => {
                                             <article key={analisis.identificador} className={`analisis-card glass-card ${statusClass}`}>
                                                 <div className="card-header">
                                                     <div className="user-info-section">
-                                                        <img
-                                                            src={userProfile.imagen || defaultUser}
-                                                            alt={userProfile.usuario}
-                                                            className="user-avatar-small"
-                                                        />
+                                                        {userProfile.imagen ? (
+                                                            <img
+                                                                src={userProfile.imagen.startsWith('http') ? userProfile.imagen : `http://localhost:8080${userProfile.imagen}`}
+                                                                alt={userProfile.usuario}
+                                                                className="user-avatar-small"
+                                                            />
+                                                        ) : (
+                                                            <div className="avatar-placeholder-small">
+                                                                {userProfile.usuario?.charAt(0).toUpperCase() || '?'}
+                                                            </div>
+                                                        )}
                                                         <div className="user-meta">
                                                             <span className="username">{userProfile.usuario}</span>
                                                             <div className="user-stats-small">

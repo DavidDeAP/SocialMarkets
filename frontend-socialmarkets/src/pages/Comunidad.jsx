@@ -690,11 +690,17 @@ const Comunidad = () => {
                                         {/* Cabecera con la foto, nombre y estadísticas del autor */}
                                         <div className="card-header">
                                             <div className="user-info-section clickable-profile" onClick={() => navigate(`/perfil/${analisis.usuario?.usuario}`)}>
-                                                <img
-                                                    src={analisis.usuario?.imagen || 'https://via.placeholder.com/150'}
-                                                    alt={analisis.usuario?.usuario}
-                                                    className="user-avatar-small"
-                                                />
+                                                {analisis.usuario?.imagen ? (
+                                                    <img
+                                                        src={analisis.usuario.imagen.startsWith('http') ? analisis.usuario.imagen : `http://localhost:8080${analisis.usuario.imagen}`}
+                                                        alt={analisis.usuario?.usuario}
+                                                        className="user-avatar-small"
+                                                    />
+                                                ) : (
+                                                    <div className="avatar-placeholder-small">
+                                                        {analisis.usuario?.usuario?.charAt(0).toUpperCase() || '?'}
+                                                    </div>
+                                                )}
                                                 <div className="user-meta">
                                                     <span className="username">{analisis.usuario?.usuario}</span>
                                                     <div className="user-stats-small">
