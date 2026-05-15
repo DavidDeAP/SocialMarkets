@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { UserPlus, Camera, Info, ShieldCheck } from 'lucide-react';
 import axios from 'axios';
 import './Registro.css';
@@ -62,7 +62,7 @@ const Registro = () => {
         } catch (error) {
             // Si el nombre de usuario ya está cogido, mostramos el aviso
             if (error.response?.data?.toString().toLowerCase().includes("existe")) {
-                setErrorUsuario("Este analista ya está registrado");
+                setErrorUsuario("El nombre de usuario ya existe, por favor elige otro");
             }
         } finally {
             setCargando(false);
@@ -96,6 +96,19 @@ const Registro = () => {
                     <div className={`input-group-modern ${errorUsuario || errores.usuario ? 'error' : ''}`}>
                         <label><UserPlus size={14} /> Usuario</label>
                         <input name="usuario" onChange={handleInputChange} />
+                        <AnimatePresence>
+                            {(errorUsuario || errores.usuario) && (
+                                <motion.span 
+                                    initial={{ opacity: 0, height: 0, y: -5 }}
+                                    animate={{ opacity: 1, height: 'auto', y: 0 }}
+                                    exit={{ opacity: 0, height: 0, y: -5 }}
+                                    className="error-hint"
+                                    style={{ display: 'block', overflow: 'hidden' }}
+                                >
+                                    {errorUsuario || "El nombre de usuario es obligatorio"}
+                                </motion.span>
+                            )}
+                        </AnimatePresence>
                     </div>
 
                     <div className={`input-group-modern ${errores.hashClave ? 'error' : ''}`}>
